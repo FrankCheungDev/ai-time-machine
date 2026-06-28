@@ -9,6 +9,8 @@
 - SVG 流程图
 - 通用 Stepper demo 组件
 - RAG Pipeline 教学原型
+- Attention Map 教学原型
+- Agent Loop 教学原型
 
 ## 本地开发
 
@@ -19,4 +21,8 @@ pnpm build
 pnpm test
 ```
 
-RAG 原型页面位于 `/chapters/rag/`。
+已实现页面：
+
+- `/chapters/rag/`
+- `/chapters/attention/`
+- `/chapters/agent/`

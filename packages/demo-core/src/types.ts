@@ -26,3 +26,48 @@ export interface PipelineDemo {
   edges: PipelineEdge[];
   steps: DemoStep[];
 }
+
+export interface AttentionToken {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  focusTitle: string;
+  focusDescription: string;
+}
+
+export interface AttentionLink {
+  id: string;
+  from: string;
+  to: string;
+  weight: number;
+}
+
+export interface AttentionMapDemo {
+  title: string;
+  question: string;
+  simplificationNote: string;
+  attentionModeCopy: string;
+  rnnModeCopy: string;
+  tokens: AttentionToken[];
+  links: AttentionLink[];
+}
+
+export interface AgentLoopStep extends DemoStep {
+  loopLabel: string;
+}
+
+export interface AgentBranchOption {
+  id: string;
+  label: string;
+  targetStepId: string;
+  description: string;
+}
+
+export interface AgentLoopDemo {
+  title: string;
+  question: string;
+  simplificationNote: string;
+  steps: AgentLoopStep[];
+  branchOptions: AgentBranchOption[];
+}

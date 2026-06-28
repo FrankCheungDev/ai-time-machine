@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import AttentionMapDemo from "../../demos/attention-map/AttentionMapDemo.svelte";
+---
+
+<BaseLayout
+  title="Attention 与 Transformer：token 为什么可以直接互相关注？"
+  description="一个静态、教学型 Attention Map 交互图解。"
+>
+  <main class="chapter-main">
+    <p class="eyebrow">MVP Demo 02</p>
+    <h1 class="page-title">Attention 与 Transformer：token 为什么可以直接互相关注？</h1>
+    <p class="lede">
+      为什么 Attention 比 RNN 更适合建模长距离依赖？这个章节把历史位置放在 RNN 之后、
+      Transformer 之前，帮助用户看到“直接连接”为什么改变 NLP。
+    </p>
+    <AttentionMapDemo client:load />
+
+    <section class="section-band" aria-labelledby="attention-notes">
+      <p class="eyebrow">观察指南</p>
+      <h2 id="attention-notes">从链式传递到直接连接</h2>
+      <p>
+        它之前的问题是：RNN 需要按顺序传递状态，远距离 token 的关系容易变弱。
+        Attention 解决的是信息路径过长的问题，但没有直接解决训练成本、幻觉或事实更新问题。
+        后续影响是 Transformer、基础模型和现代多模态模型。
+      </p>
+      <p>
+        参考资料建议后续补充：Attention Is All You Need、Transformer 可视化文章、RNN/Attention 对比教程。
+      </p>
+    </section>
+  </main>
+</BaseLayout>

@@ -13,8 +13,8 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
           深度学习到大模型、RAG 与 Agent 的演化脉络。
         </p>
         <div class="actions">
-          <a class="button primary" href="/chapters/rag/">打开 RAG 原型</a>
-          <a class="button" href="#mvp">查看 MVP 闭环</a>
+          <a class="button primary" href="/chapters/rag/">打开三件套原型</a>
+          <a class="button" href="#mvp">查看已实现 demo</a>
         </div>
       </div>
       <div class="system-map" aria-label="AI 技术演化主线图">
@@ -52,12 +52,23 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
 
     <section id="mvp" class="section-band" aria-labelledby="mvp-title">
       <p class="eyebrow">MVP 验证顺序</p>
-      <h2 id="mvp-title">先跑通一个可理解、可复用、可静态构建的 demo</h2>
-      <div class="pill-grid">
-        <div class="pill">Astro 静态站点</div>
-        <div class="pill">Svelte 交互 island</div>
-        <div class="pill">SVG 流程图</div>
-        <div class="pill">RAG Pipeline Demo</div>
+      <h2 id="mvp-title">现代 AI 三件套：RAG、Attention、Agent</h2>
+      <div class="demo-grid">
+        <a class="demo-card" href="/chapters/rag/">
+          <span>01</span>
+          <strong>RAG Pipeline</strong>
+          <p>观察问题如何经过 embedding、检索、重排、prompt、LLM 和引用答案。</p>
+        </a>
+        <a class="demo-card" href="/chapters/attention/">
+          <span>02</span>
+          <strong>Attention Map</strong>
+          <p>点击 token，比较 Attention 直接连接和 RNN 链式传递的差异。</p>
+        </a>
+        <a class="demo-card" href="/chapters/agent/">
+          <span>03</span>
+          <strong>Agent Loop</strong>
+          <p>执行 plan、tool call、observation、revise、final answer 的循环。</p>
+        </a>
       </div>
     </section>
   </main>

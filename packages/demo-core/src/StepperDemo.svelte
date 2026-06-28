@@ -4,7 +4,7 @@
 
   export let steps: DemoStep[];
 
-  let currentIndex = 0;
+  export let currentIndex = 0;
   $: currentStep = steps[currentIndex];
   $: isFirst = currentIndex === 0;
   $: isLast = currentIndex === steps.length - 1;
