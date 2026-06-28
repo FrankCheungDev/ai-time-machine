@@ -6,6 +6,13 @@ export interface DemoStep {
   activeEdgeIds: string[];
 }
 
+export interface DemoMetadata {
+  title: string;
+  question: string;
+  simplificationNote: string;
+  learningGoals: string[];
+}
+
 export interface PipelineNode {
   id: string;
   label: string;
@@ -27,10 +34,7 @@ export interface PipelineScenario {
   riskNote: string;
 }
 
-export interface PipelineDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface PipelineDemo extends DemoMetadata {
   nodes: PipelineNode[];
   edges: PipelineEdge[];
   steps: DemoStep[];
@@ -53,10 +57,7 @@ export interface AttentionLink {
   weight: number;
 }
 
-export interface AttentionMapDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface AttentionMapDemo extends DemoMetadata {
   attentionModeCopy: string;
   rnnModeCopy: string;
   tokens: AttentionToken[];
@@ -74,10 +75,7 @@ export interface AgentBranchOption {
   description: string;
 }
 
-export interface AgentLoopDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface AgentLoopDemo extends DemoMetadata {
   steps: AgentLoopStep[];
   branchOptions: AgentBranchOption[];
 }
@@ -95,10 +93,7 @@ export interface ExpertRule {
   explanation: string;
 }
 
-export interface ExpertSystemDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface ExpertSystemDemo extends DemoMetadata {
   conditions: ExpertCondition[];
   exceptionCondition: ExpertCondition;
   rules: ExpertRule[];
@@ -131,19 +126,13 @@ export interface SearchStrategy {
   frontierLabel: string;
 }
 
-export interface SearchTreeDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface SearchTreeDemo extends DemoMetadata {
   nodes: SearchTreeNode[];
   edges: SearchTreeEdge[];
   strategies: SearchStrategy[];
 }
 
-export interface BayesUpdateDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface BayesUpdateDemo extends DemoMetadata {
   priorDefault: number;
   evidenceDefault: number;
   priorLabel: string;
@@ -166,10 +155,7 @@ export interface BoundaryMode {
   path: string;
 }
 
-export interface DecisionBoundaryDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface DecisionBoundaryDemo extends DemoMetadata {
   points: DecisionPoint[];
   modes: BoundaryMode[];
   outlierLabel: string;
@@ -191,10 +177,7 @@ export interface CnnScanStep {
   description: string;
 }
 
-export interface CnnKernelDemo {
-  title: string;
-  question: string;
-  simplificationNote: string;
+export interface CnnKernelDemo extends DemoMetadata {
   imageGrid: number[][];
   kernels: CnnKernel[];
   scanSteps: CnnScanStep[];

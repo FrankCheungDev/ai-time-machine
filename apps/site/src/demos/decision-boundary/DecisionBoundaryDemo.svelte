@@ -11,6 +11,7 @@
   title={decisionBoundaryDemo.title}
   question={decisionBoundaryDemo.question}
   simplificationNote={decisionBoundaryDemo.simplificationNote}
+  learningGoals={decisionBoundaryDemo.learningGoals}
 >
   <div class="mode-buttons" aria-label="边界模式">
     {#each decisionBoundaryDemo.modes as mode}

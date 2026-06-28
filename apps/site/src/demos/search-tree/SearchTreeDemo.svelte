@@ -20,6 +20,7 @@
   title={searchTreeDemo.title}
   question={searchTreeDemo.question}
   simplificationNote={searchTreeDemo.simplificationNote}
+  learningGoals={searchTreeDemo.learningGoals}
 >
   <div class="strategy-buttons" aria-label="搜索策略">
     {#each searchTreeDemo.strategies as strategy}

@@ -25,6 +25,7 @@
   title={attentionMapDemo.title}
   question={attentionMapDemo.question}
   simplificationNote={attentionMapDemo.simplificationNote}
+  learningGoals={attentionMapDemo.learningGoals}
 >
   <div class="mode-switch" aria-label="模式切换">
     <button type="button" class:active={mode === "attention"} on:click={() => (mode = "attention")}>Attention 模式</button>

@@ -1,5 +1,68 @@
 ---
 import BaseLayout from "../components/layout/BaseLayout.astro";
+
+const coreDiagrams = [
+  {
+    title: "AI 技术演化主线图",
+    route: "/",
+    note: "首页首屏的规则、学习、大模型、Agent 主线。"
+  },
+  {
+    title: "AI 技术演化总览时间线",
+    route: "/timeline/",
+    note: "按时代串起关键技术转向和对应 demo。"
+  },
+  {
+    title: "AI 技术谱系图",
+    route: "/lineage/",
+    note: "按范式展示符号主义、统计学习、神经网络、基础模型和 Agent。"
+  },
+  {
+    title: "LLM 系统边界图",
+    route: "/chapters/llm-system/",
+    note: "展示模型、上下文、检索、工具、记忆和评估的系统关系。"
+  },
+  {
+    title: "搜索树策略图",
+    route: "/chapters/search/",
+    note: "比较 BFS、DFS、A* 的展开路径和 frontier。"
+  },
+  {
+    title: "专家系统规则图",
+    route: "/chapters/expert-system/",
+    note: "展示 if-then 规则、例外条件和冲突状态。"
+  },
+  {
+    title: "Bayes 信念更新图",
+    route: "/chapters/bayes/",
+    note: "用先验、证据强度和后验条形反馈解释不确定性更新。"
+  },
+  {
+    title: "决策边界对比图",
+    route: "/chapters/decision-boundary/",
+    note: "比较线性、非线性和过拟合边界。"
+  },
+  {
+    title: "CNN Kernel 扫描图",
+    route: "/chapters/cnn/",
+    note: "展示局部窗口、卷积核和 feature map 响应。"
+  },
+  {
+    title: "Attention Token 关系图",
+    route: "/chapters/attention/",
+    note: "展示 token 直接连接和 RNN 链式传递对比。"
+  },
+  {
+    title: "RAG Pipeline 流程图",
+    route: "/chapters/rag/",
+    note: "展示 Query、Embedding、Vector DB、Reranker、Prompt、LLM、Answer。"
+  },
+  {
+    title: "Agent Loop 行动循环图",
+    route: "/chapters/agent/",
+    note: "展示 plan、tool call、observation、revise、final answer。"
+  }
+];
 ---
 
 <BaseLayout title="图源与导出说明" description="贡献者如何命名、导出和复用交互图源。">
@@ -41,6 +104,20 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
           <strong>下载 RAG Pipeline SVG</strong>
           <p>包含 <code>node-query</code>、<code>arrow-query-embedding</code> 等稳定 id，便于绑定交互状态。</p>
         </a>
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="core-diagrams">
+      <p class="eyebrow">MVP 核心图解</p>
+      <h2 id="core-diagrams">12 张第一版核心图解</h2>
+      <div class="demo-grid overview-grid">
+        {coreDiagrams.map((diagram) => (
+          <a class="demo-card" href={diagram.route} data-core-diagram>
+            <span>Diagram</span>
+            <strong>{diagram.title}</strong>
+            <p>{diagram.note}</p>
+          </a>
+        ))}
       </div>
     </section>
 

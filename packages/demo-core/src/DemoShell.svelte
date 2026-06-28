@@ -2,6 +2,7 @@
   export let title: string;
   export let question: string;
   export let simplificationNote: string;
+  export let learningGoals: string[] = [];
 </script>
 
 <section class="demo-shell" aria-labelledby="demo-title">
@@ -11,6 +12,16 @@
     <p class="question">{question}</p>
   </div>
   <slot />
+  {#if learningGoals.length}
+    <div class="learning-goals">
+      <strong>学习目标</strong>
+      <ul>
+        {#each learningGoals as goal}
+          <li>{goal}</li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
   <div class="note">
     <strong>简化说明</strong>
     <p>{simplificationNote}</p>
@@ -45,7 +56,8 @@
   }
 
   .question,
-  .note {
+  .note,
+  .learning-goals {
     color: var(--color-muted, #5f6864);
   }
 
@@ -54,18 +66,29 @@
     font-size: 1.05rem;
   }
 
-  .note {
+  .note,
+  .learning-goals {
     margin: 18px 0 0;
     padding-top: 16px;
     border-top: 1px solid var(--color-line, #d7ddd7);
     font-size: 0.94rem;
   }
 
-  .note strong {
+  .note strong,
+  .learning-goals strong {
     color: var(--color-blue, #3469a6);
   }
 
-  .note p {
+  .note p,
+  .learning-goals ul {
     margin: 6px 0 0;
+  }
+
+  .learning-goals ul {
+    padding-left: 18px;
+  }
+
+  .learning-goals li + li {
+    margin-top: 4px;
   }
 </style>

@@ -19,6 +19,7 @@
   title={cnnKernelDemo.title}
   question={cnnKernelDemo.question}
   simplificationNote={cnnKernelDemo.simplificationNote}
+  learningGoals={cnnKernelDemo.learningGoals}
 >
   <div class="kernel-buttons" aria-label="卷积核选择">
     {#each cnnKernelDemo.kernels as kernel}

@@ -5,12 +5,17 @@ export const cnnKernelDemo = {
   question: "机器如何从图像中识别局部特征？",
   simplificationNote:
     "本案例是二维网格卷积示意，不训练真实 CNN；数值只用来展示局部感受野和 feature map 的直觉。",
+  learningGoals: [
+    "理解卷积核通过局部窗口扫描图像，而不是一次读取整张图。",
+    "观察不同 kernel 如何产生不同 feature map 响应。",
+    "说明局部感受野和参数共享为什么适合视觉特征提取。",
+  ],
   imageGrid: [
     [0, 0, 1, 1, 1],
     [0, 0, 1, 1, 1],
     [0, 0, 1, 1, 1],
     [0, 0, 1, 1, 1],
-    [0, 0, 1, 1, 1]
+    [0, 0, 1, 1, 1],
   ],
   kernels: [
     {
@@ -21,8 +26,8 @@ export const cnnKernelDemo = {
       matrix: [
         [-1, 0, 1],
         [-1, 0, 1],
-        [-1, 0, 1]
-      ]
+        [-1, 0, 1],
+      ],
     },
     {
       id: "blur",
@@ -32,13 +37,31 @@ export const cnnKernelDemo = {
       matrix: [
         [1, 1, 1],
         [1, 1, 1],
-        [1, 1, 1]
-      ]
-    }
+        [1, 1, 1],
+      ],
+    },
   ],
   scanSteps: [
-    { id: "s1", x: 0, y: 0, title: "扫描左上窗口", description: "kernel 先看一个小局部，而不是整张图。" },
-    { id: "s2", x: 1, y: 0, title: "滑到边界附近", description: "窗口覆盖明暗变化处，边缘响应开始增强。" },
-    { id: "s3", x: 2, y: 0, title: "生成右侧响应", description: "多个局部响应组合成 feature map。" }
-  ]
+    {
+      id: "s1",
+      x: 0,
+      y: 0,
+      title: "扫描左上窗口",
+      description: "kernel 先看一个小局部，而不是整张图。",
+    },
+    {
+      id: "s2",
+      x: 1,
+      y: 0,
+      title: "滑到边界附近",
+      description: "窗口覆盖明暗变化处，边缘响应开始增强。",
+    },
+    {
+      id: "s3",
+      x: 2,
+      y: 0,
+      title: "生成右侧响应",
+      description: "多个局部响应组合成 feature map。",
+    },
+  ],
 } satisfies CnnKernelDemo;

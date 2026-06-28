@@ -15,6 +15,7 @@
   title={bayesUpdateDemo.title}
   question={bayesUpdateDemo.question}
   simplificationNote={bayesUpdateDemo.simplificationNote}
+  learningGoals={bayesUpdateDemo.learningGoals}
 >
   <div class="bayes-demo">
     <div class="controls">

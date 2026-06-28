@@ -60,6 +60,7 @@
   title={ragPipelineDemo.title}
   question={ragPipelineDemo.question}
   simplificationNote={ragPipelineDemo.simplificationNote}
+  learningGoals={ragPipelineDemo.learningGoals}
 >
   <StepperDemo steps={ragPipelineDemo.steps} let:currentStep>
     <SvgScene label="RAG pipeline flow diagram">

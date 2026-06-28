@@ -25,6 +25,7 @@
   title={expertSystemDemo.title}
   question={expertSystemDemo.question}
   simplificationNote={expertSystemDemo.simplificationNote}
+  learningGoals={expertSystemDemo.learningGoals}
 >
   <div class="rule-demo">
     <div class="conditions" aria-label="条件选择">

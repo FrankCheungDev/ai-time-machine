@@ -41,6 +41,7 @@
   title={agentLoopDemo.title}
   question={agentLoopDemo.question}
   simplificationNote={agentLoopDemo.simplificationNote}
+  learningGoals={agentLoopDemo.learningGoals}
 >
   <StepperDemo steps={agentLoopDemo.steps} bind:currentIndex let:currentStep>
     <SvgScene label="Agent plan tool observe revise loop" viewBox="0 0 820 430">
