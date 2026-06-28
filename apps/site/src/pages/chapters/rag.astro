@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import RagPipelineDemo from "../../demos/rag-pipeline/RagPipelineDemo.svelte";
+---
+
+<BaseLayout
+  title="RAG：大模型如何连接外部知识？"
+  description="一个静态、教学型 RAG Pipeline 交互图解。"
+>
+  <main class="chapter-main">
+    <p class="eyebrow">MVP Demo 01</p>
+    <h1 class="page-title">RAG：大模型如何连接外部知识？</h1>
+    <p class="lede">
+      为什么只靠模型参数回答问题不够？这个 demo 用分步 SVG 流程解释检索、
+      重排、拼接上下文和生成回答之间的关系。
+    </p>
+    <RagPipelineDemo client:load />
+  </main>
+</BaseLayout>

@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+---
+
+<BaseLayout title="总览">
+  <main>
+    <section class="hero" aria-labelledby="home-title">
+      <div>
+        <p class="eyebrow">中文优先 · 图解优先 · 静态可部署</p>
+        <h1 id="home-title">交互式人工智能图解史</h1>
+        <p>
+          用可点击、可分步播放、可对比的教学型案例，解释 AI 技术从规则、统计学习、
+          深度学习到大模型、RAG 与 Agent 的演化脉络。
+        </p>
+        <div class="actions">
+          <a class="button primary" href="/chapters/rag/">打开 RAG 原型</a>
+          <a class="button" href="#mvp">查看 MVP 闭环</a>
+        </div>
+      </div>
+      <div class="system-map" aria-label="AI 技术演化主线图">
+        <svg viewBox="0 0 620 420" role="img">
+          <title>AI 技术演化主线</title>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b"></path>
+            </marker>
+          </defs>
+          <path d="M76 210 C150 96 256 90 330 170 S484 312 548 174" fill="none" stroke="#2f7d5b" stroke-width="4" marker-end="url(#arrow)"></path>
+          <g fill="#fff" stroke="#d7ddd7" stroke-width="2">
+            <rect x="32" y="168" width="112" height="70" rx="8"></rect>
+            <rect x="180" y="78" width="126" height="70" rx="8"></rect>
+            <rect x="332" y="148" width="126" height="70" rx="8"></rect>
+            <rect x="472" y="266" width="116" height="70" rx="8"></rect>
+          </g>
+          <g fill="#17201d" font-size="18" font-weight="700">
+            <text x="62" y="207">规则</text>
+            <text x="213" y="117">学习</text>
+            <text x="359" y="187">大模型</text>
+            <text x="508" y="306">Agent</text>
+          </g>
+          <g fill="#5f6864" font-size="13">
+            <text x="58" y="225">搜索 / 专家系统</text>
+            <text x="211" y="135">数据驱动</text>
+            <text x="363" y="205">RAG / 对齐</text>
+            <text x="500" y="324">计划-工具-观察</text>
+          </g>
+          <circle cx="404" cy="183" r="8" fill="#b87918"></circle>
+          <circle cx="530" cy="300" r="8" fill="#3469a6"></circle>
+        </svg>
+      </div>
+    </section>
+
+    <section id="mvp" class="section-band" aria-labelledby="mvp-title">
+      <p class="eyebrow">MVP 验证顺序</p>
+      <h2 id="mvp-title">先跑通一个可理解、可复用、可静态构建的 demo</h2>
+      <div class="pill-grid">
+        <div class="pill">Astro 静态站点</div>
+        <div class="pill">Svelte 交互 island</div>
+        <div class="pill">SVG 流程图</div>
+        <div class="pill">RAG Pipeline Demo</div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
