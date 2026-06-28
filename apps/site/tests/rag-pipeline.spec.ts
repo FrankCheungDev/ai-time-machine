@@ -1,5 +1,19 @@
 import { expect, test } from "@playwright/test";
 
+function firstDurationMs(durationList: string) {
+  const firstDuration = durationList.split(",")[0]?.trim() ?? "0s";
+
+  if (firstDuration.endsWith("ms")) {
+    return Number.parseFloat(firstDuration);
+  }
+
+  if (firstDuration.endsWith("s")) {
+    return Number.parseFloat(firstDuration) * 1000;
+  }
+
+  return Number.parseFloat(firstDuration);
+}
+
 test("RAG chapter presents an interactive pipeline demo", async ({ page }) => {
   await page.goto("/chapters/rag/");
 
@@ -144,4 +158,16 @@ test("Diagrams page explains export and SVG naming conventions", async ({ page }
   await expect(page.getByRole("heading", { level: 1, name: "图源与导出说明" })).toBeVisible();
   await expect(page.getByText("node-*", { exact: true })).toBeVisible();
   await expect(page.getByText("截图友好", { exact: true })).toBeVisible();
+});
+
+test("Reduced motion preference collapses decorative transitions", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const transitionDuration = await page
+    .locator(".demo-card")
+    .first()
+    .evaluate((element) => getComputedStyle(element).transitionDuration);
+
+  expect(firstDurationMs(transitionDuration)).toBeLessThanOrEqual(1);
 });
