@@ -112,6 +112,16 @@ test("Home page links to the LLM system chapter in the MVP spine", async ({ page
   await expect(page.getByRole("link", { name: /LLM 系统地图/ })).toBeVisible();
 });
 
+test("Overview MDX chapter renders the chapter-zero narrative", async ({ page }) => {
+  await page.goto("/chapters/overview/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "总览：AI 为什么不是突然变成大模型的？" })).toBeVisible();
+  await expect(page.getByText("MDX 章节可渲染", { exact: true })).toBeVisible();
+
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: /00 总览章节/ })).toBeVisible();
+});
+
 test("Timeline page shows the AI evolution overview", async ({ page }) => {
   await page.goto("/timeline/");
 

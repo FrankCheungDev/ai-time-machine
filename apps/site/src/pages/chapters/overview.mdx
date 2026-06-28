@@ -1,0 +1,79 @@
+---
+layout: ../../components/layout/BaseLayout.astro
+title: "总览：AI 为什么不是突然变成大模型的？"
+description: "MDX chapter-zero overview for the interactive AI history project."
+---
+
+<main class="chapter-main">
+  <p class="eyebrow">Chapter 00 · MDX</p>
+  <h1 class="page-title">总览：AI 为什么不是突然变成大模型的？</h1>
+  <p class="lede">
+    AI 的主线不是一个模型突然出现，而是规则搜索、知识工程、概率统计、表示学习、
+    Transformer、RAG 与 Agent 不断回应前一阶段瓶颈的结果。
+  </p>
+  <p class="chapter-question">AI 为什么不是突然变成大模型的？</p>
+
+  <section class="section-band" aria-labelledby="mdx-proof">
+    <p class="eyebrow">Technical Closure</p>
+    <h2 id="mdx-proof">MDX 章节可渲染</h2>
+    <p>
+      这个页面验证 Astro + MDX 章节闭环：贡献者可以用 Markdown/MDX 写解释文本，
+      同时复用站点布局、设计 token 和 Astro 路由。
+    </p>
+  </section>
+
+  <section class="section-band" aria-labelledby="spine">
+    <p class="eyebrow">历史主线</p>
+    <h2 id="spine">从规则到系统</h2>
+    <div class="demo-grid overview-grid">
+      <div class="demo-card">
+        <span>规则与知识</span>
+        <strong>可解释，但难扩展</strong>
+        <p>搜索和专家系统证明规则能表达推理，也暴露出组合爆炸和例外维护问题。</p>
+      </div>
+      <div class="demo-card">
+        <span>数据与表示</span>
+        <strong>能学习，但依赖样本</strong>
+        <p>统计学习和神经网络把问题转向数据、特征和表示，让模型从样本中归纳。</p>
+      </div>
+      <div class="demo-card">
+        <span>基础模型与系统</span>
+        <strong>能力强，但需要外部结构</strong>
+        <p>Transformer 扩展出 LLM，RAG、工具、记忆和评估把模型组织成现代 AI 系统。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-band" aria-labelledby="how-to-read">
+    <p class="eyebrow">阅读方式</p>
+    <h2 id="how-to-read">每章看四件事</h2>
+    <div class="timeline-list compact-list">
+      <article class="timeline-item compact-item">
+        <span>之前的问题</span>
+        <div>
+          <h3>上一阶段为什么不够用？</h3>
+          <p>先理解瓶颈，再看新技术为什么出现。</p>
+        </div>
+      </article>
+      <article class="timeline-item compact-item">
+        <span>交互图解</span>
+        <div>
+          <h3>用一个动作拿到一个直觉</h3>
+          <p>每个 demo 都只讲一个核心 aha moment，避免把真实系统复杂度塞进入门解释。</p>
+        </div>
+      </article>
+      <article class="timeline-item compact-item">
+        <span>遗留问题</span>
+        <div>
+          <h3>新技术解决了什么，又留下什么？</h3>
+          <p>RAG、Agent 和评估不是终点，而是继续回应事实性、可控性和可靠性问题。</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="actions">
+    <a class="button primary" href="/timeline/">打开时间线</a>
+    <a class="button" href="/chapters/search/">从搜索章节开始</a>
+  </div>
+</main>
