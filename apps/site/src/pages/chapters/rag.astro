@@ -15,5 +15,18 @@ import RagPipelineDemo from "../../demos/rag-pipeline/RagPipelineDemo.svelte";
       重排、拼接上下文和生成回答之间的关系。
     </p>
     <RagPipelineDemo client:load />
+
+    <section class="section-band" aria-labelledby="rag-notes">
+      <p class="eyebrow">历史位置</p>
+      <h2 id="rag-notes">RAG 把大模型接回外部知识系统</h2>
+      <p>
+        它之前的问题是：LLM 的参数知识会过期，也不能直接读取私有文档。
+        RAG 解决的是把外部证据放进上下文，让答案更可更新、更可追溯。
+        它没有自动解决错误检索、证据冲突、引用核验和权限控制问题。
+        后续影响是企业知识库问答、搜索增强 Agent 和更严格的事实性评估。
+      </p>
+      <p class="eyebrow">参考资料</p>
+      <p>参考资料建议后续补充：Retrieval-Augmented Generation、向量检索、重排模型、引用式问答评估。</p>
+    </section>
   </main>
 </BaseLayout>

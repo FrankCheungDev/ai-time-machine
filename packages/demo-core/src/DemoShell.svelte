@@ -11,7 +11,10 @@
     <p class="question">{question}</p>
   </div>
   <slot />
-  <p class="note">{simplificationNote}</p>
+  <div class="note">
+    <strong>简化说明</strong>
+    <p>{simplificationNote}</p>
+  </div>
 </section>
 
 <style>
@@ -56,5 +59,13 @@
     padding-top: 16px;
     border-top: 1px solid var(--color-line, #d7ddd7);
     font-size: 0.94rem;
+  }
+
+  .note strong {
+    color: var(--color-blue, #3469a6);
+  }
+
+  .note p {
+    margin: 6px 0 0;
   }
 </style>

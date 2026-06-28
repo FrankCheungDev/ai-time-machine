@@ -1,5 +1,18 @@
 import { expect, test } from "@playwright/test";
 
+const chapterRoutes = [
+  "/chapters/overview/",
+  "/chapters/search/",
+  "/chapters/expert-system/",
+  "/chapters/bayes/",
+  "/chapters/decision-boundary/",
+  "/chapters/cnn/",
+  "/chapters/attention/",
+  "/chapters/llm-system/",
+  "/chapters/rag/",
+  "/chapters/agent/"
+];
+
 function firstDurationMs(durationList: string) {
   const firstDuration = durationList.split(",")[0]?.trim() ?? "0s";
 
@@ -163,6 +176,14 @@ test("Diagrams page explains export and SVG naming conventions", async ({ page, 
   const response = await request.get("/diagrams/rag-pipeline.svg");
   expect(response.ok()).toBeTruthy();
   expect(await response.text()).toContain('id="node-query"');
+});
+
+test("Chapter pages expose references and simplification notes", async ({ page }) => {
+  for (const route of chapterRoutes) {
+    await page.goto(route);
+    await expect(page.getByText("参考资料", { exact: true })).toBeVisible();
+    await expect(page.getByText("简化说明", { exact: true })).toBeVisible();
+  }
 });
 
 test("Reduced motion preference collapses decorative transitions", async ({ page }) => {
