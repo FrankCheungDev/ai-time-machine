@@ -34,10 +34,12 @@ test("RAG chapter presents an interactive pipeline demo", async ({ page }) => {
   await expect(page.getByText("为什么只靠模型参数回答问题不够？", { exact: true })).toBeVisible();
   await expect(page.getByText("Query", { exact: true })).toBeVisible();
   await expect(page.getByText("Vector DB", { exact: true })).toBeVisible();
+  await expect(page.locator("#node-query")).toHaveAttribute("data-role", "node");
 
   const nextButton = page.getByRole("button", { name: "下一步" });
   await nextButton.click();
   await expect(page.getByRole("heading", { level: 3, name: "把问题转换为向量" })).toBeVisible();
+  await expect(page.locator("#arrow-query-embedding")).toHaveAttribute("data-motion", "draw-in");
 
   await page.getByRole("button", { name: "上一步" }).click();
   await expect(page.getByRole("heading", { level: 3, name: "用户提出一个问题" })).toBeVisible();

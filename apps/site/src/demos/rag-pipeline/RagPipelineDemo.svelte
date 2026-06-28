@@ -2,6 +2,7 @@
   import { DemoShell, StepperDemo, SvgScene } from "@ai-history/demo-core";
   import { ragPipelineDemo } from "@ai-history/data";
   import type { DemoStep } from "@ai-history/demo-core";
+  import { gsap } from "gsap";
 
   const positions: Record<string, { x: number; y: number }> = {
     query: { x: 36, y: 164 },
@@ -28,6 +29,31 @@
   function isEdgeActive(step: DemoStep, id: string) {
     return step.activeEdgeIds.includes(id);
   }
+
+  function prefersReducedMotion() {
+    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function drawIn(node: SVGLineElement, active: boolean) {
+    function update(isActive: boolean) {
+      if (!isActive) return;
+
+      if (prefersReducedMotion()) {
+        gsap.set(node, { strokeDasharray: "0", strokeDashoffset: 0 });
+        return;
+      }
+
+      gsap.fromTo(
+        node,
+        { strokeDasharray: "18 10", strokeDashoffset: 28 },
+        { strokeDashoffset: 0, duration: 0.42, ease: "power2.out", overwrite: true }
+      );
+    }
+
+    update(active);
+
+    return { update };
+  }
 </script>
 
 <DemoShell
@@ -47,6 +73,10 @@
         {@const from = positions[edge.from]}
         {@const to = positions[edge.to]}
         <line
+          id={`arrow-${edge.id}`}
+          data-role="arrow"
+          data-motion={isEdgeActive(currentStep, edge.id) ? "draw-in" : "idle"}
+          use:drawIn={isEdgeActive(currentStep, edge.id)}
           class:edge-active={isEdgeActive(currentStep, edge.id)}
           class:edge-muted={!isEdgeActive(currentStep, edge.id)}
           x1={from.x + nodeWidth}
@@ -59,7 +89,12 @@
 
       {#each ragPipelineDemo.nodes as node}
         {@const position = positions[node.id]}
-        <g class:node-active={isActive(currentStep, node.id)} class:node-muted={!isActive(currentStep, node.id)}>
+        <g
+          id={`node-${node.id}`}
+          data-role="node"
+          class:node-active={isActive(currentStep, node.id)}
+          class:node-muted={!isActive(currentStep, node.id)}
+        >
           <rect x={position.x} y={position.y} width={nodeWidth} height={nodeHeight} rx="8"></rect>
           <text class="node-label" x={position.x + nodeWidth / 2} y={position.y + 30} text-anchor="middle">{node.label}</text>
           <text class="node-caption" x={position.x + nodeWidth / 2} y={position.y + 52} text-anchor="middle">{node.description}</text>
