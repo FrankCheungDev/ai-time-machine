@@ -92,3 +92,27 @@ test("CNN chapter shows kernel-driven feature maps", async ({ page }) => {
   await page.getByRole("button", { name: "下一步" }).click();
   await expect(page.getByText("当前窗口响应")).toBeVisible();
 });
+
+test("Timeline page shows the AI evolution overview", async ({ page }) => {
+  await page.goto("/timeline/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "AI 技术演化总览时间线" })).toBeVisible();
+  await expect(page.getByText("Transformer", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "查看 Attention demo" })).toBeVisible();
+});
+
+test("Lineage page shows the technical paradigm map", async ({ page }) => {
+  await page.goto("/lineage/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "AI 技术谱系图" })).toBeVisible();
+  await expect(page.getByText("符号主义", { exact: true })).toBeVisible();
+  await expect(page.getByText("RAG", { exact: true })).toBeVisible();
+});
+
+test("Diagrams page explains export and SVG naming conventions", async ({ page }) => {
+  await page.goto("/diagrams/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "图源与导出说明" })).toBeVisible();
+  await expect(page.getByText("node-*", { exact: true })).toBeVisible();
+  await expect(page.getByText("截图友好", { exact: true })).toBeVisible();
+});

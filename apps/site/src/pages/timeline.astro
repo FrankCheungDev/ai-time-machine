@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import { aiTimelineEntries } from "@ai-history/data";
+---
+
+<BaseLayout title="AI 技术演化总览时间线" description="按时间理解 AI 技术从符号主义到 Agent 的演化脉络。">
+  <main class="chapter-main">
+    <p class="eyebrow">Overview</p>
+    <h1 class="page-title">AI 技术演化总览时间线</h1>
+    <p class="lede">
+      这条时间线不是论文清单，而是把每个阶段的核心问题、技术转向和对应 demo 放在一条主线上。
+    </p>
+
+    <section class="timeline-list" aria-label="AI 技术演化事件">
+      {aiTimelineEntries.map((entry) => (
+        <article id={`timeline-${entry.id}`} class="timeline-item">
+          <span>{entry.year}</span>
+          <p class="eyebrow">{entry.era}</p>
+          <h2>{entry.title}</h2>
+          <p>{entry.summary}</p>
+          {entry.demoHref && <a class="button" href={entry.demoHref}>{entry.demoLabel}</a>}
+        </article>
+      ))}
+    </section>
+  </main>
+</BaseLayout>

@@ -179,6 +179,10 @@ main {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.overview-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .demo-card {
   display: grid;
   min-height: 170px;
@@ -212,6 +216,104 @@ main {
   padding: 54px 0 72px;
 }
 
+.timeline-list {
+  display: grid;
+  gap: 14px;
+  margin: 34px 0 48px;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.timeline-item > span {
+  color: var(--color-blue);
+  font-weight: 780;
+}
+
+.timeline-item h2,
+.timeline-item p {
+  margin: 0;
+}
+
+.timeline-item h2 {
+  font-size: 1.18rem;
+  letter-spacing: 0;
+}
+
+.timeline-item p:not(.eyebrow) {
+  color: var(--color-muted);
+}
+
+.lineage-panel {
+  overflow-x: auto;
+  margin: 34px 0;
+  padding: 22px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.lineage-panel svg {
+  display: block;
+  width: 100%;
+  min-width: 860px;
+  height: auto;
+}
+
+.lineage-panel line {
+  stroke: #9ba9a1;
+  stroke-width: 3;
+}
+
+.lineage-panel marker path {
+  fill: #9ba9a1;
+}
+
+.lineage-node rect {
+  fill: white;
+  stroke: var(--color-line);
+  stroke-width: 2;
+}
+
+.lineage-node.symbolic rect {
+  stroke: var(--color-amber);
+}
+
+.lineage-node.statistical rect {
+  stroke: var(--color-green);
+}
+
+.lineage-node.neural rect,
+.lineage-node.foundation rect {
+  stroke: var(--color-blue);
+}
+
+.lineage-node.agent rect,
+.lineage-node.safety rect {
+  stroke: var(--color-coral);
+}
+
+.lineage-panel text {
+  fill: var(--color-ink);
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.lineage-panel .node-caption,
+.lineage-panel .edge-label {
+  fill: var(--color-muted);
+  font-size: 10px;
+}
+
 @media (max-width: 820px) {
   .site-header {
     align-items: flex-start;
@@ -224,14 +326,20 @@ main {
   }
 
   .pill-grid,
-  .demo-grid {
+  .demo-grid,
+  .overview-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .timeline-item {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 520px) {
   .pill-grid,
-  .demo-grid {
+  .demo-grid,
+  .overview-grid {
     grid-template-columns: 1fr;
   }
 }

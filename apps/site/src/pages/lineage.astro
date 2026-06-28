@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import { aiLineageEdges, aiLineageNodes } from "@ai-history/data";
+
+const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]));
+---
+
+<BaseLayout title="AI 技术谱系图" description="按范式理解符号主义、统计学习、神经网络、基础模型、RAG 与 Agent 的关系。">
+  <main class="chapter-main">
+    <p class="eyebrow">Paradigm Map</p>
+    <h1 class="page-title">AI 技术谱系图</h1>
+    <p class="lede">
+      同一项技术往往不是突然出现，而是在旧问题和新约束之间迁移。谱系图帮助你看到范式之间的继承关系。
+    </p>
+
+    <section class="lineage-panel" aria-label="AI 技术谱系 SVG 图">
+      <svg viewBox="0 0 920 410" role="img" aria-labelledby="lineage-title">
+        <title id="lineage-title">AI 技术谱系图</title>
+        <defs>
+          <marker id="lineage-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+          </marker>
+        </defs>
+
+        {aiLineageEdges.map((edge) => {
+          const from = nodeById[edge.from];
+          const to = nodeById[edge.to];
+          const midX = (from.x + to.x) / 2;
+          const midY = (from.y + to.y) / 2;
+          return (
+            <>
+              <line id={`arrow-${edge.id}`} x1={from.x + 76} y1={from.y + 36} x2={to.x} y2={to.y + 36} marker-end="url(#lineage-arrow)" />
+              <text class="edge-label" x={midX + 34} y={midY + 18} text-anchor="middle">{edge.label}</text>
+            </>
+          );
+        })}
+
+        {aiLineageNodes.map((node) => (
+          <a href={node.href ?? "#"} aria-label={`${node.label}：${node.description}`}>
+            <g id={`node-${node.id}`} class={`lineage-node ${node.group}`}>
+              <rect x={node.x} y={node.y} width="132" height="72" rx="8"></rect>
+              <text x={node.x + 66} y={node.y + 32} text-anchor="middle">{node.label}</text>
+              <text class="node-caption" x={node.x + 66} y={node.y + 52} text-anchor="middle">{node.group}</text>
+            </g>
+          </a>
+        ))}
+      </svg>
+    </section>
+
+    <section class="section-band" aria-labelledby="lineage-notes">
+      <p class="eyebrow">阅读方式</p>
+      <h2 id="lineage-notes">先看范式，再看 demo</h2>
+      <p>
+        从左到右看，你会看到 AI 从规则与搜索走向统计学习，再走向神经网络与基础模型。
+        RAG 和 Agent 不是孤立应用，而是现代模型连接知识、工具和任务循环的系统化结果。
+      </p>
+    </section>
+  </main>
+</BaseLayout>

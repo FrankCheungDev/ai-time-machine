@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+---
+
+<BaseLayout title="图源与导出说明" description="贡献者如何命名、导出和复用交互图源。">
+  <main class="chapter-main">
+    <p class="eyebrow">Diagram Source</p>
+    <h1 class="page-title">图源与导出说明</h1>
+    <p class="lede">
+      本项目的图解需要截图友好、可维护、可绑定交互状态。优先使用手工整理的 SVG，并遵循稳定 id 约定。
+    </p>
+
+    <section class="section-band" aria-labelledby="export-flow">
+      <p class="eyebrow">推荐流程</p>
+      <h2 id="export-flow">从图源到可交互 SVG</h2>
+      <div class="pill-grid">
+        <div class="pill">Figma / Excalidraw 草图</div>
+        <div class="pill">导出 SVG</div>
+        <div class="pill">SVGO 优化</div>
+        <div class="pill">补 id / data-role</div>
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="naming">
+      <p class="eyebrow">SVG 命名规范</p>
+      <h2 id="naming">稳定命名让动画和测试更可靠</h2>
+      <div class="demo-grid">
+        <div class="demo-card"><strong>node-*</strong><p>概念节点、流程节点、token 节点。</p></div>
+        <div class="demo-card"><strong>arrow-*</strong><p>数据流、控制流、影响关系。</p></div>
+        <div class="demo-card"><strong>label-*</strong><p>截图和导出时保留的文字标签。</p></div>
+        <div class="demo-card"><strong>highlight-*</strong><p>当前步骤、失败状态、解决状态。</p></div>
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="screenshots">
+      <p class="eyebrow">截图友好</p>
+      <h2 id="screenshots">每张图都应该能单独传播</h2>
+      <p>
+        保持边距、标题、激活状态和简化说明清晰可见。导出或截图前，优先选择能表达一个核心 aha moment 的状态，
+        避免把多个控件面板、过长解释和复杂参数同时放进画面。
+      </p>
+    </section>
+  </main>
+</BaseLayout>

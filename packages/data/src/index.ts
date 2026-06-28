@@ -6,3 +6,7 @@ export { decisionBoundaryDemo } from "./demos/decision-boundary";
 export { expertSystemDemo } from "./demos/expert-system";
 export { ragPipelineDemo } from "./demos/rag-pipeline";
 export { searchTreeDemo } from "./demos/search-tree";
+export { aiLineageEdges, aiLineageNodes } from "./overview/lineage";
+export { aiTimelineEntries } from "./overview/timeline";
+export type { LineageEdge, LineageNode } from "./overview/lineage";
+export type { TimelineEntry } from "./overview/timeline";
