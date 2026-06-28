@@ -70,7 +70,7 @@
 
   button {
     min-width: 96px;
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 16px;
     border: 1px solid var(--color-line, #d7ddd7);
     border-radius: 8px;

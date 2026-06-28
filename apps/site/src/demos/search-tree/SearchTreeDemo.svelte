@@ -68,7 +68,7 @@
   }
 
   button {
-    min-height: 40px;
+    min-height: 44px;
     padding: 0 14px;
     border: 1px solid var(--color-line, #d7ddd7);
     border-radius: 8px;

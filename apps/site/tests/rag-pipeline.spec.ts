@@ -350,3 +350,24 @@ test("Reduced motion preference collapses decorative transitions", async ({
 
   expect(firstDurationMs(transitionDuration)).toBeLessThanOrEqual(1);
 });
+
+test("Demo controls keep mobile-safe touch target height", async ({ page }) => {
+  const demoRoutes = chapterRoutes.filter(
+    (route) =>
+      route !== "/chapters/overview/" && route !== "/chapters/llm-system/",
+  );
+
+  for (const route of demoRoutes) {
+    await page.goto(route);
+
+    const buttonHeights = await page
+      .locator("main button")
+      .evaluateAll((buttons) =>
+        buttons.map((button) => button.getBoundingClientRect().height),
+      );
+
+    for (const height of buttonHeights) {
+      expect(height, `${route} control height`).toBeGreaterThanOrEqual(44);
+    }
+  }
+});

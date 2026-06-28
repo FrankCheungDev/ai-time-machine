@@ -157,7 +157,7 @@
   }
 
   button {
-    min-height: 40px;
+    min-height: 44px;
     flex: 0 0 auto;
     padding: 0 14px;
     border: 1px solid var(--color-coral, #c6543f);
