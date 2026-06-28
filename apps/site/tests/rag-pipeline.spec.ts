@@ -14,6 +14,10 @@ test("RAG chapter presents an interactive pipeline demo", async ({ page }) => {
 
   await page.getByRole("button", { name: "上一步" }).click();
   await expect(page.getByRole("heading", { level: 3, name: "用户提出一个问题" })).toBeVisible();
+
+  await page.getByLabel("检索场景").selectOption("wrong");
+  await expect(page.getByRole("heading", { level: 3, name: "错误检索：证据把答案带偏" })).toBeVisible();
+  await expect(page.getByText("错误片段会把模型带向错误答案。")).toBeVisible();
 });
 
 test("Attention chapter lets users inspect token relationships", async ({ page }) => {

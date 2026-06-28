@@ -72,5 +72,39 @@ export const ragPipelineDemo = {
       activeNodeIds: ["llm", "answer"],
       activeEdgeIds: ["llm-answer"]
     }
+  ],
+  scenarios: [
+    {
+      id: "no-rag",
+      label: "无 RAG",
+      title: "无 RAG：只能依赖参数记忆",
+      description: "系统不检索外部材料，模型只能根据训练中留下的参数记忆回答。",
+      answerPreview: "回答可能很流畅，但难以说明来源，也无法保证知识是最新的。",
+      riskNote: "适合低风险常识，不适合需要最新事实、私有知识或严格引用的问题。"
+    },
+    {
+      id: "correct",
+      label: "正确检索",
+      title: "正确检索：答案可引用",
+      description: "检索片段覆盖了问题所需的关键事实，模型能把证据组织成答案。",
+      answerPreview: "答案既回答问题，也能指出依据来自哪段材料。",
+      riskNote: "RAG 的收益来自把正确证据放进上下文，而不是让模型凭空更聪明。"
+    },
+    {
+      id: "wrong",
+      label: "错误检索",
+      title: "错误检索：证据把答案带偏",
+      description: "错误片段会把模型带向错误答案。",
+      answerPreview: "模型可能忠实总结了上下文，但上下文本身就是错的。",
+      riskNote: "这就是为什么召回、重排、引用核验和人工反馈仍然重要。"
+    },
+    {
+      id: "overloaded",
+      label: "检索过多",
+      title: "检索过多：上下文被噪声占满",
+      description: "系统塞入太多弱相关片段，关键信息被稀释，模型需要在噪声中猜重点。",
+      answerPreview: "答案可能变长、变含糊，甚至混合多个互相冲突的来源。",
+      riskNote: "更多上下文不总是更好，chunk、top-k 和重排策略会影响结果。"
+    }
   ]
 } satisfies PipelineDemo;

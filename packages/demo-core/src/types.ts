@@ -18,6 +18,15 @@ export interface PipelineEdge {
   to: string;
 }
 
+export interface PipelineScenario {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  answerPreview: string;
+  riskNote: string;
+}
+
 export interface PipelineDemo {
   title: string;
   question: string;
@@ -25,6 +34,7 @@ export interface PipelineDemo {
   nodes: PipelineNode[];
   edges: PipelineEdge[];
   steps: DemoStep[];
+  scenarios?: PipelineScenario[];
 }
 
 export interface AttentionToken {

@@ -15,6 +15,11 @@
 
   const nodeWidth = 100;
   const nodeHeight = 74;
+  let selectedScenarioId = ragPipelineDemo.scenarios?.[1]?.id ?? "";
+
+  $: selectedScenario =
+    ragPipelineDemo.scenarios?.find((scenario) => scenario.id === selectedScenarioId) ??
+    ragPipelineDemo.scenarios?.[0];
 
   function isActive(step: DemoStep, id: string) {
     return step.activeNodeIds.includes(id);
@@ -62,6 +67,27 @@
       {/each}
     </SvgScene>
   </StepperDemo>
+
+  {#if ragPipelineDemo.scenarios?.length && selectedScenario}
+    <section class="scenario-panel" aria-labelledby="rag-scenario-title">
+      <div class="scenario-control">
+        <label for="rag-scenario">检索场景</label>
+        <select id="rag-scenario" bind:value={selectedScenarioId}>
+          {#each ragPipelineDemo.scenarios as scenario}
+            <option value={scenario.id}>{scenario.label}</option>
+          {/each}
+        </select>
+      </div>
+
+      <article class="scenario-result">
+        <span>{selectedScenario.label}</span>
+        <h3 id="rag-scenario-title">{selectedScenario.title}</h3>
+        <p>{selectedScenario.description}</p>
+        <p class="answer-preview">{selectedScenario.answerPreview}</p>
+        <small>{selectedScenario.riskNote}</small>
+      </article>
+    </section>
+  {/if}
 </DemoShell>
 
 <style>
@@ -120,5 +146,77 @@
   .node-caption {
     fill: var(--color-muted, #5f6864);
     font-size: 10px;
+  }
+
+  .scenario-panel {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+    padding: 18px;
+    border: 1px solid var(--color-line, #d7ddd7);
+    border-radius: 8px;
+    background: #fffaf0;
+  }
+
+  .scenario-control {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+  }
+
+  label {
+    color: var(--color-blue, #3469a6);
+    font-weight: 760;
+  }
+
+  select {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--color-line, #d7ddd7);
+    border-radius: 8px;
+    color: var(--color-ink, #17201d);
+    background: white;
+    font: inherit;
+  }
+
+  .scenario-result {
+    display: grid;
+    gap: 8px;
+  }
+
+  .scenario-result span {
+    width: fit-content;
+    padding: 3px 8px;
+    color: var(--color-amber, #b87918);
+    border: 1px solid rgba(184, 121, 24, 0.32);
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 760;
+  }
+
+  .scenario-result h3,
+  .scenario-result p {
+    margin: 0;
+  }
+
+  .scenario-result h3 {
+    font-size: 1.1rem;
+    letter-spacing: 0;
+  }
+
+  .answer-preview {
+    color: var(--color-ink, #17201d);
+    font-weight: 680;
+  }
+
+  .scenario-result small {
+    color: var(--color-muted, #5f6864);
+  }
+
+  @media (max-width: 680px) {
+    .scenario-panel {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
