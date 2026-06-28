@@ -1,0 +1,185 @@
+<script lang="ts">
+  import { DemoShell } from "@ai-history/demo-core";
+  import { cnnKernelDemo } from "@ai-history/data";
+
+  let activeKernelId = "edge";
+  let stepIndex = 0;
+  $: activeKernel = cnnKernelDemo.kernels.find((kernel) => kernel.id === activeKernelId) ?? cnnKernelDemo.kernels[0];
+  $: activeStep = cnnKernelDemo.scanSteps[stepIndex];
+  $: response = activeKernel.matrix
+    .flatMap((row, y) => row.map((value, x) => value * cnnKernelDemo.imageGrid[activeStep.y + y][activeStep.x + x]))
+    .reduce((sum, value) => sum + value, 0);
+
+  function nextStep() {
+    stepIndex = Math.min(cnnKernelDemo.scanSteps.length - 1, stepIndex + 1);
+  }
+</script>
+
+<DemoShell
+  title={cnnKernelDemo.title}
+  question={cnnKernelDemo.question}
+  simplificationNote={cnnKernelDemo.simplificationNote}
+>
+  <div class="kernel-buttons" aria-label="卷积核选择">
+    {#each cnnKernelDemo.kernels as kernel}
+      <button type="button" class:active={kernel.id === activeKernelId} on:click={() => (activeKernelId = kernel.id)}>
+        {kernel.label}
+      </button>
+    {/each}
+    <button type="button" on:click={nextStep} disabled={stepIndex === cnnKernelDemo.scanSteps.length - 1}>下一步</button>
+  </div>
+
+  <div class="cnn-grid">
+    <div class="image-grid" aria-label="输入图像网格">
+      {#each cnnKernelDemo.imageGrid as row, y}
+        {#each row as value, x}
+          <span
+            class:active={x >= activeStep.x && x < activeStep.x + 3 && y >= activeStep.y && y < activeStep.y + 3}
+            style={`opacity: ${0.28 + value * 0.62}`}
+          ></span>
+        {/each}
+      {/each}
+    </div>
+
+    <div class="kernel-matrix" aria-label="卷积核矩阵">
+      {#each activeKernel.matrix as row}
+        {#each row as value}
+          <span>{value}</span>
+        {/each}
+      {/each}
+    </div>
+
+    <div class="feature-map" aria-label="特征图">
+      {#each cnnKernelDemo.scanSteps as step, index}
+        <span class:filled={index <= stepIndex}>{index <= stepIndex ? response : ""}</span>
+      {/each}
+    </div>
+  </div>
+
+  <section class="explanation" aria-live="polite">
+    <span>当前窗口响应：{response}</span>
+    <h3>{activeStep.title}</h3>
+    <p>{activeKernel.title}。{activeStep.description}</p>
+  </section>
+</DemoShell>
+
+<style>
+  .kernel-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  button {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--color-line, #d7ddd7);
+    border-radius: 8px;
+    color: var(--color-ink, #17201d);
+    background: white;
+    font: inherit;
+    font-weight: 720;
+    cursor: pointer;
+  }
+
+  button.active,
+  button:last-child {
+    color: white;
+    background: var(--color-green, #2f7d5b);
+    border-color: var(--color-green, #2f7d5b);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .cnn-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 0.8fr;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .image-grid,
+  .kernel-matrix,
+  .feature-map {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--color-line, #d7ddd7);
+    border-radius: 8px;
+    background: white;
+  }
+
+  .image-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .kernel-matrix,
+  .feature-map {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .image-grid span,
+  .kernel-matrix span,
+  .feature-map span {
+    display: grid;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 6px;
+    background: var(--color-blue, #3469a6);
+    color: white;
+    font-weight: 760;
+  }
+
+  .image-grid span.active {
+    outline: 3px solid var(--color-coral, #c6543f);
+  }
+
+  .kernel-matrix span {
+    background: #f0f4f2;
+    color: var(--color-ink, #17201d);
+  }
+
+  .feature-map span {
+    background: #e8ece8;
+    color: var(--color-ink, #17201d);
+  }
+
+  .feature-map span.filled {
+    background: #eaf6ef;
+  }
+
+  .explanation {
+    min-height: 134px;
+    margin-top: 18px;
+    padding: 18px;
+    border: 1px solid var(--color-line, #d7ddd7);
+    border-radius: 8px;
+    background: #f7faf8;
+  }
+
+  .explanation span {
+    color: var(--color-green, #2f7d5b);
+    font-weight: 760;
+  }
+
+  h3 {
+    margin: 6px 0 8px;
+    font-size: 1.2rem;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-muted, #5f6864);
+  }
+
+  @media (max-width: 820px) {
+    .cnn-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

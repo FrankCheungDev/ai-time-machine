@@ -1,3 +1,8 @@
 export { agentLoopDemo } from "./demos/agent-loop";
 export { attentionMapDemo } from "./demos/attention-map";
+export { bayesUpdateDemo } from "./demos/bayes-update";
+export { cnnKernelDemo } from "./demos/cnn-kernel";
+export { decisionBoundaryDemo } from "./demos/decision-boundary";
+export { expertSystemDemo } from "./demos/expert-system";
 export { ragPipelineDemo } from "./demos/rag-pipeline";
+export { searchTreeDemo } from "./demos/search-tree";

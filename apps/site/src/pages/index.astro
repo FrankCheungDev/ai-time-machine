@@ -13,8 +13,8 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
           深度学习到大模型、RAG 与 Agent 的演化脉络。
         </p>
         <div class="actions">
-          <a class="button primary" href="/chapters/rag/">打开三件套原型</a>
-          <a class="button" href="#mvp">查看已实现 demo</a>
+          <a class="button primary" href="#mvp">打开 8 个交互原型</a>
+          <a class="button" href="/chapters/search/">从搜索开始</a>
         </div>
       </div>
       <div class="system-map" aria-label="AI 技术演化主线图">
@@ -52,20 +52,45 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
 
     <section id="mvp" class="section-band" aria-labelledby="mvp-title">
       <p class="eyebrow">MVP 验证顺序</p>
-      <h2 id="mvp-title">现代 AI 三件套：RAG、Attention、Agent</h2>
+      <h2 id="mvp-title">MVP 八个交互 demo：从搜索到 Agent</h2>
       <div class="demo-grid">
-        <a class="demo-card" href="/chapters/rag/">
+        <a class="demo-card" href="/chapters/search/">
           <span>01</span>
+          <strong>搜索树 / A*</strong>
+          <p>切换 BFS、DFS、A*，观察搜索策略如何影响 frontier。</p>
+        </a>
+        <a class="demo-card" href="/chapters/expert-system/">
+          <span>02</span>
+          <strong>专家系统规则推理</strong>
+          <p>选择条件并加入例外，观察 if-then 规则如何产生冲突。</p>
+        </a>
+        <a class="demo-card" href="/chapters/bayes/">
+          <span>03</span>
+          <strong>Bayes 更新</strong>
+          <p>拖动先验与证据强度，看信念如何被证据更新。</p>
+        </a>
+        <a class="demo-card" href="/chapters/decision-boundary/">
+          <span>04</span>
+          <strong>决策边界</strong>
+          <p>比较线性、非线性、过拟合边界，理解数据驱动学习。</p>
+        </a>
+        <a class="demo-card" href="/chapters/cnn/">
+          <span>05</span>
+          <strong>CNN 卷积核</strong>
+          <p>选择 kernel 并推进窗口，观察 feature map 如何生成。</p>
+        </a>
+        <a class="demo-card" href="/chapters/attention/">
+          <span>06</span>
+          <strong>Attention Map</strong>
+          <p>点击 token，比较 Attention 直接连接和 RNN 链式传递。</p>
+        </a>
+        <a class="demo-card" href="/chapters/rag/">
+          <span>07</span>
           <strong>RAG Pipeline</strong>
           <p>观察问题如何经过 embedding、检索、重排、prompt、LLM 和引用答案。</p>
         </a>
-        <a class="demo-card" href="/chapters/attention/">
-          <span>02</span>
-          <strong>Attention Map</strong>
-          <p>点击 token，比较 Attention 直接连接和 RNN 链式传递的差异。</p>
-        </a>
         <a class="demo-card" href="/chapters/agent/">
-          <span>03</span>
+          <span>08</span>
           <strong>Agent Loop</strong>
           <p>执行 plan、tool call、observation、revise、final answer 的循环。</p>
         </a>

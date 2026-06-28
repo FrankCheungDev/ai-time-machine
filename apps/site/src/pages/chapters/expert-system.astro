@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import ExpertSystemDemo from "../../demos/expert-system/ExpertSystemDemo.svelte";
+---
+
+<BaseLayout title="专家系统：专家知识能否写成 if-then 规则？" description="一个静态、教学型专家系统规则推理交互图解。">
+  <main class="chapter-main">
+    <p class="eyebrow">MVP Demo 05</p>
+    <h1 class="page-title">专家系统：专家知识能否写成 if-then 规则？</h1>
+    <p class="lede">
+      专家系统把人类专家经验写成 if-then 规则。这个章节展示规则推理为何一度有效，
+      以及例外和模糊边界为什么让规则库难以维护。
+    </p>
+    <ExpertSystemDemo client:load />
+
+    <section class="section-band" aria-labelledby="expert-notes">
+      <p class="eyebrow">观察指南</p>
+      <h2 id="expert-notes">规则系统的问题常常出现在例外越来越多的时候</h2>
+      <p>
+        它之前的问题是通用搜索缺少领域知识。专家系统解决了可解释的专业规则推理，
+        但没有解决知识获取瓶颈、规则冲突和维护成本。后续影响是知识工程、规则引擎和混合推理系统。
+      </p>
+      <p>参考资料建议后续补充：MYCIN、DENDRAL、知识工程、规则引擎设计。</p>
+    </section>
+  </main>
+</BaseLayout>

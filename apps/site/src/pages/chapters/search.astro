@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import SearchTreeDemo from "../../demos/search-tree/SearchTreeDemo.svelte";
+---
+
+<BaseLayout title="符号主义与搜索：机器能否通过搜索表现出智能？" description="一个静态、教学型搜索树交互图解。">
+  <main class="chapter-main">
+    <p class="eyebrow">MVP Demo 04</p>
+    <h1 class="page-title">符号主义与搜索：机器能否通过搜索表现出智能？</h1>
+    <p class="lede">
+      早期 AI 把智能看作在明确规则空间中寻找答案。这个章节展示搜索为什么强大，
+      以及状态空间扩大后为什么会遇到组合爆炸。
+    </p>
+    <SearchTreeDemo client:load />
+
+    <section class="section-band" aria-labelledby="search-notes">
+      <p class="eyebrow">观察指南</p>
+      <h2 id="search-notes">搜索擅长明确规则，但害怕状态膨胀</h2>
+      <p>
+        它之前的问题是机器还缺少可执行的“问题求解”方法。搜索解决了路径寻找和规划问题，
+        但没有解决知识表示、启发式质量和规模爆炸。后续影响包括规划、博弈树、A* 和强化学习中的搜索思想。
+      </p>
+      <p>参考资料建议后续补充：A* 搜索、Newell 与 Simon、博弈树搜索、规划算法教材。</p>
+    </section>
+  </main>
+</BaseLayout>

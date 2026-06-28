@@ -8,6 +8,11 @@
 - Svelte 交互 island
 - SVG 流程图
 - 通用 Stepper demo 组件
+- 搜索树 / A* 教学原型
+- 专家系统规则推理教学原型
+- Bayes 更新教学原型
+- 决策边界教学原型
+- CNN 卷积核教学原型
 - RAG Pipeline 教学原型
 - Attention Map 教学原型
 - Agent Loop 教学原型
@@ -23,6 +28,11 @@ pnpm test
 
 已实现页面：
 
+- `/chapters/search/`
+- `/chapters/expert-system/`
+- `/chapters/bayes/`
+- `/chapters/decision-boundary/`
+- `/chapters/cnn/`
 - `/chapters/rag/`
 - `/chapters/attention/`
 - `/chapters/agent/`

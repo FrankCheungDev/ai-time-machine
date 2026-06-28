@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import BayesUpdateDemo from "../../demos/bayes-update/BayesUpdateDemo.svelte";
+---
+
+<BaseLayout title="概率推理：机器如何处理不确定性？" description="一个静态、教学型 Bayes 更新交互图解。">
+  <main class="chapter-main">
+    <p class="eyebrow">MVP Demo 06</p>
+    <h1 class="page-title">概率推理：机器如何处理不确定性？</h1>
+    <p class="lede">
+      当世界无法被写成确定规则时，AI 需要表达不确定性。这个章节展示证据如何改变信念，
+      让用户理解统计推理与规则推理的差异。
+    </p>
+    <BayesUpdateDemo client:load />
+
+    <section class="section-band" aria-labelledby="bayes-notes">
+      <p class="eyebrow">观察指南</p>
+      <h2 id="bayes-notes">证据不是替代信念，而是更新信念</h2>
+      <p>
+        它之前的问题是规则系统难以处理模糊和噪声。概率推理解决了不确定性表达，
+        但没有自动解决因果解释、数据质量和建模假设。后续影响包括朴素 Bayes、图模型和统计机器学习。
+      </p>
+      <p>参考资料建议后续补充：Bayes 定理、概率图模型、朴素 Bayes 分类器。</p>
+    </section>
+  </main>
+</BaseLayout>
