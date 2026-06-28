@@ -13,7 +13,7 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
           深度学习到大模型、RAG 与 Agent 的演化脉络。
         </p>
         <div class="actions">
-          <a class="button primary" href="#mvp">打开 8 个交互原型</a>
+          <a class="button primary" href="#mvp">打开第一版主线</a>
           <a class="button" href="/chapters/search/">从搜索开始</a>
         </div>
       </div>
@@ -52,7 +52,7 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
 
     <section id="mvp" class="section-band" aria-labelledby="mvp-title">
       <p class="eyebrow">MVP 验证顺序</p>
-      <h2 id="mvp-title">MVP 八个交互 demo：从搜索到 Agent</h2>
+      <h2 id="mvp-title">第一版主线：8 个交互 demo 加 1 个系统桥接章</h2>
       <div class="demo-grid">
         <a class="demo-card" href="/chapters/search/">
           <span>01</span>
@@ -84,13 +84,18 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
           <strong>Attention Map</strong>
           <p>点击 token，比较 Attention 直接连接和 RNN 链式传递。</p>
         </a>
-        <a class="demo-card" href="/chapters/rag/">
+        <a class="demo-card" href="/chapters/llm-system/">
           <span>07</span>
+          <strong>LLM 系统地图</strong>
+          <p>理解上下文、检索、工具、记忆和评估为什么围绕大模型出现。</p>
+        </a>
+        <a class="demo-card" href="/chapters/rag/">
+          <span>08</span>
           <strong>RAG Pipeline</strong>
           <p>观察问题如何经过 embedding、检索、重排、prompt、LLM 和引用答案。</p>
         </a>
         <a class="demo-card" href="/chapters/agent/">
-          <span>08</span>
+          <span>09</span>
           <strong>Agent Loop</strong>
           <p>执行 plan、tool call、observation、revise、final answer 的循环。</p>
         </a>

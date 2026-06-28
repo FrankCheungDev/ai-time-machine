@@ -29,6 +29,15 @@ test("Attention chapter lets users inspect token relationships", async ({ page }
   await expect(page.getByText("链式传递会让远距离关系逐步变弱。")).toBeVisible();
 });
 
+test("LLM system chapter bridges foundation models to RAG and Agent", async ({ page }) => {
+  await page.goto("/chapters/llm-system/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "LLM 与现代 AI 系统：为什么大模型还需要外部系统？" })).toBeVisible();
+  await expect(page.getByText("为什么大模型还需要外部知识和工具？", { exact: true })).toBeVisible();
+  await expect(page.getByText("Context Window", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "继续看 RAG Pipeline" })).toBeVisible();
+});
+
 test("Agent chapter shows the action loop and repair branch", async ({ page }) => {
   await page.goto("/chapters/agent/");
 
@@ -91,6 +100,12 @@ test("CNN chapter shows kernel-driven feature maps", async ({ page }) => {
   await page.getByRole("button", { name: "边缘检测" }).click();
   await page.getByRole("button", { name: "下一步" }).click();
   await expect(page.getByText("当前窗口响应")).toBeVisible();
+});
+
+test("Home page links to the LLM system chapter in the MVP spine", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByRole("link", { name: /LLM 系统地图/ })).toBeVisible();
 });
 
 test("Timeline page shows the AI evolution overview", async ({ page }) => {

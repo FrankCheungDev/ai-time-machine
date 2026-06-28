@@ -55,11 +55,20 @@ export const aiTimelineEntries: TimelineEntry[] = [
     demoLabel: "查看 Attention demo"
   },
   {
-    id: "llm-rag",
+    id: "llm-system",
     era: "现代 AI 系统",
     year: "2020s",
-    title: "LLM 与 RAG",
-    summary: "大模型具备强生成能力，但仍需要外部知识、检索和引用来提升事实性与可更新性。",
+    title: "LLM 系统化",
+    summary: "大模型具备强生成能力，但现代应用通常还需要上下文、工具、记忆和评估把能力组织成系统。",
+    demoHref: "/chapters/llm-system/",
+    demoLabel: "查看 LLM 系统地图"
+  },
+  {
+    id: "rag",
+    era: "现代 AI 系统",
+    year: "2020s",
+    title: "RAG",
+    summary: "RAG 把外部知识检索进上下文，提高答案事实性、可更新性和可引用性。",
     demoHref: "/chapters/rag/",
     demoLabel: "查看 RAG demo"
   },
