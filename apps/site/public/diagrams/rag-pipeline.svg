@@ -1,0 +1,68 @@
+<svg id="diagram-rag-pipeline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 360" role="img" aria-labelledby="title desc">
+  <title id="title">RAG Pipeline Source Diagram</title>
+  <desc id="desc">A reusable SVG source diagram for Query to Embedding to Vector DB to Reranker to Prompt to LLM to Answer.</desc>
+  <defs>
+    <marker id="arrow-main" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" />
+    </marker>
+    <style>
+      .node-rect { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
+      .node-label { fill: #17201d; font: 700 18px system-ui, sans-serif; }
+      .node-note { fill: #5f6864; font: 12px system-ui, sans-serif; }
+      .arrow { stroke: #2f7d5b; stroke-width: 4; fill: none; marker-end: url(#arrow-main); }
+      .highlight { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
+    </style>
+  </defs>
+
+  <rect id="background-canvas" width="1040" height="360" rx="8" fill="#fbfbf8" />
+  <text id="label-title" x="40" y="48" class="node-label">RAG Pipeline</text>
+  <text id="label-subtitle" x="40" y="72" class="node-note">Scripted teaching diagram with stable node-* and arrow-* ids.</text>
+
+  <g id="node-query" data-role="node" data-step="1">
+    <rect class="highlight" x="40" y="150" width="118" height="76" rx="8" />
+    <text class="node-label" x="99" y="184" text-anchor="middle">Query</text>
+    <text class="node-note" x="99" y="206" text-anchor="middle">user question</text>
+  </g>
+  <path id="arrow-query-embedding" data-role="arrow" data-step="2" class="arrow" d="M158 188 H228" />
+
+  <g id="node-embedding" data-role="node" data-step="2">
+    <rect class="node-rect" x="230" y="150" width="130" height="76" rx="8" />
+    <text class="node-label" x="295" y="184" text-anchor="middle">Embedding</text>
+    <text class="node-note" x="295" y="206" text-anchor="middle">semantic vector</text>
+  </g>
+  <path id="arrow-embedding-vector-db" data-role="arrow" data-step="3" class="arrow" d="M360 188 H430" />
+
+  <g id="node-vector-db" data-role="node" data-step="3">
+    <rect class="node-rect" x="432" y="150" width="128" height="76" rx="8" />
+    <text class="node-label" x="496" y="184" text-anchor="middle">Vector DB</text>
+    <text class="node-note" x="496" y="206" text-anchor="middle">candidate chunks</text>
+  </g>
+  <path id="arrow-vector-db-reranker" data-role="arrow" data-step="4" class="arrow" d="M560 188 H630" />
+
+  <g id="node-reranker" data-role="node" data-step="4">
+    <rect class="node-rect" x="632" y="150" width="120" height="76" rx="8" />
+    <text class="node-label" x="692" y="184" text-anchor="middle">Reranker</text>
+    <text class="node-note" x="692" y="206" text-anchor="middle">sort evidence</text>
+  </g>
+  <path id="arrow-reranker-prompt" data-role="arrow" data-step="5" class="arrow" d="M752 188 H822" />
+
+  <g id="node-prompt" data-role="node" data-step="5">
+    <rect class="node-rect" x="824" y="110" width="120" height="76" rx="8" />
+    <text class="node-label" x="884" y="144" text-anchor="middle">Prompt</text>
+    <text class="node-note" x="884" y="166" text-anchor="middle">question + docs</text>
+  </g>
+  <path id="arrow-prompt-llm" data-role="arrow" data-step="6" class="arrow" d="M884 186 V238" />
+
+  <g id="node-llm" data-role="node" data-step="6">
+    <rect class="node-rect" x="824" y="240" width="120" height="76" rx="8" />
+    <text class="node-label" x="884" y="274" text-anchor="middle">LLM</text>
+    <text class="node-note" x="884" y="296" text-anchor="middle">grounded answer</text>
+  </g>
+  <path id="arrow-llm-answer" data-role="arrow" data-step="7" class="arrow" d="M944 278 H994" />
+
+  <g id="node-answer" data-role="node" data-step="7">
+    <rect class="node-rect" x="996" y="240" width="2" height="76" rx="1" />
+    <text class="node-label" x="1000" y="274" text-anchor="start">Answer</text>
+    <text class="node-note" x="1000" y="296" text-anchor="start">with citations</text>
+  </g>
+</svg>

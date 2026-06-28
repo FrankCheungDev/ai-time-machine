@@ -152,12 +152,17 @@ test("Lineage page shows the technical paradigm map", async ({ page }) => {
   await expect(page.getByText("RAG", { exact: true })).toBeVisible();
 });
 
-test("Diagrams page explains export and SVG naming conventions", async ({ page }) => {
+test("Diagrams page explains export and SVG naming conventions", async ({ page, request }) => {
   await page.goto("/diagrams/");
 
   await expect(page.getByRole("heading", { level: 1, name: "图源与导出说明" })).toBeVisible();
   await expect(page.getByText("node-*", { exact: true })).toBeVisible();
   await expect(page.getByText("截图友好", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "下载 RAG Pipeline SVG" })).toHaveAttribute("href", "/diagrams/rag-pipeline.svg");
+
+  const response = await request.get("/diagrams/rag-pipeline.svg");
+  expect(response.ok()).toBeTruthy();
+  expect(await response.text()).toContain('id="node-query"');
 });
 
 test("Reduced motion preference collapses decorative transitions", async ({ page }) => {
