@@ -13,7 +13,12 @@ const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]
       同一项技术往往不是突然出现，而是在旧问题和新约束之间迁移。谱系图帮助你看到范式之间的继承关系。
     </p>
 
-    <section class="lineage-panel" aria-label="AI 技术谱系 SVG 图">
+    <section
+      class="lineage-panel"
+      aria-label="AI 技术谱系 SVG 图，可横向滚动查看完整图解"
+      tabindex="0"
+      data-mobile-scroll-scene
+    >
       <svg viewBox="0 0 920 410" role="img" aria-labelledby="lineage-title">
         <title id="lineage-title">AI 技术谱系图</title>
         <defs>

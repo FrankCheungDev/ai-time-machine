@@ -13,6 +13,22 @@ const chapterRoutes = [
   "/chapters/agent/",
 ];
 
+const primaryRoutes = [
+  "/",
+  ...chapterRoutes,
+  "/timeline/",
+  "/lineage/",
+  "/diagrams/",
+];
+
+const scrollSceneRoutes = [
+  "/chapters/search/",
+  "/chapters/attention/",
+  "/chapters/rag/",
+  "/chapters/agent/",
+  "/lineage/",
+];
+
 function firstDurationMs(durationList: string) {
   const firstDuration = durationList.split(",")[0]?.trim() ?? "0s";
 
@@ -370,4 +386,71 @@ test("Demo controls keep mobile-safe touch target height", async ({ page }) => {
       expect(height, `${route} control height`).toBeGreaterThanOrEqual(44);
     }
   }
+});
+
+test.describe("Mobile responsive foundation", () => {
+  for (const width of [375, 390, 768]) {
+    test(`keeps primary routes within the ${width}px viewport`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 });
+
+      for (const route of primaryRoutes) {
+        await page.goto(route);
+
+        const layout = await page.evaluate(() => ({
+          viewportWidth: window.innerWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+          bodyScrollWidth: document.body.scrollWidth,
+        }));
+
+        expect(
+          layout.scrollWidth,
+          `${route} document width`,
+        ).toBeLessThanOrEqual(layout.viewportWidth);
+        expect(
+          layout.bodyScrollWidth,
+          `${route} body width`,
+        ).toBeLessThanOrEqual(layout.viewportWidth);
+      }
+    });
+  }
+
+  test("keeps header navigation targets comfortable on phones", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.goto("/");
+
+    const navTargetHeights = await page
+      .locator(".site-header a")
+      .evaluateAll((links) =>
+        links.map((link) => link.getBoundingClientRect().height),
+      );
+
+    for (const height of navTargetHeights) {
+      expect(height, "header link height").toBeGreaterThanOrEqual(44);
+    }
+  });
+
+  test("marks scrollable diagrams as mobile scroll scenes", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+
+    for (const route of scrollSceneRoutes) {
+      await page.goto(route);
+
+      const scene = page.locator("[data-mobile-scroll-scene]").first();
+      await expect(scene, `${route} scroll scene`).toBeVisible();
+      await expect(scene, `${route} scroll scene`).toHaveAttribute(
+        "tabindex",
+        "0",
+      );
+      await expect(scene, `${route} scroll scene`).toHaveAttribute(
+        "aria-label",
+        /横向滚动/,
+      );
+    }
+  });
 });
