@@ -29,6 +29,8 @@ const scrollSceneRoutes = [
   "/lineage/",
 ];
 
+const stepperDemoRoutes = ["/chapters/rag/", "/chapters/agent/"];
+
 function firstDurationMs(durationList: string) {
   const firstDuration = durationList.split(",")[0]?.trim() ?? "0s";
 
@@ -451,6 +453,61 @@ test.describe("Mobile responsive foundation", () => {
         "aria-label",
         /横向滚动/,
       );
+    }
+  });
+
+  test("shows stepper instructions and controls before mobile diagrams", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+
+    for (const route of stepperDemoRoutes) {
+      await page.goto(route);
+      await page
+        .locator(".demo-shell")
+        .first()
+        .evaluate((element) => element.scrollIntoView({ block: "start" }));
+
+      const layout = await page.evaluate(() => {
+        const rect = (selector: string) => {
+          const element = document.querySelector(selector);
+          if (!element) {
+            return null;
+          }
+
+          const { bottom, top } = element.getBoundingClientRect();
+          return { bottom, top };
+        };
+
+        return {
+          control: rect(
+            ".demo-shell button, .demo-shell select, .demo-shell input",
+          ),
+          heading: rect(".demo-shell h3"),
+          scene: rect(".demo-shell [data-mobile-scroll-scene]"),
+          viewportHeight: window.innerHeight,
+        };
+      });
+
+      expect(layout.heading, `${route} step heading`).not.toBeNull();
+      expect(layout.control, `${route} first control`).not.toBeNull();
+      expect(layout.scene, `${route} scroll scene`).not.toBeNull();
+      expect(
+        layout.heading!.bottom,
+        `${route} step heading in first mobile view`,
+      ).toBeLessThan(layout.viewportHeight);
+      expect(
+        layout.control!.bottom,
+        `${route} first control in first mobile view`,
+      ).toBeLessThan(layout.viewportHeight);
+      expect(
+        layout.heading!.top,
+        `${route} step heading before diagram`,
+      ).toBeLessThan(layout.scene!.top);
+      expect(
+        layout.control!.top,
+        `${route} first control before diagram`,
+      ).toBeLessThan(layout.scene!.top);
     }
   });
 });

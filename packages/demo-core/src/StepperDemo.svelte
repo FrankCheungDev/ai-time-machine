@@ -19,7 +19,9 @@
 </script>
 
 <div class="stepper">
-  <slot {currentStep} {currentIndex} />
+  <div class="step-scene">
+    <slot {currentStep} {currentIndex} />
+  </div>
   <div class="step-content" aria-live="polite">
     <span>{currentIndex + 1} / {steps.length}</span>
     <h3>{currentStep.title}</h3>
@@ -36,6 +38,10 @@
     display: grid;
     gap: 18px;
     margin-top: 24px;
+  }
+
+  .step-scene {
+    min-width: 0;
   }
 
   .step-content {
@@ -93,7 +99,24 @@
   }
 
   @media (max-width: 560px) {
+    .stepper {
+      grid-template-areas:
+        "content"
+        "controls"
+        "scene";
+    }
+
+    .step-scene {
+      grid-area: scene;
+    }
+
+    .step-content {
+      grid-area: content;
+      min-height: 0;
+    }
+
     .controls {
+      grid-area: controls;
       justify-content: stretch;
     }
 
