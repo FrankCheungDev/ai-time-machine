@@ -456,6 +456,55 @@ test.describe("Mobile responsive foundation", () => {
     }
   });
 
+  test("fits the lineage map first and keeps detail zoom available", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/lineage/");
+
+    const fitButton = page.getByRole("button", { name: "适配屏幕" });
+    const detailButton = page.getByRole("button", { name: "放大查看" });
+
+    await expect(fitButton).toBeVisible();
+    await expect(detailButton).toBeVisible();
+
+    const fitLayout = await page.evaluate(() => {
+      const panel = document.querySelector("[data-lineage-panel]");
+      const svg = panel?.querySelector("svg");
+
+      return {
+        panelClientWidth: panel?.clientWidth ?? 0,
+        panelScrollWidth: panel?.scrollWidth ?? 0,
+        svgWidth: svg?.getBoundingClientRect().width ?? 0,
+        view: panel instanceof HTMLElement ? panel.dataset.view : "",
+      };
+    });
+
+    expect(fitLayout.view).toBe("fit");
+    expect(fitLayout.panelScrollWidth).toBeLessThanOrEqual(
+      fitLayout.panelClientWidth + 1,
+    );
+    expect(fitLayout.svgWidth).toBeLessThanOrEqual(fitLayout.panelClientWidth);
+
+    await detailButton.click();
+
+    const detailLayout = await page.evaluate(() => {
+      const panel = document.querySelector("[data-lineage-panel]");
+
+      return {
+        panelClientWidth: panel?.clientWidth ?? 0,
+        panelScrollWidth: panel?.scrollWidth ?? 0,
+        view: panel instanceof HTMLElement ? panel.dataset.view : "",
+      };
+    });
+
+    await expect(detailButton).toHaveAttribute("aria-pressed", "true");
+    expect(detailLayout.view).toBe("detail");
+    expect(detailLayout.panelScrollWidth).toBeGreaterThan(
+      detailLayout.panelClientWidth,
+    );
+  });
+
   test("shows stepper instructions and controls before mobile diagrams", async ({
     page,
   }) => {

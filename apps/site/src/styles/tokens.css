@@ -264,8 +264,31 @@ main {
   color: var(--color-muted);
 }
 
+.lineage-view-controls {
+  display: none;
+  gap: 10px;
+  margin: 24px 0 -12px;
+}
+
+.lineage-view-controls button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 720;
+}
+
+.lineage-view-controls button[aria-pressed="true"] {
+  color: white;
+  background: var(--color-green);
+  border-color: var(--color-green);
+}
+
 .lineage-panel {
-  overflow-x: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-inline: contain;
   scrollbar-gutter: stable;
@@ -287,8 +310,16 @@ main {
 .lineage-panel svg {
   display: block;
   width: 100%;
-  min-width: 860px;
+  min-width: 0;
   height: auto;
+}
+
+.lineage-panel[data-view="detail"] {
+  overflow-x: auto;
+}
+
+.lineage-panel[data-view="detail"] svg {
+  min-width: 860px;
 }
 
 .lineage-panel line {
@@ -453,6 +484,14 @@ main {
 
   .llm-map {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .lineage-view-controls {
+    display: flex;
+  }
+
+  .lineage-view-controls button {
+    flex: 1;
   }
 }
 

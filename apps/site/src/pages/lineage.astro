@@ -13,10 +13,17 @@ const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]
       同一项技术往往不是突然出现，而是在旧问题和新约束之间迁移。谱系图帮助你看到范式之间的继承关系。
     </p>
 
+    <div class="lineage-view-controls" aria-label="谱系图显示模式" data-lineage-view-controls>
+      <button type="button" data-lineage-view="fit" aria-pressed="true">适配屏幕</button>
+      <button type="button" data-lineage-view="detail" aria-pressed="false">放大查看</button>
+    </div>
+
     <section
       class="lineage-panel"
-      aria-label="AI 技术谱系 SVG 图，可横向滚动查看完整图解"
+      aria-label="AI 技术谱系 SVG 图，可适配屏幕或横向滚动查看完整图解"
       tabindex="0"
+      data-lineage-panel
+      data-view="fit"
       data-mobile-scroll-scene
     >
       <svg viewBox="0 0 920 410" role="img" aria-labelledby="lineage-title">
@@ -62,3 +69,37 @@ const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]
     </section>
   </main>
 </BaseLayout>
+
+<script>
+  const lineagePanel = document.querySelector("[data-lineage-panel]");
+  const lineageButtons = document.querySelectorAll("[data-lineage-view]");
+
+  function setLineageView(view: string) {
+    if (!(lineagePanel instanceof HTMLElement)) {
+      return;
+    }
+
+    lineagePanel.dataset.view = view;
+
+    lineageButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.lineageView === view),
+      );
+    });
+  }
+
+  lineageButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!(button instanceof HTMLButtonElement) || !button.dataset.lineageView) {
+        return;
+      }
+
+      setLineageView(button.dataset.lineageView);
+    });
+  });
+</script>
