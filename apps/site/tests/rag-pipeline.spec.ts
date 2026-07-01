@@ -23,10 +23,19 @@ const primaryRoutes = [
 
 const scrollSceneRoutes = [
   "/chapters/search/",
+  "/chapters/decision-boundary/",
   "/chapters/attention/",
   "/chapters/rag/",
   "/chapters/agent/",
   "/lineage/",
+];
+
+const svgSceneRoutes = [
+  "/chapters/search/",
+  "/chapters/decision-boundary/",
+  "/chapters/attention/",
+  "/chapters/rag/",
+  "/chapters/agent/",
 ];
 
 const stepperDemoRoutes = ["/chapters/rag/", "/chapters/agent/"];
@@ -370,6 +379,8 @@ test("Reduced motion preference collapses decorative transitions", async ({
 });
 
 test("Demo controls keep mobile-safe touch target height", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 });
+
   const demoRoutes = chapterRoutes.filter(
     (route) =>
       route !== "/chapters/overview/" && route !== "/chapters/llm-system/",
@@ -378,13 +389,13 @@ test("Demo controls keep mobile-safe touch target height", async ({ page }) => {
   for (const route of demoRoutes) {
     await page.goto(route);
 
-    const buttonHeights = await page
-      .locator("main button")
-      .evaluateAll((buttons) =>
-        buttons.map((button) => button.getBoundingClientRect().height),
+    const controlHeights = await page
+      .locator("main button, main .svg-scene-controls label")
+      .evaluateAll((controls) =>
+        controls.map((control) => control.getBoundingClientRect().height),
       );
 
-    for (const height of buttonHeights) {
+    for (const height of controlHeights) {
       expect(height, `${route} control height`).toBeGreaterThanOrEqual(44);
     }
   }
@@ -503,6 +514,62 @@ test.describe("Mobile responsive foundation", () => {
     expect(detailLayout.panelScrollWidth).toBeGreaterThan(
       detailLayout.panelClientWidth,
     );
+  });
+
+  test("fits SVG demo scenes first and keeps detail zoom available", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+
+    for (const route of svgSceneRoutes) {
+      await page.goto(route);
+
+      const fitOption = page.getByRole("radio", { name: "适配屏幕" });
+      const detailOption = page.getByRole("radio", { name: "放大查看" });
+
+      await expect(fitOption, `${route} fit option`).toBeChecked();
+      await expect(detailOption, `${route} detail option`).not.toBeChecked();
+
+      const fitLayout = await page.evaluate(() => {
+        const scene = document.querySelector(
+          ".demo-shell [data-mobile-scroll-scene]",
+        );
+        const svg = scene?.querySelector("svg");
+
+        return {
+          sceneClientWidth: scene?.clientWidth ?? 0,
+          sceneScrollWidth: scene?.scrollWidth ?? 0,
+          svgWidth: svg?.getBoundingClientRect().width ?? 0,
+        };
+      });
+
+      expect(
+        fitLayout.sceneScrollWidth,
+        `${route} fit scene width`,
+      ).toBeLessThanOrEqual(fitLayout.sceneClientWidth + 1);
+      expect(fitLayout.svgWidth, `${route} fit svg width`).toBeLessThanOrEqual(
+        fitLayout.sceneClientWidth,
+      );
+
+      await page.getByText("放大查看", { exact: true }).click();
+
+      const detailLayout = await page.evaluate(() => {
+        const scene = document.querySelector(
+          ".demo-shell [data-mobile-scroll-scene]",
+        );
+
+        return {
+          sceneClientWidth: scene?.clientWidth ?? 0,
+          sceneScrollWidth: scene?.scrollWidth ?? 0,
+        };
+      });
+
+      await expect(detailOption, `${route} detail checked`).toBeChecked();
+      expect(
+        detailLayout.sceneScrollWidth,
+        `${route} detail scene width`,
+      ).toBeGreaterThan(detailLayout.sceneClientWidth);
+    }
   });
 
   test("shows stepper instructions and controls before mobile diagrams", async ({
