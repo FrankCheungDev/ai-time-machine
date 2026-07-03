@@ -44,6 +44,10 @@
     min-width: 0;
   }
 
+  .step-scene :global(.svg-scene-shell) {
+    margin-top: 0;
+  }
+
   .step-content {
     min-height: 142px;
     padding: 18px;

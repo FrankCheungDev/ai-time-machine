@@ -50,6 +50,7 @@
   .svg-scene-shell {
     display: grid;
     gap: 12px;
+    margin-top: 14px;
   }
 
   .svg-scene-controls {

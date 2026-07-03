@@ -572,6 +572,24 @@ test.describe("Mobile responsive foundation", () => {
     }
   });
 
+  test("keeps stacked mobile demo controls separated", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/chapters/search/");
+
+    const spacing = await page.evaluate(() => {
+      const strategyControls = document.querySelector(".strategy-buttons");
+      const sceneControls = document.querySelector(".svg-scene-controls");
+      const strategyRect = strategyControls?.getBoundingClientRect();
+      const sceneRect = sceneControls?.getBoundingClientRect();
+
+      return strategyRect && sceneRect
+        ? sceneRect.top - strategyRect.bottom
+        : 0;
+    });
+
+    expect(spacing).toBeGreaterThanOrEqual(12);
+  });
+
   test("shows stepper instructions and controls before mobile diagrams", async ({
     page,
   }) => {
