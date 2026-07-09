@@ -3,13 +3,15 @@
   import { getAgentLoopDemo, type Locale } from "@ai-history/data";
   import type { AgentLoopStep } from "@ai-history/demo-core";
   import { getSiteCopy } from "../../i18n/siteCopy";
+  import { resolveAgentBranchNote } from "./agentState";
 
   export let locale: Locale = "zh-CN";
 
   let currentIndex = 0;
-  let branchNote = "";
+  let selectedBranchId = "";
 
   $: agentLoopDemo = getAgentLoopDemo(locale);
+  $: branchNote = resolveAgentBranchNote(agentLoopDemo, selectedBranchId);
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -47,10 +49,10 @@
     return step.activeEdgeIds.includes(id);
   }
 
-  function triggerBranch(targetStepId: string, description: string) {
+  function triggerBranch(targetStepId: string, branchId: string) {
     const nextIndex = agentLoopDemo.steps.findIndex((step) => step.id === targetStepId);
     currentIndex = Math.max(0, nextIndex);
-    branchNote = description;
+    selectedBranchId = branchId;
   }
 </script>
 
@@ -112,7 +114,7 @@
   <div class="branch-panel">
     <p>{branchNote || copy.branchFallback}</p>
     {#each agentLoopDemo.branchOptions as option}
-      <button type="button" on:click={() => triggerBranch(option.targetStepId, option.description)}>
+      <button type="button" on:click={() => triggerBranch(option.targetStepId, option.id)}>
         {option.label}
       </button>
     {/each}

@@ -66,6 +66,65 @@ const englishLlmSystemChapter = {
   evidence: "Context Window",
 } as const;
 
+const englishChapterReferenceCases = [
+  {
+    route: "/en/chapters/search/",
+    expectedHrefs: [
+      "https://aima.cs.berkeley.edu/",
+      "https://doi.org/10.1109/TSSC.1968.300136",
+    ],
+  },
+  {
+    route: "/en/chapters/expert-system/",
+    expectedHrefs: [
+      "https://www.shortliffe.net/",
+      "https://doi.org/10.1016/0004-3702(93)90068-M",
+    ],
+  },
+  {
+    route: "/en/chapters/bayes/",
+    expectedHrefs: [
+      "https://allendowney.github.io/ThinkBayes2/",
+      "https://www.deeplearningbook.org/contents/prob.html",
+    ],
+  },
+  {
+    route: "/en/chapters/decision-boundary/",
+    expectedHrefs: [
+      "https://hastie.su.domains/ElemStatLearn/",
+      "https://www.cs.cornell.edu/courses/cs4780/2018fa/lectures/",
+    ],
+  },
+  {
+    route: "/en/chapters/cnn/",
+    expectedHrefs: [
+      "https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html",
+      "https://www.deeplearningbook.org/contents/convnets.html",
+    ],
+  },
+  {
+    route: "/en/chapters/attention/",
+    expectedHrefs: [
+      "https://arxiv.org/abs/1706.03762",
+      "https://jalammar.github.io/illustrated-transformer/",
+    ],
+  },
+  {
+    route: "/en/chapters/rag/",
+    expectedHrefs: [
+      "https://arxiv.org/abs/2005.11401",
+      "https://arxiv.org/abs/2312.10997",
+    ],
+  },
+  {
+    route: "/en/chapters/agent/",
+    expectedHrefs: [
+      "https://arxiv.org/abs/2210.03629",
+      "https://arxiv.org/abs/2302.04761",
+    ],
+  },
+] as const;
+
 const englishRouteLinkCases = [
   {
     label: "home learning links",
@@ -168,6 +227,17 @@ const englishRouteLinkCases = [
     expectedHrefs: ["/en/chapters/rag/", "/en/chapters/agent/"],
   },
 ] as const;
+
+async function openReadyEnglishDemo(
+  page: import("@playwright/test").Page,
+  route: string,
+) {
+  await page.goto(route);
+  await expect(
+    page.locator(".demo-shell[data-demo-ready='true']"),
+    route,
+  ).toHaveCount(1);
+}
 
 test("Chinese routes expose zh-CN document language and an English switch", async ({
   page,
@@ -371,10 +441,28 @@ test("English demo and LLM-system chapters are fully localized", async ({
     await expect(
       page.locator(".demo-shell[data-demo-ready='true']"),
       chapter.route,
-    ).toBeVisible();
+    ).toHaveCount(1);
 
     const mainText = await page.locator("main").innerText();
     expect(mainText, chapter.route).not.toMatch(/\p{Script=Han}/u);
+
+    const localizedAttributes = await page
+      .locator("main, main *")
+      .evaluateAll((elements) =>
+        elements.flatMap((element) =>
+          ["aria-label", "title"]
+            .map((attribute) => element.getAttribute(attribute))
+            .filter((value): value is string => value !== null),
+        ),
+      );
+    expect(
+      localizedAttributes.length,
+      `${chapter.route} localized accessibility attributes`,
+    ).toBeGreaterThan(0);
+    expect(
+      localizedAttributes.join("\n"),
+      `${chapter.route} aria-label/title attributes`,
+    ).not.toMatch(/\p{Script=Han}/u);
   }
 
   await page.goto(englishLlmSystemChapter.route);
@@ -409,10 +497,141 @@ test("English route classes keep exact localized and static hrefs", async ({
   }
 });
 
+test("English standard chapter references keep exact external hrefs", async ({
+  page,
+}) => {
+  for (const referenceCase of englishChapterReferenceCases) {
+    await page.goto(referenceCase.route);
+
+    const hrefs = await page
+      .locator('main a[href^="https://"]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+
+    expect(hrefs, referenceCase.route).toEqual(referenceCase.expectedHrefs);
+  }
+});
+
+test("English search interaction changes the active strategy", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/search/");
+
+  await page.getByRole("button", { name: "A* heuristic" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "A* uses a heuristic to move toward the goal",
+    }),
+  ).toBeVisible();
+});
+
+test("English expert-system interaction reveals a rule conflict", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/expert-system/");
+
+  await page
+    .getByRole("checkbox", { name: "Add the penguin exception" })
+    .check();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Rule conflict: can it fly or not?",
+    }),
+  ).toBeVisible();
+});
+
+test("English Bayes interaction updates the posterior belief", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/bayes/");
+
+  await page.getByRole("slider", { name: "Evidence strength" }).fill("80");
+  await expect(
+    page.getByText("Posterior belief 63%", { exact: true }),
+  ).toBeVisible();
+});
+
+test("English decision-boundary interaction changes the model mode", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/decision-boundary/");
+
+  await page.getByRole("button", { name: "Overfit boundary" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Overfitting chases every example",
+    }),
+  ).toBeVisible();
+});
+
+test("English CNN interaction changes the kernel and scan step", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/cnn/");
+
+  await page.getByRole("button", { name: "Smoothing convolution" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Slide toward the boundary",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Smoothing convolution summarizes a local region. The window covers the brightness transition, so the edge response begins to grow.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+});
+
+test("English Attention interaction changes the token and mode", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/attention/");
+
+  await page.getByRole("button", { name: "external knowledge" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: '"external knowledge" is the distant key',
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "RNN mode" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "An RNN can only pass information along the sequence",
+    }),
+  ).toBeVisible();
+});
+
+test("English Agent interaction selects the localized failure branch", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/agent/");
+
+  await page.getByRole("button", { name: "Simulate a tool failure" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Observe failure and revise the plan",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "The tool returns no result or outdated information, so the agent must inspect the failure and revise its plan.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+});
+
 test("English RAG chapter renders localized demo controls and scenarios", async ({
   page,
 }) => {
-  await page.goto("/en/chapters/rag/");
+  await openReadyEnglishDemo(page, "/en/chapters/rag/");
 
   await expect(
     page.getByRole("heading", {

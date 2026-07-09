@@ -10,10 +10,16 @@ import type { Locale } from "../../i18n/locales";
 interface Props {
   locale: Locale;
   chapterId: DemoChapterId;
-  DemoComponent: any;
 }
 
-const { locale, chapterId, DemoComponent } = Astro.props;
+const { locale, chapterId } = Astro.props;
+
+if (!Astro.slots.has("demo")) {
+  throw new Error(
+    `StandardDemoChapter requires the named "demo" slot for chapter "${chapterId}".`,
+  );
+}
+
 const copy = demoChapterCopy[chapterId][locale];
 const common = commonLabels[locale];
 ---
@@ -23,9 +29,7 @@ const common = commonLabels[locale];
     <p class="eyebrow">{copy.eyebrow}</p>
     <h1 class="page-title">{copy.title}</h1>
     <p class="lede">{copy.lede}</p>
-    <slot name="demo">
-      <DemoComponent locale={locale} />
-    </slot>
+    <slot name="demo" />
 
     <section class="section-band" aria-labelledby={copy.notesId}>
       <p class="eyebrow">{copy.notesEyebrow}</p>
