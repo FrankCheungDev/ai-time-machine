@@ -279,6 +279,14 @@ test("Home page links to the LLM system chapter in the MVP spine", async ({
   await expect(page.getByRole("link", { name: /LLM 系统地图/ })).toBeVisible();
 });
 
+test("Home page hero map does not overlay standalone marker dots on labels", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await expect(page.locator(".system-map > svg > circle")).toHaveCount(0);
+});
+
 test("Overview MDX chapter renders the chapter-zero narrative", async ({
   page,
 }) => {
