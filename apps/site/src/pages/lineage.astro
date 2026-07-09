@@ -2,7 +2,64 @@
 import BaseLayout from "../components/layout/BaseLayout.astro";
 import { aiLineageEdges, aiLineageNodes } from "@ai-history/data";
 
-const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]));
+const nodeById = Object.fromEntries(
+  aiLineageNodes.map((node) => [node.id, node]),
+);
+const lineageNodeWidth = 132;
+const lineageNodeHeight = 72;
+const lineageNodeRadius = 8;
+type LineageNode = (typeof aiLineageNodes)[number];
+
+function getLineageEdgeGeometry(
+  edgeId: string,
+  from: LineageNode,
+  to: LineageNode,
+) {
+  const fromCenterX = from.x + lineageNodeWidth / 2;
+  const fromCenterY = from.y + lineageNodeHeight / 2;
+  const toCenterX = to.x + lineageNodeWidth / 2;
+  const toCenterY = to.y + lineageNodeHeight / 2;
+  const dx = toCenterX - fromCenterX;
+  const dy = toCenterY - fromCenterY;
+  const isHorizontal = Math.abs(dx) >= Math.abs(dy);
+
+  if (edgeId === "agent-safety") {
+    const x1 = fromCenterX;
+    const y1 = from.y + lineageNodeHeight;
+    const x2 = to.x + lineageNodeWidth;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${x1} ${y2} L ${x2} ${y2}`,
+      labelX: (x1 + x2) / 2,
+      labelY: y2 - 10,
+    };
+  }
+
+  if (isHorizontal) {
+    const x1 = dx >= 0 ? from.x + lineageNodeWidth : from.x;
+    const x2 = dx >= 0 ? to.x : to.x + lineageNodeWidth;
+    const y1 = fromCenterY;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${x2} ${y2}`,
+      labelX: (x1 + x2) / 2,
+      labelY: (y1 + y2) / 2 - 10,
+    };
+  }
+
+  const x1 = fromCenterX;
+  const x2 = toCenterX;
+  const y1 = dy >= 0 ? from.y + lineageNodeHeight : from.y;
+  const y2 = dy >= 0 ? to.y : to.y + lineageNodeHeight;
+
+  return {
+    path: `M ${x1} ${y1} L ${x2} ${y2}`,
+    labelX: (x1 + x2) / 2 + 18,
+    labelY: (y1 + y2) / 2,
+  };
+}
 ---
 
 <BaseLayout title="AI 技术谱系图" description="按范式理解符号主义、统计学习、神经网络、基础模型、RAG 与 Agent 的关系。">
@@ -26,10 +83,18 @@ const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]
       data-view="fit"
       data-mobile-scroll-scene
     >
-      <svg viewBox="0 0 920 410" role="img" aria-labelledby="lineage-title">
+      <svg viewBox="0 0 1120 480" role="img" aria-labelledby="lineage-title">
         <title id="lineage-title">AI 技术谱系图</title>
         <defs>
-          <marker id="lineage-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker
+            id="lineage-arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
             <path d="M 0 0 L 10 5 L 0 10 z"></path>
           </marker>
         </defs>
@@ -37,22 +102,55 @@ const nodeById = Object.fromEntries(aiLineageNodes.map((node) => [node.id, node]
         {aiLineageEdges.map((edge) => {
           const from = nodeById[edge.from];
           const to = nodeById[edge.to];
-          const midX = (from.x + to.x) / 2;
-          const midY = (from.y + to.y) / 2;
+          const geometry = getLineageEdgeGeometry(edge.id, from, to);
           return (
             <>
-              <line id={`arrow-${edge.id}`} x1={from.x + 76} y1={from.y + 36} x2={to.x} y2={to.y + 36} marker-end="url(#lineage-arrow)" />
-              <text class="edge-label" x={midX + 34} y={midY + 18} text-anchor="middle">{edge.label}</text>
+              <path
+                id={`arrow-${edge.id}`}
+                d={geometry.path}
+                fill="none"
+                marker-end="url(#lineage-arrow)"
+              />
+              <text
+                class="edge-label"
+                x={geometry.labelX}
+                y={geometry.labelY}
+                text-anchor="middle"
+              >
+                {edge.label}
+              </text>
             </>
           );
         })}
 
         {aiLineageNodes.map((node) => (
-          <a href={node.href ?? "#"} aria-label={`${node.label}：${node.description}`}>
+          <a
+            href={node.href ?? "#"}
+            aria-label={`${node.label}：${node.description}`}
+          >
             <g id={`node-${node.id}`} class={`lineage-node ${node.group}`}>
-              <rect x={node.x} y={node.y} width="132" height="72" rx="8"></rect>
-              <text x={node.x + 66} y={node.y + 32} text-anchor="middle">{node.label}</text>
-              <text class="node-caption" x={node.x + 66} y={node.y + 52} text-anchor="middle">{node.group}</text>
+              <rect
+                x={node.x}
+                y={node.y}
+                width={lineageNodeWidth}
+                height={lineageNodeHeight}
+                rx={lineageNodeRadius}
+              ></rect>
+              <text
+                x={node.x + lineageNodeWidth / 2}
+                y={node.y + 32}
+                text-anchor="middle"
+              >
+                {node.label}
+              </text>
+              <text
+                class="node-caption"
+                x={node.x + lineageNodeWidth / 2}
+                y={node.y + 52}
+                text-anchor="middle"
+              >
+                {node.group}
+              </text>
             </g>
           </a>
         ))}

@@ -322,7 +322,7 @@ main {
   min-width: 860px;
 }
 
-.lineage-panel line {
+.lineage-panel path[id^="arrow-"] {
   stroke: #9ba9a1;
   stroke-width: 3;
 }
@@ -365,6 +365,13 @@ main {
 .lineage-panel .edge-label {
   fill: var(--color-muted);
   font-size: 10px;
+}
+
+.lineage-panel .edge-label {
+  paint-order: stroke;
+  stroke: var(--color-surface);
+  stroke-linejoin: round;
+  stroke-width: 5px;
 }
 
 .chapter-question {
