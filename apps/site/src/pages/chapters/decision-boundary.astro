@@ -1,29 +1,12 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
+import StandardDemoChapter from "../../components/pages/StandardDemoChapter.astro";
 import DecisionBoundaryDemo from "../../demos/decision-boundary/DecisionBoundaryDemo.svelte";
 ---
 
-<BaseLayout title="经典机器学习：机器如何从数据中学习决策边界？" description="一个静态、教学型决策边界交互图解。">
-  <main class="chapter-main">
-    <p class="eyebrow">Demo 04</p>
-    <h1 class="page-title">经典机器学习：机器如何从数据中学习决策边界？</h1>
-    <p class="lede">
-      经典机器学习从手写规则转向数据驱动。这个章节展示样本、模型复杂度和决策边界之间的关系。
-    </p>
-    <DecisionBoundaryDemo client:load />
-
-    <section class="section-band" aria-labelledby="boundary-notes">
-      <p class="eyebrow">观察指南</p>
-      <h2 id="boundary-notes">模型不是背规则，而是在样本中学习分界</h2>
-      <p>
-        它之前的问题是规则无法覆盖所有情况。经典机器学习解决了从数据归纳规律的问题，
-        但没有自动解决特征设计、泛化、偏差和过拟合。后续影响是 SVM、树模型、集成学习和深度学习。
-      </p>
-      <p class="eyebrow">参考资料</p>
-      <ul>
-        <li><a href="https://hastie.su.domains/ElemStatLearn/">The Elements of Statistical Learning</a></li>
-        <li><a href="https://www.cs.cornell.edu/courses/cs4780/2018fa/lectures/">CS4780 Machine Learning for Intelligent Systems notes</a></li>
-      </ul>
-    </section>
-  </main>
-</BaseLayout>
+<StandardDemoChapter
+  locale="zh-CN"
+  chapterId="decision-boundary"
+  DemoComponent={DecisionBoundaryDemo}
+>
+  <DecisionBoundaryDemo slot="demo" client:load locale="zh-CN" />
+</StandardDemoChapter>

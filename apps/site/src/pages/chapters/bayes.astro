@@ -1,30 +1,12 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
+import StandardDemoChapter from "../../components/pages/StandardDemoChapter.astro";
 import BayesUpdateDemo from "../../demos/bayes-update/BayesUpdateDemo.svelte";
 ---
 
-<BaseLayout title="概率推理：机器如何处理不确定性？" description="一个静态、教学型 Bayes 更新交互图解。">
-  <main class="chapter-main">
-    <p class="eyebrow">Demo 03</p>
-    <h1 class="page-title">概率推理：机器如何处理不确定性？</h1>
-    <p class="lede">
-      当世界无法被写成确定规则时，AI 需要表达不确定性。这个章节展示证据如何改变信念，
-      让用户理解统计推理与规则推理的差异。
-    </p>
-    <BayesUpdateDemo client:load />
-
-    <section class="section-band" aria-labelledby="bayes-notes">
-      <p class="eyebrow">观察指南</p>
-      <h2 id="bayes-notes">证据不是替代信念，而是更新信念</h2>
-      <p>
-        它之前的问题是规则系统难以处理模糊和噪声。概率推理解决了不确定性表达，
-        但没有自动解决因果解释、数据质量和建模假设。后续影响包括朴素 Bayes、图模型和统计机器学习。
-      </p>
-      <p class="eyebrow">参考资料</p>
-      <ul>
-        <li><a href="https://allendowney.github.io/ThinkBayes2/">Think Bayes, 2nd Edition</a></li>
-        <li><a href="https://www.deeplearningbook.org/contents/prob.html">Deep Learning Book: Probability and Information Theory</a></li>
-      </ul>
-    </section>
-  </main>
-</BaseLayout>
+<StandardDemoChapter
+  locale="zh-CN"
+  chapterId="bayes"
+  DemoComponent={BayesUpdateDemo}
+>
+  <BayesUpdateDemo slot="demo" client:load locale="zh-CN" />
+</StandardDemoChapter>

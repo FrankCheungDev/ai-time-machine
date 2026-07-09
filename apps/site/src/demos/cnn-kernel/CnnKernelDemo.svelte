@@ -1,9 +1,32 @@
 <script lang="ts">
   import { DemoShell } from "@ai-history/demo-core";
-  import { cnnKernelDemo } from "@ai-history/data";
+  import { getCnnKernelDemo, type Locale } from "@ai-history/data";
+  import { getSiteCopy } from "../../i18n/siteCopy";
+
+  export let locale: Locale = "zh-CN";
 
   let activeKernelId = "edge";
   let stepIndex = 0;
+  $: cnnKernelDemo = getCnnKernelDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          kernelAriaLabel: "Kernel selection",
+          imageGridAriaLabel: "Input image grid",
+          kernelMatrixAriaLabel: "Kernel matrix",
+          featureMapAriaLabel: "Feature map",
+          responseLabel: "Current window response",
+          explanationSeparator: ". "
+        }
+      : {
+          kernelAriaLabel: "卷积核选择",
+          imageGridAriaLabel: "输入图像网格",
+          kernelMatrixAriaLabel: "卷积核矩阵",
+          featureMapAriaLabel: "特征图",
+          responseLabel: "当前窗口响应",
+          explanationSeparator: "。"
+        };
   $: activeKernel = cnnKernelDemo.kernels.find((kernel) => kernel.id === activeKernelId) ?? cnnKernelDemo.kernels[0];
   $: activeStep = cnnKernelDemo.scanSteps[stepIndex];
   $: response = activeKernel.matrix
@@ -20,18 +43,23 @@
   question={cnnKernelDemo.question}
   simplificationNote={cnnKernelDemo.simplificationNote}
   learningGoals={cnnKernelDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="kernel-buttons" aria-label="卷积核选择">
+  <div class="kernel-buttons" aria-label={copy.kernelAriaLabel}>
     {#each cnnKernelDemo.kernels as kernel}
       <button type="button" class:active={kernel.id === activeKernelId} on:click={() => (activeKernelId = kernel.id)}>
         {kernel.label}
       </button>
     {/each}
-    <button type="button" on:click={nextStep} disabled={stepIndex === cnnKernelDemo.scanSteps.length - 1}>下一步</button>
+    <button type="button" on:click={nextStep} disabled={stepIndex === cnnKernelDemo.scanSteps.length - 1}>
+      {demoCoreCopy.nextLabel}
+    </button>
   </div>
 
   <div class="cnn-grid">
-    <div class="image-grid" aria-label="输入图像网格">
+    <div class="image-grid" aria-label={copy.imageGridAriaLabel}>
       {#each cnnKernelDemo.imageGrid as row, y}
         {#each row as value, x}
           <span
@@ -42,7 +70,7 @@
       {/each}
     </div>
 
-    <div class="kernel-matrix" aria-label="卷积核矩阵">
+    <div class="kernel-matrix" aria-label={copy.kernelMatrixAriaLabel}>
       {#each activeKernel.matrix as row}
         {#each row as value}
           <span>{value}</span>
@@ -50,7 +78,7 @@
       {/each}
     </div>
 
-    <div class="feature-map" aria-label="特征图">
+    <div class="feature-map" aria-label={copy.featureMapAriaLabel}>
       {#each cnnKernelDemo.scanSteps as step, index}
         <span class:filled={index <= stepIndex}>{index <= stepIndex ? response : ""}</span>
       {/each}
@@ -58,9 +86,9 @@
   </div>
 
   <section class="explanation" aria-live="polite">
-    <span>当前窗口响应：{response}</span>
+    <span>{copy.responseLabel}: {response}</span>
     <h3>{activeStep.title}</h3>
-    <p>{activeKernel.title}。{activeStep.description}</p>
+    <p>{activeKernel.title}{copy.explanationSeparator}{activeStep.description}</p>
   </section>
 </DemoShell>
 

@@ -1,29 +1,12 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
+import StandardDemoChapter from "../../components/pages/StandardDemoChapter.astro";
 import CnnKernelDemo from "../../demos/cnn-kernel/CnnKernelDemo.svelte";
 ---
 
-<BaseLayout title="深度学习与 CNN：机器如何从图像中学习局部特征？" description="一个静态、教学型 CNN 卷积核交互图解。">
-  <main class="chapter-main">
-    <p class="eyebrow">Demo 05</p>
-    <h1 class="page-title">深度学习与 CNN：机器如何从图像中学习局部特征？</h1>
-    <p class="lede">
-      CNN 把图像理解拆成局部感受野和层级特征。这个章节用小网格展示 kernel 如何滑动并生成 feature map。
-    </p>
-    <CnnKernelDemo client:load />
-
-    <section class="section-band" aria-labelledby="cnn-notes">
-      <p class="eyebrow">观察指南</p>
-      <h2 id="cnn-notes">局部特征可以组合成更高层视觉理解</h2>
-      <p>
-        它之前的问题是手写视觉特征难以泛化。CNN 解决了局部模式检测和参数共享问题，
-        但没有自动解决数据需求、鲁棒性和可解释性。后续影响是深度视觉模型、残差网络和视觉 Transformer。
-      </p>
-      <p class="eyebrow">参考资料</p>
-      <ul>
-        <li><a href="https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html">ImageNet Classification with Deep Convolutional Neural Networks</a></li>
-        <li><a href="https://www.deeplearningbook.org/contents/convnets.html">Deep Learning Book: Convolutional Networks</a></li>
-      </ul>
-    </section>
-  </main>
-</BaseLayout>
+<StandardDemoChapter
+  locale="zh-CN"
+  chapterId="cnn"
+  DemoComponent={CnnKernelDemo}
+>
+  <CnnKernelDemo slot="demo" client:load locale="zh-CN" />
+</StandardDemoChapter>

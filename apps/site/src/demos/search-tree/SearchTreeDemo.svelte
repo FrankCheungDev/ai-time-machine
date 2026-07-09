@@ -1,8 +1,23 @@
 <script lang="ts">
   import { DemoShell, SvgScene } from "@ai-history/demo-core";
-  import { searchTreeDemo } from "@ai-history/data";
+  import { getSearchTreeDemo, type Locale } from "@ai-history/data";
+  import { getSiteCopy } from "../../i18n/siteCopy";
+
+  export let locale: Locale = "zh-CN";
 
   let activeStrategyId = "bfs";
+  $: searchTreeDemo = getSearchTreeDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          strategyAriaLabel: "Search strategy",
+          sceneLabel: "Search tree strategy comparison"
+        }
+      : {
+          strategyAriaLabel: "搜索策略",
+          sceneLabel: "搜索树策略比较"
+        };
   $: activeStrategy =
     searchTreeDemo.strategies.find((strategy) => strategy.id === activeStrategyId) ?? searchTreeDemo.strategies[0];
   $: nodeById = Object.fromEntries(searchTreeDemo.nodes.map((node) => [node.id, node]));
@@ -21,8 +36,11 @@
   question={searchTreeDemo.question}
   simplificationNote={searchTreeDemo.simplificationNote}
   learningGoals={searchTreeDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="strategy-buttons" aria-label="搜索策略">
+  <div class="strategy-buttons" aria-label={copy.strategyAriaLabel}>
     {#each searchTreeDemo.strategies as strategy}
       <button type="button" class:active={strategy.id === activeStrategyId} on:click={() => (activeStrategyId = strategy.id)}>
         {strategy.label}
@@ -30,7 +48,13 @@
     {/each}
   </div>
 
-  <SvgScene label="Search tree strategy comparison" viewBox="0 0 840 360">
+  <SvgScene
+    label={copy.sceneLabel}
+    viewBox="0 0 840 360"
+    fitLabel={demoCoreCopy.fitLabel}
+    detailLabel={demoCoreCopy.detailLabel}
+    scrollSuffix={demoCoreCopy.scrollSuffix}
+  >
     {#each searchTreeDemo.edges as edge}
       {@const from = nodeById[edge.from]}
       {@const to = nodeById[edge.to]}

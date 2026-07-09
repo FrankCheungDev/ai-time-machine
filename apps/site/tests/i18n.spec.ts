@@ -8,6 +8,64 @@ const englishPrimaryRoutes = [
   "/en/chapters/overview/",
 ] as const;
 
+const englishDemoChapterCases = [
+  {
+    route: "/en/chapters/search/",
+    title: "Symbolic AI And Search: Can machines act intelligent by searching?",
+    evidence:
+      "Why did early AI rely on search, and why did it encounter combinatorial explosion?",
+  },
+  {
+    route: "/en/chapters/expert-system/",
+    title: "Expert Systems: Can expert knowledge be written as if-then rules?",
+    evidence:
+      "Can expert knowledge be written as rules, and why do rule systems become brittle?",
+  },
+  {
+    route: "/en/chapters/bayes/",
+    title: "Probabilistic Reasoning: How do machines handle uncertainty?",
+    evidence: "How does evidence change a belief?",
+  },
+  {
+    route: "/en/chapters/decision-boundary/",
+    title:
+      "Classic Machine Learning: How do machines learn decision boundaries from data?",
+    evidence: "How do machines learn classification boundaries from data?",
+  },
+  {
+    route: "/en/chapters/cnn/",
+    title:
+      "Deep Learning And CNNs: How do machines learn local visual features?",
+    evidence: "How do machines identify local features in an image?",
+  },
+  {
+    route: "/en/chapters/attention/",
+    title:
+      "Attention And Transformers: Why can tokens directly attend to each other?",
+    evidence:
+      "Why is Attention better suited than an RNN for modeling long-range dependencies?",
+  },
+  {
+    route: "/en/chapters/rag/",
+    title: "RAG: How do large language models connect to external knowledge?",
+    evidence:
+      "Why are model parameters alone not enough for answering questions?",
+  },
+  {
+    route: "/en/chapters/agent/",
+    title: "Agents: How do large language models execute multi-step tasks?",
+    evidence:
+      "Why is an agent a looped control system rather than a one-shot answer?",
+  },
+] as const;
+
+const englishLlmSystemChapter = {
+  route: "/en/chapters/llm-system/",
+  title:
+    "LLMs And Modern AI Systems: Why do large models still need external systems?",
+  evidence: "Context Window",
+} as const;
+
 const englishRouteLinkCases = [
   {
     label: "home learning links",
@@ -102,6 +160,12 @@ const englishRouteLinkCases = [
       "https://www.deeplearningbook.org/",
       "https://arxiv.org/abs/1706.03762",
     ],
+  },
+  {
+    label: "LLM system follow-on links",
+    route: "/en/chapters/llm-system/",
+    selector: ".actions a",
+    expectedHrefs: ["/en/chapters/rag/", "/en/chapters/agent/"],
   },
 ] as const;
 
@@ -286,6 +350,51 @@ test("English primary route bodies contain no Han characters", async ({
   }
 });
 
+test("English demo and LLM-system chapters are fully localized", async ({
+  page,
+}) => {
+  for (const chapter of englishDemoChapterCases) {
+    await page.goto(chapter.route);
+
+    await expect(page.locator("html"), chapter.route).toHaveAttribute(
+      "lang",
+      "en",
+    );
+    await expect(
+      page.getByRole("heading", { level: 1, name: chapter.title }),
+      chapter.route,
+    ).toBeVisible();
+    await expect(
+      page.getByText(chapter.evidence, { exact: true }),
+      chapter.route,
+    ).toBeVisible();
+    await expect(
+      page.locator(".demo-shell[data-demo-ready='true']"),
+      chapter.route,
+    ).toBeVisible();
+
+    const mainText = await page.locator("main").innerText();
+    expect(mainText, chapter.route).not.toMatch(/\p{Script=Han}/u);
+  }
+
+  await page.goto(englishLlmSystemChapter.route);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: englishLlmSystemChapter.title,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(englishLlmSystemChapter.evidence, { exact: true }),
+  ).toBeVisible();
+
+  const mainText = await page.locator("main").innerText();
+  expect(mainText, englishLlmSystemChapter.route).not.toMatch(
+    /\p{Script=Han}/u,
+  );
+});
+
 test("English route classes keep exact localized and static hrefs", async ({
   page,
 }) => {
@@ -298,4 +407,41 @@ test("English route classes keep exact localized and static hrefs", async ({
 
     expect(hrefs, linkCase.label).toEqual(linkCase.expectedHrefs);
   }
+});
+
+test("English RAG chapter renders localized demo controls and scenarios", async ({
+  page,
+}) => {
+  await page.goto("/en/chapters/rag/");
+
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "RAG: How do large language models connect to external knowledge?",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Why are model parameters alone not enough for answering questions?",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("Learning goals", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Next" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Convert the question into a vector",
+    }),
+  ).toBeVisible();
+
+  await page.getByLabel("Retrieval scenario").selectOption("wrong");
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Wrong retrieval: evidence leads the answer astray",
+    }),
+  ).toBeVisible();
 });
