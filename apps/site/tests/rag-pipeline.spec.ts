@@ -326,6 +326,70 @@ test("Lineage page shows the technical paradigm map", async ({ page }) => {
   await expect(page.getByText("RAG", { exact: true })).toBeVisible();
 });
 
+test("Lineage SVG keeps paradigm nodes inside the canvas without overlap", async ({
+  page,
+}) => {
+  await page.goto("/lineage/");
+
+  const layout = await page.evaluate(() => {
+    const svg = document.querySelector(".lineage-panel svg");
+
+    if (!(svg instanceof SVGSVGElement)) {
+      return { clipped: ["missing-svg"], overlaps: ["missing-svg"] };
+    }
+
+    const viewBox = svg.viewBox.baseVal;
+    const nodes = Array.from(svg.querySelectorAll(".lineage-node")).map(
+      (node) => {
+        const rect = node.querySelector("rect");
+        const box = rect instanceof SVGGraphicsElement ? rect.getBBox() : null;
+
+        return {
+          id: node.id,
+          x: box?.x ?? 0,
+          y: box?.y ?? 0,
+          width: box?.width ?? 0,
+          height: box?.height ?? 0,
+        };
+      },
+    );
+
+    const clipped = nodes
+      .filter(
+        (node) =>
+          node.x < viewBox.x ||
+          node.y < viewBox.y ||
+          node.x + node.width > viewBox.x + viewBox.width ||
+          node.y + node.height > viewBox.y + viewBox.height,
+      )
+      .map((node) => node.id);
+
+    const overlaps: string[] = [];
+    const gap = 8;
+
+    for (let index = 0; index < nodes.length; index += 1) {
+      for (let nextIndex = index + 1; nextIndex < nodes.length; nextIndex += 1) {
+        const a = nodes[index];
+        const b = nodes[nextIndex];
+        const separated =
+          a.x + a.width + gap <= b.x ||
+          b.x + b.width + gap <= a.x ||
+          a.y + a.height + gap <= b.y ||
+          b.y + b.height + gap <= a.y;
+
+        if (!separated) {
+          overlaps.push(`${a.id}:${b.id}`);
+        }
+      }
+    }
+
+    return { clipped, overlaps };
+  });
+
+  expect(layout.clipped).toEqual([]);
+  expect(layout.overlaps).toEqual([]);
+});
+
 test("Diagrams page explains export and SVG naming conventions", async ({
   page,
   request,

@@ -20,8 +20,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "symbolic",
     label: "符号主义",
     group: "symbolic",
-    x: 86,
-    y: 92,
+    x: 60,
+    y: 110,
     description: "规则、逻辑、搜索和规划把智能看作可操作的符号结构。",
     href: "/chapters/search/"
   },
@@ -29,8 +29,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "expert",
     label: "专家系统",
     group: "symbolic",
-    x: 258,
-    y: 92,
+    x: 245,
+    y: 110,
     description: "把领域知识写成规则库，强调可解释推理。",
     href: "/chapters/expert-system/"
   },
@@ -38,8 +38,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "statistical",
     label: "统计学习",
     group: "statistical",
-    x: 258,
-    y: 226,
+    x: 245,
+    y: 285,
     description: "用概率和数据描述不确定性，从样本中学习边界。",
     href: "/chapters/bayes/"
   },
@@ -47,8 +47,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "neural",
     label: "神经网络",
     group: "neural",
-    x: 442,
-    y: 226,
+    x: 430,
+    y: 285,
     description: "用可学习表示和多层组合处理感知任务。",
     href: "/chapters/cnn/"
   },
@@ -56,8 +56,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "transformer",
     label: "Transformer",
     group: "foundation",
-    x: 626,
-    y: 146,
+    x: 615,
+    y: 185,
     description: "Attention 让 token 直接互相关注，支撑基础模型扩展。",
     href: "/chapters/attention/"
   },
@@ -65,8 +65,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "rag",
     label: "RAG",
     group: "foundation",
-    x: 802,
-    y: 92,
+    x: 800,
+    y: 90,
     description: "把外部知识检索进上下文，提高事实性与可更新性。",
     href: "/chapters/rag/"
   },
@@ -74,8 +74,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "llm-system",
     label: "LLM 系统",
     group: "foundation",
-    x: 708,
-    y: 198,
+    x: 800,
+    y: 265,
     description: "把模型、上下文、工具、记忆和评估组合成现代 AI 应用。",
     href: "/chapters/llm-system/"
   },
@@ -83,8 +83,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "agent",
     label: "Agent",
     group: "agent",
-    x: 884,
-    y: 258,
+    x: 970,
+    y: 265,
     description: "把模型放进计划、工具、观察和修正循环。",
     href: "/chapters/agent/"
   },
@@ -92,8 +92,8 @@ export const aiLineageNodes: LineageNode[] = [
     id: "safety",
     label: "Safety / Eval",
     group: "safety",
-    x: 626,
-    y: 320,
+    x: 615,
+    y: 380,
     description: "评估可靠性、偏差、工具安全和多步任务风险。"
   }
 ];

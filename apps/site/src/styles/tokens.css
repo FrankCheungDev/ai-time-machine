@@ -367,6 +367,13 @@ main {
   font-size: 10px;
 }
 
+.lineage-panel .edge-label {
+  paint-order: stroke;
+  stroke: var(--color-surface);
+  stroke-linejoin: round;
+  stroke-width: 5px;
+}
+
 .chapter-question {
   display: inline-flex;
   margin: 18px 0 0;
