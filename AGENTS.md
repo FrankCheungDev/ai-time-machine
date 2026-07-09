@@ -21,6 +21,12 @@ Keep Chinese explanatory copy near the page, demo, or data file that owns it. Ke
 - `pnpm test` runs Vitest package tests and Playwright smoke tests.
 - `pnpm format` runs Prettier across the repo.
 
+## Development Workflow
+
+Before starting any development task, update `main` first: check out `main`, fetch `origin`, and fast-forward with `git pull --ff-only origin main`.
+
+Create a fresh feature branch from the updated `main`, preferably `codex/<short-task-name>`, and do the work in a Git worktree instead of the primary checkout. Prefer `.worktrees/<branch-slug>/` for project-local worktrees, keep `.worktrees/` ignored, and keep the primary checkout on `main` for syncing and worktree management only.
+
 ## Coding Style & Naming Conventions
 
 Use TypeScript for shared logic and Svelte components. Prefer explicit interfaces, small modules, and data-driven demos. Use `PascalCase` for components, `camelCase` for variables/functions, and kebab-case for route or demo folders such as `rag-pipeline/`.
@@ -37,7 +43,7 @@ Every demo should prove that the page loads, controls respond, active nodes or e
 
 History uses concise imperative commits such as `Add RAG SVG draw-in motion` and `Add root project docs`. Follow that style.
 
-Do all development on feature branches, preferably `codex/<short-task-name>`. Push the branch to GitHub and open a pull request; never develop, commit, or push directly on `main`.
+Do all development through the workflow above. Push the feature branch to GitHub and open a pull request; never develop, commit, or push directly on `main`.
 
 Pull requests should include a short summary, linked task or issue, verification commands, and screenshots or recordings for visual/demo changes. Call out teaching simplifications and any source references added.
 
