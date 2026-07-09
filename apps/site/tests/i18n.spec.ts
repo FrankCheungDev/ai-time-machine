@@ -10,4 +10,7 @@ test("Chinese routes expose zh-CN document language and an English switch", asyn
   const englishSwitch = page.getByRole("link", { name: "English" });
   await expect(englishSwitch).toBeVisible();
   await expect(englishSwitch).toHaveAttribute("href", "/en/chapters/rag/");
+
+  const chapterNavigation = page.getByRole("link", { name: "章节主线" });
+  await expect(chapterNavigation).toHaveAttribute("href", "/#mvp");
 });

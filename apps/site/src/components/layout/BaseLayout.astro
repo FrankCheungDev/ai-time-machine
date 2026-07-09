@@ -31,6 +31,7 @@ const isChapterSection =
   pathname === toLocalizedPath("/chapters/overview/", locale);
 
 const localizeHref = (href: string) => toLocalizedPath(href, locale);
+const chapterNavigationHref = `${localizeHref("/")}#mvp`;
 ---
 
 <!doctype html>
@@ -67,7 +68,7 @@ const localizeHref = (href: string) => toLocalizedPath(href, locale);
           {copy.nav.lineage}
         </a>
         <a
-          href={localizeHref("/#mvp")}
+          href={chapterNavigationHref}
           class:list={[{ "is-active-section": isChapterSection }]}
           aria-current={isChapterSection ? "page" : undefined}
         >
