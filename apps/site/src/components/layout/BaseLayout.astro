@@ -1,69 +1,124 @@
 ---
 import "../../styles/tokens.css";
+import {
+  defaultLocale,
+  getPathLocale,
+  toLocalizedPath,
+  type Locale,
+} from "../../i18n/locales";
+import { getSiteCopy, languageStorageKey } from "../../i18n/siteCopy";
 
 interface Props {
   title: string;
   description?: string;
+  locale?: Locale;
 }
 
+const pathname = Astro.url.pathname;
+const locale = Astro.props.locale ?? getPathLocale(pathname);
+const copy = getSiteCopy(locale);
 const {
   title,
-  description = "交互式人工智能图解史：用图解、动画和轻量交互解释 AI 技术演化。"
+  description = copy.defaultDescription,
 } = Astro.props;
 
-const pathname = Astro.url.pathname;
-const isCurrentPage = (href: string) => pathname === href;
-const isChapterSection = pathname.startsWith("/chapters/");
+const switchLocale: Locale = locale === "en" ? defaultLocale : "en";
+const languageSwitchHref = toLocalizedPath(pathname, switchLocale);
+const isCurrentPage = (href: string) =>
+  pathname === toLocalizedPath(href, locale);
+const isChapterSection =
+  pathname.startsWith(toLocalizedPath("/chapters/", locale)) ||
+  pathname === toLocalizedPath("/chapters/overview/", locale);
+
+const localizeHref = (href: string) => toLocalizedPath(href, locale);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <title>{title} | 交互式人工智能图解史</title>
+    <title>{title} | {copy.siteTitle}</title>
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">
+      <a class="brand" href={localizeHref("/")}>
         <span class="brand-mark" aria-hidden="true">AI</span>
-        <span>交互式人工智能图解史</span>
+        <span>{copy.siteTitle}</span>
       </a>
-      <nav aria-label="主导航">
+      <nav aria-label={copy.navLabel}>
         <a
-          href="/"
+          href={localizeHref("/")}
           aria-current={isCurrentPage("/") ? "page" : undefined}
         >
-          总览
+          {copy.nav.home}
         </a>
         <a
-          href="/timeline/"
+          href={localizeHref("/timeline/")}
           aria-current={isCurrentPage("/timeline/") ? "page" : undefined}
         >
-          时间线
+          {copy.nav.timeline}
         </a>
         <a
-          href="/lineage/"
+          href={localizeHref("/lineage/")}
           aria-current={isCurrentPage("/lineage/") ? "page" : undefined}
         >
-          谱系图
+          {copy.nav.lineage}
         </a>
         <a
-          href="/#mvp"
+          href={localizeHref("/#mvp")}
           class:list={[{ "is-active-section": isChapterSection }]}
           aria-current={isChapterSection ? "page" : undefined}
         >
-          章节主线
+          {copy.nav.chapters}
         </a>
         <a
-          href="/diagrams/"
+          href={localizeHref("/diagrams/")}
           aria-current={isCurrentPage("/diagrams/") ? "page" : undefined}
         >
-          图源
+          {copy.nav.diagrams}
         </a>
       </nav>
+      <a
+        class="language-switch"
+        href={languageSwitchHref}
+        aria-label={copy.language.switchAriaLabel}
+        data-language-switch
+        data-language-target={switchLocale}
+      >
+        {copy.language.switchLabel}
+      </a>
     </header>
     <slot />
+    <script is:inline define:vars={{ languageStorageKey }}>
+      document.querySelector("[data-language-switch]")?.addEventListener("click", (event) => {
+        const target = event.currentTarget;
+        if (target instanceof HTMLElement && target.dataset.languageTarget) {
+          try {
+            localStorage.setItem(languageStorageKey, target.dataset.languageTarget);
+            document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
+          } catch {
+            document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
+          }
+        }
+      });
+    </script>
   </body>
 </html>
+
+<style>
+  .language-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--color-line, #d7ddd7);
+    border-radius: 8px;
+    color: var(--color-ink, #17201d);
+    background: var(--color-surface, #fff);
+    font-weight: 720;
+    text-decoration: none;
+  }
+</style>
