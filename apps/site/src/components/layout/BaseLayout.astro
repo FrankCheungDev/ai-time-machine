@@ -128,12 +128,18 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
 
       const detectBrowserLanguage = () => {
         for (const language of navigator.languages ?? []) {
-          const normalizedLanguage = language.toLowerCase();
-          if (normalizedLanguage.startsWith("zh")) {
-            return "zh-CN";
-          }
-          if (normalizedLanguage.startsWith("en")) {
+          const normalizedLanguage = language.trim().toLowerCase();
+          if (
+            normalizedLanguage === "en" ||
+            normalizedLanguage.startsWith("en-")
+          ) {
             return "en";
+          }
+          if (
+            normalizedLanguage === "zh" ||
+            normalizedLanguage.startsWith("zh-")
+          ) {
+            return "zh-CN";
           }
         }
 

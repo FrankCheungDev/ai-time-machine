@@ -284,7 +284,7 @@ test("manual Chinese preference keeps root visits on Chinese", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL("http://127.0.0.1:4321/");
   await expect(
     page.getByRole("heading", { level: 1, name: "交互式人工智能图解史" }),
   ).toBeVisible();
@@ -311,7 +311,7 @@ test("valid cookie preference wins when local storage is invalid", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL("http://127.0.0.1:4321/");
   await context.close();
 });
 
@@ -362,7 +362,7 @@ test("cookie preference is used when local storage is unavailable", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL("http://127.0.0.1:4321/");
   await context.close();
 });
 
@@ -380,7 +380,43 @@ test("the first supported browser language keeps root visits Chinese", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await context.close();
+});
+
+test("unsupported lookalike browser languages keep root visits Chinese", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, "languages", {
+      configurable: true,
+      value: ["enochian", "zhongwen"],
+    });
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await context.close();
+});
+
+test("browser detection skips lookalikes before a supported locale", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, "languages", {
+      configurable: true,
+      value: ["zhongwen", "en-US"],
+    });
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/en\/$/);
   await context.close();
 });
 
