@@ -91,7 +91,8 @@ a {
   color: var(--color-ink);
 }
 
-.site-header nav a[aria-current="page"] {
+.site-header nav a[aria-current="page"],
+.site-header nav a.is-active-section {
   color: var(--color-ink);
   font-weight: 760;
   box-shadow: inset 0 -2px var(--color-green);

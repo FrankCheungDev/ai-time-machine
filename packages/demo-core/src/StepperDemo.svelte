@@ -114,7 +114,7 @@
     opacity: 0.45;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 900px) {
     .stepper {
       grid-template-areas:
         "content"
