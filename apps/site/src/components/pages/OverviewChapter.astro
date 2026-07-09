@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../layout/BaseLayout.astro";
+import {
+  commonLabels,
+  overviewChapterCopy,
+  overviewReadingItems,
+  overviewReferences,
+  overviewSpineCards,
+} from "../../i18n/pages";
+import { type Locale, toLocalizedPath } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = overviewChapterCopy[locale];
+const labels = commonLabels[locale];
+const spineCards = overviewSpineCards[locale];
+const readingItems = overviewReadingItems[locale];
+const href = (path: string) => toLocalizedPath(path, locale);
+---
+
+<BaseLayout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+>
+  <main class="chapter-main">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="page-title">{copy.heading}</h1>
+    <p class="lede">{copy.lede}</p>
+    <p class="chapter-question">{copy.question}</p>
+
+    <section class="section-band" aria-labelledby="mdx-proof">
+      <p class="eyebrow">{copy.closureEyebrow}</p>
+      <h2 id="mdx-proof">{copy.closureHeading}</h2>
+      <p>{copy.closureBody}</p>
+    </section>
+
+    <section class="section-band" aria-labelledby="spine">
+      <p class="eyebrow">{copy.spineEyebrow}</p>
+      <h2 id="spine">{copy.spineHeading}</h2>
+      <div class="demo-grid overview-grid">
+        {
+          spineCards.map((card) => (
+            <div class="demo-card">
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              <p>{card.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="how-to-read">
+      <p class="eyebrow">{copy.readingEyebrow}</p>
+      <h2 id="how-to-read">{copy.readingHeading}</h2>
+      <div class="timeline-list compact-list">
+        {
+          readingItems.map((item) => (
+            <article class="timeline-item compact-item">
+              <span>{item.label}</span>
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="overview-simplification">
+      <p class="eyebrow">{labels.simplification}</p>
+      <h2 id="overview-simplification">{copy.simplificationHeading}</h2>
+      <p>{copy.simplificationBody}</p>
+      <p class="eyebrow">{labels.references}</p>
+      <ul>
+        {
+          overviewReferences.map((reference) => (
+            <li>
+              <a href={reference.href}>{reference.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <div class="actions">
+      <a class="button primary" href={href("/timeline/")}
+        >{copy.primaryAction}</a
+      >
+      <a class="button" href={href("/chapters/search/")}
+        >{copy.secondaryAction}</a
+      >
+    </div>
+  </main>
+</BaseLayout>

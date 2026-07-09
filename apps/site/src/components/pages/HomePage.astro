@@ -1,0 +1,126 @@
+---
+import BaseLayout from "../layout/BaseLayout.astro";
+import {
+  homeLearningPathCards,
+  homeMapNodes,
+  homeOverviewCards,
+  homePageCopy,
+} from "../../i18n/pages";
+import { toLocalizedPath, type Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = homePageCopy[locale];
+const mapNodes = homeMapNodes[locale];
+const learningPathCards = homeLearningPathCards[locale];
+const overviewCards = homeOverviewCards[locale];
+const href = (path: string) => toLocalizedPath(path, locale);
+---
+
+<BaseLayout title={copy.title} locale={locale}>
+  <main>
+    <section class="hero" aria-labelledby="home-title">
+      <div>
+        <p class="eyebrow">{copy.heroEyebrow}</p>
+        <h1 id="home-title">{copy.heroTitle}</h1>
+        <p>{copy.heroDescription}</p>
+        <div class="actions">
+          <a class="button primary" href={href("/chapters/overview/")}
+            >{copy.primaryAction}</a
+          >
+          <a class="button" href="#mvp">{copy.secondaryAction}</a>
+        </div>
+      </div>
+      <div class="system-map" aria-label={copy.mapAriaLabel}>
+        <svg viewBox="0 0 620 420" role="img">
+          <title>{copy.mapTitle}</title>
+          <defs>
+            <marker
+              id="arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b"></path>
+            </marker>
+          </defs>
+          <path
+            d="M76 210 C150 96 256 90 330 170 S484 312 548 174"
+            fill="none"
+            stroke="#2f7d5b"
+            stroke-width="4"
+            marker-end="url(#arrow)"></path>
+          <g fill="#fff" stroke="#d7ddd7" stroke-width="2">
+            <rect x="32" y="168" width="112" height="70" rx="8"></rect>
+            <rect x="180" y="78" width="126" height="70" rx="8"></rect>
+            <rect x="332" y="148" width="126" height="70" rx="8"></rect>
+            <rect x="472" y="200" width="116" height="70" rx="8"></rect>
+          </g>
+          <g
+            fill="#17201d"
+            font-size="18"
+            font-weight="700"
+            text-anchor="middle"
+          >
+            <text x="88" y="207">{mapNodes[0].title}</text>
+            <text x="243" y="117">{mapNodes[1].title}</text>
+            <text x="395" y="187">{mapNodes[2].title}</text>
+            <text x="530" y="240">{mapNodes[3].title}</text>
+          </g>
+          <g fill="#5f6864" font-size="13" text-anchor="middle">
+            <text x="88" y="225">{mapNodes[0].subtitle}</text>
+            <text x="243" y="135">{mapNodes[1].subtitle}</text>
+            <text x="395" y="205">{mapNodes[2].subtitle}</text>
+            <text x="530" y="258">{mapNodes[3].subtitle}</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section id="mvp" class="section-band" aria-labelledby="mvp-title">
+      <p class="eyebrow">{copy.pathEyebrow}</p>
+      <h2 id="mvp-title">{copy.pathTitle}</h2>
+      <div class="demo-grid">
+        {
+          learningPathCards.map((card) => (
+            <a
+              class:list={[
+                "demo-card",
+                { "recommended-card": Boolean(card.recommendation) },
+              ]}
+              href={href(card.route)}
+            >
+              {card.recommendation && <small>{card.recommendation}</small>}
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              {card.meta && <p class="card-meta">{card.meta}</p>}
+              <p>{card.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="overview-title">
+      <p class="eyebrow">{copy.overviewEyebrow}</p>
+      <h2 id="overview-title">{copy.overviewTitle}</h2>
+      <div class="demo-grid overview-grid">
+        {
+          overviewCards.map((card) => (
+            <a class="demo-card" href={href(card.route)}>
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              <p>{card.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>

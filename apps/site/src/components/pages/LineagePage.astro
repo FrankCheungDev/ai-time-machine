@@ -1,0 +1,265 @@
+---
+import { getAiLineageEdges, getAiLineageNodes } from "@ai-history/data";
+import BaseLayout from "../layout/BaseLayout.astro";
+import { lineageGroupLabels, lineagePageCopy } from "../../i18n/pages";
+import { getSiteCopy } from "../../i18n/siteCopy";
+import { type Locale, toLocalizedPath } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = lineagePageCopy[locale];
+const siteCopy = getSiteCopy(locale);
+const groupLabels: Record<string, string> = lineageGroupLabels[locale];
+const lineageNodes = getAiLineageNodes(locale);
+const lineageEdges = getAiLineageEdges(locale);
+const href = (path: string) => toLocalizedPath(path, locale);
+const nodeById = Object.fromEntries(
+  lineageNodes.map((node) => [node.id, node]),
+);
+const lineageNodeWidth = 132;
+const lineageNodeHeight = 72;
+const lineageNodeRadius = 8;
+const wrappedEnglishEdgeIds = new Set([
+  "symbolic-expert",
+  "statistical-neural",
+  "neural-transformer",
+  "transformer-llm-system",
+  "llm-system-agent",
+]);
+type LineageNode = (typeof lineageNodes)[number];
+
+function getLineageEdgeLabelLines(edgeId: string, label: string) {
+  if (locale !== "en" || !wrappedEnglishEdgeIds.has(edgeId)) {
+    return [label];
+  }
+
+  return label.split(" ");
+}
+
+function getLineageEdgeGeometry(
+  edgeId: string,
+  from: LineageNode,
+  to: LineageNode,
+) {
+  const fromCenterX = from.x + lineageNodeWidth / 2;
+  const fromCenterY = from.y + lineageNodeHeight / 2;
+  const toCenterX = to.x + lineageNodeWidth / 2;
+  const toCenterY = to.y + lineageNodeHeight / 2;
+  const dx = toCenterX - fromCenterX;
+  const dy = toCenterY - fromCenterY;
+  const isHorizontal = Math.abs(dx) >= Math.abs(dy);
+
+  if (edgeId === "agent-safety") {
+    const x1 = fromCenterX;
+    const y1 = from.y + lineageNodeHeight;
+    const x2 = to.x + lineageNodeWidth;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${x1} ${y2} L ${x2} ${y2}`,
+      labelX: (x1 + x2) / 2,
+      labelY: y2 - 10,
+    };
+  }
+
+  if (isHorizontal) {
+    const x1 = dx >= 0 ? from.x + lineageNodeWidth : from.x;
+    const x2 = dx >= 0 ? to.x : to.x + lineageNodeWidth;
+    const y1 = fromCenterY;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${x2} ${y2}`,
+      labelX: (x1 + x2) / 2,
+      labelY: (y1 + y2) / 2 - 10,
+    };
+  }
+
+  const x1 = fromCenterX;
+  const x2 = toCenterX;
+  const y1 = dy >= 0 ? from.y + lineageNodeHeight : from.y;
+  const y2 = dy >= 0 ? to.y : to.y + lineageNodeHeight;
+
+  return {
+    path: `M ${x1} ${y1} L ${x2} ${y2}`,
+    labelX: (x1 + x2) / 2 + 18,
+    labelY: (y1 + y2) / 2,
+  };
+}
+---
+
+<BaseLayout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+>
+  <main class="chapter-main">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="page-title">{copy.heading}</h1>
+    <p class="lede">{copy.lede}</p>
+
+    <div
+      class="lineage-view-controls"
+      aria-label={copy.viewControlsAriaLabel}
+      data-lineage-view-controls
+    >
+      <button type="button" data-lineage-view="fit" aria-pressed="true"
+        >{siteCopy.demoCore.fitLabel}</button
+      >
+      <button type="button" data-lineage-view="detail" aria-pressed="false"
+        >{siteCopy.demoCore.detailLabel}</button
+      >
+    </div>
+
+    <section
+      class="lineage-panel"
+      aria-label={copy.panelAriaLabel}
+      tabindex="0"
+      data-lineage-panel
+      data-view="fit"
+      data-mobile-scroll-scene
+    >
+      <svg viewBox="0 0 1120 480" role="img" aria-labelledby="lineage-title">
+        <title id="lineage-title">{copy.svgTitle}</title>
+        <defs>
+          <marker
+            id="lineage-arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+          </marker>
+        </defs>
+
+        {
+          lineageEdges.map((edge) => {
+            const from = nodeById[edge.from];
+            const to = nodeById[edge.to];
+            const geometry = getLineageEdgeGeometry(edge.id, from, to);
+            const labelLines = getLineageEdgeLabelLines(edge.id, edge.label);
+            const labelLineHeight = 9;
+            const labelStartY =
+              geometry.labelY - ((labelLines.length - 1) * labelLineHeight) / 2;
+            return (
+              <>
+                <path
+                  id={`arrow-${edge.id}`}
+                  d={geometry.path}
+                  fill="none"
+                  marker-end="url(#lineage-arrow)"
+                />
+                <text
+                  class="edge-label"
+                  x={geometry.labelX}
+                  y={geometry.labelY}
+                  text-anchor="middle"
+                  aria-label={edge.label}
+                  style={labelLines.length > 1 ? "font-size: 8px" : undefined}
+                >
+                  {labelLines.length === 1
+                    ? edge.label
+                    : labelLines.map((line, index) => (
+                        <tspan
+                          x={geometry.labelX}
+                          y={labelStartY + index * labelLineHeight}
+                          textLength={line.length > 12 ? 48 : undefined}
+                          lengthAdjust={line.length > 12
+                            ? "spacingAndGlyphs"
+                            : undefined}
+                        >
+                          {line}
+                        </tspan>
+                      ))}
+                </text>
+              </>
+            );
+          })
+        }
+
+        {
+          lineageNodes.map((node) => (
+            <a
+              href={node.href ? href(node.href) : "#"}
+              aria-label={`${node.label}${copy.nodeAriaSeparator}${node.description}`}
+            >
+              <g id={`node-${node.id}`} class={`lineage-node ${node.group}`}>
+                <rect
+                  x={node.x}
+                  y={node.y}
+                  width={lineageNodeWidth}
+                  height={lineageNodeHeight}
+                  rx={lineageNodeRadius}
+                />
+                <text
+                  x={node.x + lineageNodeWidth / 2}
+                  y={node.y + 32}
+                  text-anchor="middle"
+                  style={locale === "en" && node.label.length > 16
+                    ? "font-size: 13px"
+                    : undefined}
+                >
+                  {node.label}
+                </text>
+                <text
+                  class="node-caption"
+                  x={node.x + lineageNodeWidth / 2}
+                  y={node.y + 52}
+                  text-anchor="middle"
+                >
+                  {groupLabels[node.group] ?? node.group}
+                </text>
+              </g>
+            </a>
+          ))
+        }
+      </svg>
+    </section>
+
+    <section class="section-band" aria-labelledby="lineage-notes">
+      <p class="eyebrow">{copy.notesEyebrow}</p>
+      <h2 id="lineage-notes">{copy.notesHeading}</h2>
+      <p>{copy.notesBody}</p>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const lineagePanel = document.querySelector("[data-lineage-panel]");
+  const lineageButtons = document.querySelectorAll("[data-lineage-view]");
+
+  function setLineageView(view: string) {
+    if (!(lineagePanel instanceof HTMLElement)) {
+      return;
+    }
+
+    lineagePanel.dataset.view = view;
+
+    lineageButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.lineageView === view),
+      );
+    });
+  }
+
+  lineageButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!(button instanceof HTMLButtonElement) || !button.dataset.lineageView) {
+        return;
+      }
+
+      setLineageView(button.dataset.lineageView);
+    });
+  });
+</script>
