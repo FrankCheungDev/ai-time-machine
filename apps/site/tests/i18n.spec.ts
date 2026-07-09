@@ -1,5 +1,110 @@
 import { expect, test } from "@playwright/test";
 
+const englishPrimaryRoutes = [
+  "/en/",
+  "/en/timeline/",
+  "/en/lineage/",
+  "/en/diagrams/",
+  "/en/chapters/overview/",
+] as const;
+
+const englishRouteLinkCases = [
+  {
+    label: "home learning links",
+    route: "/en/",
+    selector: "#mvp a.demo-card",
+    expectedHrefs: [
+      "/en/chapters/overview/",
+      "/en/chapters/search/",
+      "/en/chapters/expert-system/",
+      "/en/chapters/bayes/",
+      "/en/chapters/decision-boundary/",
+      "/en/chapters/cnn/",
+      "/en/chapters/attention/",
+      "/en/chapters/llm-system/",
+      "/en/chapters/rag/",
+      "/en/chapters/agent/",
+    ],
+  },
+  {
+    label: "home overview links",
+    route: "/en/",
+    selector: 'section[aria-labelledby="overview-title"] a.demo-card',
+    expectedHrefs: ["/en/timeline/", "/en/lineage/", "/en/diagrams/"],
+  },
+  {
+    label: "timeline demo links",
+    route: "/en/timeline/",
+    selector: ".timeline-list a.button",
+    expectedHrefs: [
+      "/en/chapters/search/",
+      "/en/chapters/expert-system/",
+      "/en/chapters/bayes/",
+      "/en/chapters/cnn/",
+      "/en/chapters/attention/",
+      "/en/chapters/llm-system/",
+      "/en/chapters/rag/",
+      "/en/chapters/agent/",
+    ],
+  },
+  {
+    label: "lineage node links",
+    route: "/en/lineage/",
+    selector: '.lineage-panel a[href^="/en/"]',
+    expectedHrefs: [
+      "/en/chapters/search/",
+      "/en/chapters/expert-system/",
+      "/en/chapters/bayes/",
+      "/en/chapters/cnn/",
+      "/en/chapters/attention/",
+      "/en/chapters/rag/",
+      "/en/chapters/llm-system/",
+      "/en/chapters/agent/",
+    ],
+  },
+  {
+    label: "diagram core links",
+    route: "/en/diagrams/",
+    selector: "[data-core-diagram]",
+    expectedHrefs: [
+      "/en/",
+      "/en/timeline/",
+      "/en/lineage/",
+      "/en/chapters/llm-system/",
+      "/en/chapters/search/",
+      "/en/chapters/expert-system/",
+      "/en/chapters/bayes/",
+      "/en/chapters/decision-boundary/",
+      "/en/chapters/cnn/",
+      "/en/chapters/attention/",
+      "/en/chapters/rag/",
+      "/en/chapters/agent/",
+    ],
+  },
+  {
+    label: "diagram asset download",
+    route: "/en/diagrams/",
+    selector: "a.demo-card[download]",
+    expectedHrefs: ["/diagrams/rag-pipeline.svg"],
+  },
+  {
+    label: "overview actions",
+    route: "/en/chapters/overview/",
+    selector: ".actions a",
+    expectedHrefs: ["/en/timeline/", "/en/chapters/search/"],
+  },
+  {
+    label: "overview external references",
+    route: "/en/chapters/overview/",
+    selector: 'main a[href^="https://"]',
+    expectedHrefs: [
+      "https://aima.cs.berkeley.edu/",
+      "https://www.deeplearningbook.org/",
+      "https://arxiv.org/abs/1706.03762",
+    ],
+  },
+] as const;
+
 test("Chinese routes expose zh-CN document language and an English switch", async ({
   page,
 }) => {
@@ -167,5 +272,30 @@ test("mobile headers keep brand, language switch, and navigation separated", asy
         ).toBeGreaterThanOrEqual(44);
       }
     }
+  }
+});
+
+test("English primary route bodies contain no Han characters", async ({
+  page,
+}) => {
+  for (const route of englishPrimaryRoutes) {
+    await page.goto(route);
+
+    const mainText = await page.locator("main").innerText();
+    expect(mainText, route).not.toMatch(/\p{Script=Han}/u);
+  }
+});
+
+test("English route classes keep exact localized and static hrefs", async ({
+  page,
+}) => {
+  for (const linkCase of englishRouteLinkCases) {
+    await page.goto(linkCase.route);
+
+    const hrefs = await page
+      .locator(linkCase.selector)
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+
+    expect(hrefs, linkCase.label).toEqual(linkCase.expectedHrefs);
   }
 });
