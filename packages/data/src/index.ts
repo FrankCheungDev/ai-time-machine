@@ -1,14 +1,32 @@
-export { agentLoopDemo } from "./demos/agent-loop";
-export { attentionMapDemo } from "./demos/attention-map";
-export { bayesUpdateDemo } from "./demos/bayes-update";
-export { cnnKernelDemo } from "./demos/cnn-kernel";
-export { decisionBoundaryDemo } from "./demos/decision-boundary";
-export { expertSystemDemo } from "./demos/expert-system";
-export { ragPipelineDemo } from "./demos/rag-pipeline";
-export { searchTreeDemo } from "./demos/search-tree";
-export { llmSystemConnections, llmSystemLayers } from "./overview/llm-system";
-export { aiLineageEdges, aiLineageNodes } from "./overview/lineage";
-export { aiTimelineEntries } from "./overview/timeline";
-export type { LlmSystemConnection, LlmSystemLayer } from "./overview/llm-system";
+export { agentLoopDemo, getAgentLoopDemo } from "./demos/agent-loop";
+export { attentionMapDemo, getAttentionMapDemo } from "./demos/attention-map";
+export { bayesUpdateDemo, getBayesUpdateDemo } from "./demos/bayes-update";
+export { cnnKernelDemo, getCnnKernelDemo } from "./demos/cnn-kernel";
+export {
+  decisionBoundaryDemo,
+  getDecisionBoundaryDemo,
+} from "./demos/decision-boundary";
+export { expertSystemDemo, getExpertSystemDemo } from "./demos/expert-system";
+export { getRagPipelineDemo, ragPipelineDemo } from "./demos/rag-pipeline";
+export { getSearchTreeDemo, searchTreeDemo } from "./demos/search-tree";
+export { defaultLocale, supportedLocales } from "./locales";
+export type { Locale } from "./locales";
+export {
+  getLlmSystemConnections,
+  getLlmSystemLayers,
+  llmSystemConnections,
+  llmSystemLayers,
+} from "./overview/llm-system";
+export {
+  aiLineageEdges,
+  aiLineageNodes,
+  getAiLineageEdges,
+  getAiLineageNodes,
+} from "./overview/lineage";
+export { aiTimelineEntries, getAiTimelineEntries } from "./overview/timeline";
+export type {
+  LlmSystemConnection,
+  LlmSystemLayer,
+} from "./overview/llm-system";
 export type { LineageEdge, LineageNode } from "./overview/lineage";
 export type { TimelineEntry } from "./overview/timeline";
