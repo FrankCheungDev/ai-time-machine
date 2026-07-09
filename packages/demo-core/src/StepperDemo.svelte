@@ -5,6 +5,8 @@
   export let steps: DemoStep[];
 
   export let currentIndex = 0;
+  export let previousLabel = "上一步";
+  export let nextLabel = "下一步";
   $: currentStep = steps[currentIndex];
   $: isFirst = currentIndex === 0;
   $: isLast = currentIndex === steps.length - 1;
@@ -28,8 +30,8 @@
     <p>{currentStep.description}</p>
   </div>
   <div class="controls">
-    <button type="button" on:click={previous} disabled={isFirst}>上一步</button>
-    <button type="button" on:click={next} disabled={isLast}>下一步</button>
+    <button type="button" on:click={previous} disabled={isFirst}>{previousLabel}</button>
+    <button type="button" on:click={next} disabled={isLast}>{nextLabel}</button>
   </div>
 </div>
 

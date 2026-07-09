@@ -63,6 +63,13 @@ importers:
       svelte:
         specifier: latest
         version: 5.56.4
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: 7.1.2
+        version: 7.1.2(svelte@5.56.4)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(yaml@2.9.0))
+      vite:
+        specifier: 8.1.0
+        version: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(yaml@2.9.0)
 
 packages:
 
