@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This pnpm workspace implements the Chinese-first interactive AI history atlas described in `docs/interactive_ai_history_codex_handoff.md`.
+This pnpm workspace implements the AI history atlas described in `docs/interactive_ai_history_codex_handoff.md`.
 
 - `apps/site/` contains the Astro site, chapter routes, Svelte demo islands, global tokens, Playwright tests, and public diagram exports.
 - `packages/demo-core/` contains reusable Svelte primitives such as `DemoShell`, `StepperDemo`, `SvgScene`, shared types, and Vitest coverage.
@@ -37,4 +37,10 @@ Every demo should prove that the page loads, controls respond, active nodes or e
 
 History uses concise imperative commits such as `Add RAG SVG draw-in motion` and `Add root project docs`. Follow that style.
 
+Do all development on feature branches, preferably `codex/<short-task-name>`. Push the branch to GitHub and open a pull request; never develop, commit, or push directly on `main`.
+
 Pull requests should include a short summary, linked task or issue, verification commands, and screenshots or recordings for visual/demo changes. Call out teaching simplifications and any source references added.
+
+## Security & Configuration Tips
+
+Never commit secrets, API keys, `.env*`, `.dev.vars`, `.npmrc`, or private keys. Configure deployment secrets in Cloudflare Pages environment variables instead.
