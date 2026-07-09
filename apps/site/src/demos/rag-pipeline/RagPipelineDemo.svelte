@@ -14,7 +14,7 @@
     reranker: { x: 456, y: 164 },
     prompt: { x: 596, y: 164 },
     llm: { x: 718, y: 164 },
-    answer: { x: 824, y: 164 }
+    answer: { x: 824, y: 164 },
   };
 
   const nodeWidth = 100;
@@ -28,15 +28,16 @@
     locale === "en"
       ? {
           sceneLabel: "RAG pipeline flow diagram",
-          scenarioLabel: "Retrieval scenario"
+          scenarioLabel: "Retrieval scenario",
         }
       : {
           sceneLabel: "RAG Pipeline 流程图",
-          scenarioLabel: "检索场景"
+          scenarioLabel: "检索场景",
         };
   $: selectedScenario =
-    ragPipelineDemo.scenarios?.find((scenario) => scenario.id === selectedScenarioId) ??
-    ragPipelineDemo.scenarios?.[0];
+    ragPipelineDemo.scenarios?.find(
+      (scenario) => scenario.id === selectedScenarioId,
+    ) ?? ragPipelineDemo.scenarios?.[0];
 
   function isActive(step: DemoStep, id: string) {
     return step.activeNodeIds.includes(id);
@@ -47,7 +48,10 @@
   }
 
   function prefersReducedMotion() {
-    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
   }
 
   function drawIn(node: SVGLineElement, active: boolean) {
@@ -62,7 +66,12 @@
       gsap.fromTo(
         node,
         { strokeDasharray: "18 10", strokeDashoffset: 28 },
-        { strokeDashoffset: 0, duration: 0.42, ease: "power2.out", overwrite: true }
+        {
+          strokeDashoffset: 0,
+          duration: 0.42,
+          ease: "power2.out",
+          overwrite: true,
+        },
       );
     }
 
@@ -94,7 +103,15 @@
       scrollSuffix={demoCoreCopy.scrollSuffix}
     >
       <defs>
-        <marker id="rag-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <marker
+          id="rag-arrow"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
           <path d="M 0 0 L 10 5 L 0 10 z"></path>
         </marker>
       </defs>
@@ -125,9 +142,25 @@
           class:node-active={isActive(currentStep, node.id)}
           class:node-muted={!isActive(currentStep, node.id)}
         >
-          <rect x={position.x} y={position.y} width={nodeWidth} height={nodeHeight} rx="8"></rect>
-          <text class="node-label" x={position.x + nodeWidth / 2} y={position.y + 30} text-anchor="middle">{node.label}</text>
-          <text class="node-caption" x={position.x + nodeWidth / 2} y={position.y + 52} text-anchor="middle">{node.description}</text>
+          <rect
+            x={position.x}
+            y={position.y}
+            width={nodeWidth}
+            height={nodeHeight}
+            rx="8"
+          ></rect>
+          <text
+            class="node-label"
+            x={position.x + nodeWidth / 2}
+            y={position.y + 30}
+            text-anchor="middle">{node.label}</text
+          >
+          <text
+            class="node-caption"
+            x={position.x + nodeWidth / 2}
+            y={position.y + 52}
+            text-anchor="middle">{node.description}</text
+          >
         </g>
       {/each}
     </SvgScene>

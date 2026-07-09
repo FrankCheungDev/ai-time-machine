@@ -14,11 +14,7 @@ const timelineEntries = getAiTimelineEntries(locale);
 const href = (path: string) => toLocalizedPath(path, locale);
 ---
 
-<BaseLayout
-  title={copy.title}
-  description={copy.description}
-  locale={locale}
->
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
   <main class="chapter-main">
     <p class="eyebrow">{copy.eyebrow}</p>
     <h1 class="page-title">{copy.heading}</h1>

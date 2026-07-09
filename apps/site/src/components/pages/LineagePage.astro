@@ -91,11 +91,7 @@ function getLineageEdgeGeometry(
 }
 ---
 
-<BaseLayout
-  title={copy.title}
-  description={copy.description}
-  locale={locale}
->
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
   <main class="chapter-main">
     <p class="eyebrow">{copy.eyebrow}</p>
     <h1 class="page-title">{copy.heading}</h1>
@@ -170,9 +166,9 @@ function getLineageEdgeGeometry(
                           x={geometry.labelX}
                           y={labelStartY + index * labelLineHeight}
                           textLength={line.length > 12 ? 48 : undefined}
-                          lengthAdjust={line.length > 12
-                            ? "spacingAndGlyphs"
-                            : undefined}
+                          lengthAdjust={
+                            line.length > 12 ? "spacingAndGlyphs" : undefined
+                          }
                         >
                           {line}
                         </tspan>
@@ -201,9 +197,11 @@ function getLineageEdgeGeometry(
                   x={node.x + lineageNodeWidth / 2}
                   y={node.y + 32}
                   text-anchor="middle"
-                  style={locale === "en" && node.label.length > 16
-                    ? "font-size: 13px"
-                    : undefined}
+                  style={
+                    locale === "en" && node.label.length > 16
+                      ? "font-size: 13px"
+                      : undefined
+                  }
                 >
                   {node.label}
                 </text>
@@ -255,7 +253,10 @@ function getLineageEdgeGeometry(
 
   lineageButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      if (!(button instanceof HTMLButtonElement) || !button.dataset.lineageView) {
+      if (
+        !(button instanceof HTMLButtonElement) ||
+        !button.dataset.lineageView
+      ) {
         return;
       }
 

@@ -22,7 +22,7 @@
           sceneLabel: "Attention token relationship map",
           attentionObservation: "Attention observation",
           rnnComparison: "RNN comparison",
-          rnnTitle: "An RNN can only pass information along the sequence"
+          rnnTitle: "An RNN can only pass information along the sequence",
         }
       : {
           modeSwitchAriaLabel: "模式切换",
@@ -32,11 +32,17 @@
           sceneLabel: "Attention token 关系图",
           attentionObservation: "Attention 观察",
           rnnComparison: "RNN 对比",
-          rnnTitle: "RNN 只能沿序列逐步传递"
+          rnnTitle: "RNN 只能沿序列逐步传递",
         };
-  $: selectedToken = attentionMapDemo.tokens.find((token) => token.id === selectedTokenId) ?? attentionMapDemo.tokens[0];
-  $: tokenById = Object.fromEntries(attentionMapDemo.tokens.map((token) => [token.id, token]));
-  $: activeLinks = attentionMapDemo.links.filter((link) => link.from === selectedTokenId || link.to === selectedTokenId);
+  $: selectedToken =
+    attentionMapDemo.tokens.find((token) => token.id === selectedTokenId) ??
+    attentionMapDemo.tokens[0];
+  $: tokenById = Object.fromEntries(
+    attentionMapDemo.tokens.map((token) => [token.id, token]),
+  );
+  $: activeLinks = attentionMapDemo.links.filter(
+    (link) => link.from === selectedTokenId || link.to === selectedTokenId,
+  );
 
   function selectToken(id: string) {
     selectedTokenId = id;
@@ -58,17 +64,29 @@
   simplificationLabel={demoCoreCopy.simplificationLabel}
 >
   <div class="mode-switch" aria-label={copy.modeSwitchAriaLabel}>
-    <button type="button" class:active={mode === "attention"} on:click={() => (mode = "attention")}>
+    <button
+      type="button"
+      class:active={mode === "attention"}
+      on:click={() => (mode = "attention")}
+    >
       {copy.attentionModeButton}
     </button>
-    <button type="button" class:active={mode === "rnn"} on:click={() => (mode = "rnn")}>
+    <button
+      type="button"
+      class:active={mode === "rnn"}
+      on:click={() => (mode = "rnn")}
+    >
       {copy.rnnModeButton}
     </button>
   </div>
 
   <div class="token-row" aria-label={copy.tokenSelectionAriaLabel}>
     {#each attentionMapDemo.tokens as token}
-      <button type="button" class:active={selectedTokenId === token.id} on:click={() => selectToken(token.id)}>
+      <button
+        type="button"
+        class:active={selectedTokenId === token.id}
+        on:click={() => selectToken(token.id)}
+      >
         {token.label}
       </button>
     {/each}
@@ -82,7 +100,14 @@
     scrollSuffix={demoCoreCopy.scrollSuffix}
   >
     <defs>
-      <marker id="attention-dot" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="4" markerHeight="4">
+      <marker
+        id="attention-dot"
+        viewBox="0 0 8 8"
+        refX="4"
+        refY="4"
+        markerWidth="4"
+        markerHeight="4"
+      >
         <circle cx="4" cy="4" r="4"></circle>
       </marker>
     </defs>
@@ -118,15 +143,25 @@
     {/if}
 
     {#each attentionMapDemo.tokens as token}
-      <g class:token-active={selectedTokenId === token.id} class:token-muted={mode === "attention" && selectedTokenId !== token.id}>
-        <circle id={`token-${token.id}`} cx={token.x} cy={token.y} r="34"></circle>
-        <text x={token.x} y={token.y + 5} text-anchor="middle">{token.label}</text>
+      <g
+        class:token-active={selectedTokenId === token.id}
+        class:token-muted={mode === "attention" && selectedTokenId !== token.id}
+      >
+        <circle id={`token-${token.id}`} cx={token.x} cy={token.y} r="34"
+        ></circle>
+        <text x={token.x} y={token.y + 5} text-anchor="middle"
+          >{token.label}</text
+        >
       </g>
     {/each}
   </SvgScene>
 
   <div class="explanation" aria-live="polite">
-    <span>{mode === "attention" ? copy.attentionObservation : copy.rnnComparison}</span>
+    <span
+      >{mode === "attention"
+        ? copy.attentionObservation
+        : copy.rnnComparison}</span
+    >
     {#if mode === "attention"}
       <h3>{selectedToken.focusTitle}</h3>
       <p>{selectedToken.focusDescription}</p>

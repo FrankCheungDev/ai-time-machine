@@ -86,7 +86,8 @@ export const siteCopy = {
       nextLabel: "Next",
       fitLabel: "Fit screen",
       detailLabel: "Zoom in",
-      scrollSuffix: "can fit the screen or scroll horizontally for the full diagram",
+      scrollSuffix:
+        "can fit the screen or scroll horizontally for the full diagram",
     },
   },
 } satisfies Record<Locale, SiteCopy>;

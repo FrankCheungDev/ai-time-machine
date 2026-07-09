@@ -13,13 +13,15 @@
     locale === "en"
       ? {
           modeAriaLabel: "Boundary mode",
-          sceneLabel: "Decision boundary comparison"
+          sceneLabel: "Decision boundary comparison",
         }
       : {
           modeAriaLabel: "边界模式",
-          sceneLabel: "决策边界比较"
+          sceneLabel: "决策边界比较",
         };
-  $: activeMode = decisionBoundaryDemo.modes.find((mode) => mode.id === activeModeId) ?? decisionBoundaryDemo.modes[0];
+  $: activeMode =
+    decisionBoundaryDemo.modes.find((mode) => mode.id === activeModeId) ??
+    decisionBoundaryDemo.modes[0];
 </script>
 
 <DemoShell
@@ -33,7 +35,11 @@
 >
   <div class="mode-buttons" aria-label={copy.modeAriaLabel}>
     {#each decisionBoundaryDemo.modes as mode}
-      <button type="button" class:active={mode.id === activeModeId} on:click={() => (activeModeId = mode.id)}>
+      <button
+        type="button"
+        class:active={mode.id === activeModeId}
+        on:click={() => (activeModeId = mode.id)}
+      >
         {mode.label}
       </button>
     {/each}
@@ -47,12 +53,21 @@
     scrollSuffix={demoCoreCopy.scrollSuffix}
   >
     <rect class="plot" x="54" y="40" width="590" height="300" rx="8"></rect>
-    <path id={`boundary-${activeMode.id}`} class="boundary" d={activeMode.path}></path>
+    <path id={`boundary-${activeMode.id}`} class="boundary" d={activeMode.path}
+    ></path>
     {#each decisionBoundaryDemo.points as point}
       <circle class={point.className} cx={point.x} cy={point.y} r="13"></circle>
     {/each}
-    <circle id="outlier-point" class="negative outlier" cx="470" cy={outlierY} r="15"></circle>
-    <text x="470" y={outlierY - 24} text-anchor="middle">{decisionBoundaryDemo.outlierLabel}</text>
+    <circle
+      id="outlier-point"
+      class="negative outlier"
+      cx="470"
+      cy={outlierY}
+      r="15"
+    ></circle>
+    <text x="470" y={outlierY - 24} text-anchor="middle"
+      >{decisionBoundaryDemo.outlierLabel}</text
+    >
   </SvgScene>
 
   <label class="outlier-control">

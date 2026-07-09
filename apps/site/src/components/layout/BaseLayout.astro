@@ -17,10 +17,7 @@ interface Props {
 const pathname = Astro.url.pathname;
 const locale = Astro.props.locale ?? getPathLocale(pathname);
 const copy = getSiteCopy(locale);
-const {
-  title,
-  description = copy.defaultDescription,
-} = Astro.props;
+const { title, description = copy.defaultDescription } = Astro.props;
 
 const switchLocale: Locale = locale === "en" ? defaultLocale : "en";
 const languageSwitchHref = toLocalizedPath(pathname, switchLocale);
@@ -153,17 +150,22 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
         }
       }
 
-      document.querySelector("[data-language-switch]")?.addEventListener("click", (event) => {
-        const target = event.currentTarget;
-        if (target instanceof HTMLElement && target.dataset.languageTarget) {
-          try {
-            localStorage.setItem(languageStorageKey, target.dataset.languageTarget);
-          } catch {
-            // Cookie persistence below still covers storage-restricted browsers.
+      document
+        .querySelector("[data-language-switch]")
+        ?.addEventListener("click", (event) => {
+          const target = event.currentTarget;
+          if (target instanceof HTMLElement && target.dataset.languageTarget) {
+            try {
+              localStorage.setItem(
+                languageStorageKey,
+                target.dataset.languageTarget,
+              );
+            } catch {
+              // Cookie persistence below still covers storage-restricted browsers.
+            }
+            document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
           }
-          document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
-        }
-      });
+        });
     </script>
   </body>
 </html>

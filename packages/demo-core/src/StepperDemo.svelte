@@ -30,7 +30,9 @@
     <p>{currentStep.description}</p>
   </div>
   <div class="controls">
-    <button type="button" on:click={previous} disabled={isFirst}>{previousLabel}</button>
+    <button type="button" on:click={previous} disabled={isFirst}
+      >{previousLabel}</button
+    >
     <button type="button" on:click={next} disabled={isLast}>{nextLabel}</button>
   </div>
 </div>

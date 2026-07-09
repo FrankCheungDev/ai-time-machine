@@ -10,8 +10,8 @@ const steps: DemoStep[] = [
     title: "第一步",
     description: "测试步骤",
     activeNodeIds: [],
-    activeEdgeIds: []
-  }
+    activeEdgeIds: [],
+  },
 ];
 
 describe("stepper state", () => {
@@ -42,8 +42,8 @@ describe("StepperDemo labels", () => {
       props: {
         steps,
         previousLabel: "Previous",
-        nextLabel: "Next"
-      }
+        nextLabel: "Next",
+      },
     });
 
     expect(body).toContain(">Previous</button>");

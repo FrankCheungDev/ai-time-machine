@@ -7,8 +7,10 @@
 
   $: scrollLabel = `${label}，${scrollSuffix}`;
   $: controlKey =
-    label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") ||
-    "diagram";
+    label
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "diagram";
   $: controlName = `svg-scene-view-${controlKey}`;
   $: fitControlId = `${controlName}-fit`;
   $: detailControlId = `${controlName}-detail`;
@@ -108,8 +110,7 @@
     border: 1px solid var(--color-line, #d7ddd7);
     border-radius: 8px;
     background:
-      linear-gradient(180deg, rgba(47, 125, 91, 0.08), transparent 48%),
-      #fbfbf8;
+      linear-gradient(180deg, rgba(47, 125, 91, 0.08), transparent 48%), #fbfbf8;
   }
 
   .svg-scene:focus-visible {

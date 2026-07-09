@@ -20,11 +20,7 @@ const diagrams = coreDiagrams[locale];
 const href = (path: string) => toLocalizedPath(path, locale);
 ---
 
-<BaseLayout
-  title={copy.title}
-  description={copy.description}
-  locale={locale}
->
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
   <main class="chapter-main">
     <p class="eyebrow">{copy.eyebrow}</p>
     <h1 class="page-title">{copy.heading}</h1>
@@ -80,11 +76,7 @@ const href = (path: string) => toLocalizedPath(path, locale);
       <div class="demo-grid overview-grid">
         {
           diagrams.map((diagram) => (
-            <a
-              class="demo-card"
-              href={href(diagram.route)}
-              data-core-diagram
-            >
+            <a class="demo-card" href={href(diagram.route)} data-core-diagram>
               <span>{copy.diagramLabel}</span>
               <strong>{diagram.title}</strong>
               <p>{diagram.note}</p>

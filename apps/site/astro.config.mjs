@@ -4,5 +4,5 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   output: "static",
-  integrations: [mdx(), svelte()]
+  integrations: [mdx(), svelte()],
 });

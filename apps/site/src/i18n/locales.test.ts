@@ -37,9 +37,7 @@ describe("locale helpers", () => {
 
   it("maps routes between Chinese and English", () => {
     expect(toLocalizedPath("/", "en")).toBe("/en/");
-    expect(toLocalizedPath("/chapters/rag/", "en")).toBe(
-      "/en/chapters/rag/",
-    );
+    expect(toLocalizedPath("/chapters/rag/", "en")).toBe("/en/chapters/rag/");
     expect(toLocalizedPath("/en/chapters/rag/", "zh-CN")).toBe(
       "/chapters/rag/",
     );

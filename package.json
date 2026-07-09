@@ -16,6 +16,8 @@
     "@playwright/test": "latest",
     "@types/node": "latest",
     "prettier": "latest",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-svelte": "^4.1.1",
     "typescript": "latest",
     "vitest": "latest"
   },

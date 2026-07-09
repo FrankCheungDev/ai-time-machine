@@ -16,16 +16,17 @@
       ? {
           priorStatusLabel: "Prior",
           posteriorStatusLabel: "Posterior belief",
-          explanationTitle: "The posterior belief changes with the evidence"
+          explanationTitle: "The posterior belief changes with the evidence",
         }
       : {
           priorStatusLabel: "先验",
           posteriorStatusLabel: "后验信念",
-          explanationTitle: "后验信念会随证据改变"
+          explanationTitle: "后验信念会随证据改变",
         };
   $: priorProbability = Math.min(0.95, Math.max(0.05, Number(prior) / 100));
   $: likelihoodRatio = 0.2 + (Number(evidence) / 100) * 4.8;
-  $: posteriorOdds = (priorProbability / (1 - priorProbability)) * likelihoodRatio;
+  $: posteriorOdds =
+    (priorProbability / (1 - priorProbability)) * likelihoodRatio;
   $: posterior = Math.round((posteriorOdds / (1 + posteriorOdds)) * 100);
 </script>
 
@@ -42,11 +43,23 @@
     <div class="controls">
       <label>
         <span>{bayesUpdateDemo.priorLabel}: {prior}%</span>
-        <input aria-label={bayesUpdateDemo.priorLabel} type="range" min="5" max="95" bind:value={prior} />
+        <input
+          aria-label={bayesUpdateDemo.priorLabel}
+          type="range"
+          min="5"
+          max="95"
+          bind:value={prior}
+        />
       </label>
       <label>
         <span>{bayesUpdateDemo.evidenceLabel}: {evidence}%</span>
-        <input aria-label={bayesUpdateDemo.evidenceLabel} type="range" min="0" max="100" bind:value={evidence} />
+        <input
+          aria-label={bayesUpdateDemo.evidenceLabel}
+          type="range"
+          min="0"
+          max="100"
+          bind:value={evidence}
+        />
       </label>
     </div>
 
@@ -57,7 +70,9 @@
       </div>
       <div>
         <span>{copy.posteriorStatusLabel} {posterior}%</span>
-        <div class="track posterior"><i style={`width: ${posterior}%`}></i></div>
+        <div class="track posterior">
+          <i style={`width: ${posterior}%`}></i>
+        </div>
       </div>
     </div>
 

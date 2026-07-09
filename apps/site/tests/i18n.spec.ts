@@ -447,7 +447,9 @@ test("manual switch persists the selected language", async ({ page }) => {
     .toContain("ai-history-locale=en");
 });
 
-test("manual switch navigation works without JavaScript", async ({ browser }) => {
+test("manual switch navigation works without JavaScript", async ({
+  browser,
+}) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
 

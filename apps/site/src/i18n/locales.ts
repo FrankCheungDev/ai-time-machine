@@ -45,9 +45,7 @@ export function stripLocalePrefix(pathname: string): string {
 }
 
 export function getPathLocale(pathname: string): Locale {
-  return withTrailingSlash(pathname).startsWith("/en/")
-    ? "en"
-    : defaultLocale;
+  return withTrailingSlash(pathname).startsWith("/en/") ? "en" : defaultLocale;
 }
 
 export function toLocalizedPath(pathname: string, locale: Locale): string {

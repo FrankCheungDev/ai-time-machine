@@ -17,7 +17,7 @@
           kernelMatrixAriaLabel: "Kernel matrix",
           featureMapAriaLabel: "Feature map",
           responseLabel: "Current window response",
-          explanationSeparator: ". "
+          explanationSeparator: ". ",
         }
       : {
           kernelAriaLabel: "卷积核选择",
@@ -25,12 +25,19 @@
           kernelMatrixAriaLabel: "卷积核矩阵",
           featureMapAriaLabel: "特征图",
           responseLabel: "当前窗口响应",
-          explanationSeparator: "。"
+          explanationSeparator: "。",
         };
-  $: activeKernel = cnnKernelDemo.kernels.find((kernel) => kernel.id === activeKernelId) ?? cnnKernelDemo.kernels[0];
+  $: activeKernel =
+    cnnKernelDemo.kernels.find((kernel) => kernel.id === activeKernelId) ??
+    cnnKernelDemo.kernels[0];
   $: activeStep = cnnKernelDemo.scanSteps[stepIndex];
   $: response = activeKernel.matrix
-    .flatMap((row, y) => row.map((value, x) => value * cnnKernelDemo.imageGrid[activeStep.y + y][activeStep.x + x]))
+    .flatMap((row, y) =>
+      row.map(
+        (value, x) =>
+          value * cnnKernelDemo.imageGrid[activeStep.y + y][activeStep.x + x],
+      ),
+    )
     .reduce((sum, value) => sum + value, 0);
 
   function nextStep() {
@@ -49,11 +56,19 @@
 >
   <div class="kernel-buttons" aria-label={copy.kernelAriaLabel}>
     {#each cnnKernelDemo.kernels as kernel}
-      <button type="button" class:active={kernel.id === activeKernelId} on:click={() => (activeKernelId = kernel.id)}>
+      <button
+        type="button"
+        class:active={kernel.id === activeKernelId}
+        on:click={() => (activeKernelId = kernel.id)}
+      >
         {kernel.label}
       </button>
     {/each}
-    <button type="button" on:click={nextStep} disabled={stepIndex === cnnKernelDemo.scanSteps.length - 1}>
+    <button
+      type="button"
+      on:click={nextStep}
+      disabled={stepIndex === cnnKernelDemo.scanSteps.length - 1}
+    >
       {demoCoreCopy.nextLabel}
     </button>
   </div>
@@ -63,7 +78,10 @@
       {#each cnnKernelDemo.imageGrid as row, y}
         {#each row as value, x}
           <span
-            class:active={x >= activeStep.x && x < activeStep.x + 3 && y >= activeStep.y && y < activeStep.y + 3}
+            class:active={x >= activeStep.x &&
+              x < activeStep.x + 3 &&
+              y >= activeStep.y &&
+              y < activeStep.y + 3}
             style={`opacity: ${0.28 + value * 0.62}`}
           ></span>
         {/each}
@@ -80,7 +98,9 @@
 
     <div class="feature-map" aria-label={copy.featureMapAriaLabel}>
       {#each cnnKernelDemo.scanSteps as step, index}
-        <span class:filled={index <= stepIndex}>{index <= stepIndex ? response : ""}</span>
+        <span class:filled={index <= stepIndex}
+          >{index <= stepIndex ? response : ""}</span
+        >
       {/each}
     </div>
   </div>
@@ -88,7 +108,9 @@
   <section class="explanation" aria-live="polite">
     <span>{copy.responseLabel}: {response}</span>
     <h3>{activeStep.title}</h3>
-    <p>{activeKernel.title}{copy.explanationSeparator}{activeStep.description}</p>
+    <p>
+      {activeKernel.title}{copy.explanationSeparator}{activeStep.description}
+    </p>
   </section>
 </DemoShell>
 

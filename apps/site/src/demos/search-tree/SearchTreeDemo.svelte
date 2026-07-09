@@ -12,15 +12,19 @@
     locale === "en"
       ? {
           strategyAriaLabel: "Search strategy",
-          sceneLabel: "Search tree strategy comparison"
+          sceneLabel: "Search tree strategy comparison",
         }
       : {
           strategyAriaLabel: "搜索策略",
-          sceneLabel: "搜索树策略比较"
+          sceneLabel: "搜索树策略比较",
         };
   $: activeStrategy =
-    searchTreeDemo.strategies.find((strategy) => strategy.id === activeStrategyId) ?? searchTreeDemo.strategies[0];
-  $: nodeById = Object.fromEntries(searchTreeDemo.nodes.map((node) => [node.id, node]));
+    searchTreeDemo.strategies.find(
+      (strategy) => strategy.id === activeStrategyId,
+    ) ?? searchTreeDemo.strategies[0];
+  $: nodeById = Object.fromEntries(
+    searchTreeDemo.nodes.map((node) => [node.id, node]),
+  );
 
   function isActiveNode(id: string) {
     return activeStrategy.activeNodeIds.includes(id);
@@ -42,7 +46,11 @@
 >
   <div class="strategy-buttons" aria-label={copy.strategyAriaLabel}>
     {#each searchTreeDemo.strategies as strategy}
-      <button type="button" class:active={strategy.id === activeStrategyId} on:click={() => (activeStrategyId = strategy.id)}>
+      <button
+        type="button"
+        class:active={strategy.id === activeStrategyId}
+        on:click={() => (activeStrategyId = strategy.id)}
+      >
         {strategy.label}
       </button>
     {/each}
@@ -69,8 +77,12 @@
       />
     {/each}
     {#each searchTreeDemo.nodes as node}
-      <g class:node-active={isActiveNode(node.id)} class:node-muted={!isActiveNode(node.id)}>
-        <circle id={`search-node-${node.id}`} cx={node.x} cy={node.y} r="28"></circle>
+      <g
+        class:node-active={isActiveNode(node.id)}
+        class:node-muted={!isActiveNode(node.id)}
+      >
+        <circle id={`search-node-${node.id}`} cx={node.x} cy={node.y} r="28"
+        ></circle>
         <text x={node.x} y={node.y + 5} text-anchor="middle">{node.label}</text>
       </g>
     {/each}
@@ -112,7 +124,9 @@
   line {
     stroke: #9ba9a1;
     stroke-width: 3;
-    transition: opacity 160ms ease, stroke 160ms ease;
+    transition:
+      opacity 160ms ease,
+      stroke 160ms ease;
   }
 
   .edge-active {
