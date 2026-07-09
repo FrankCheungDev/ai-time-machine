@@ -5,7 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 importers:
-
   .:
     devDependencies:
       '@playwright/test':
@@ -78,7 +77,6 @@ importers:
         version: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(yaml@2.9.0)
 
 packages:
-
   '@astrojs/check@0.9.9':
     resolution: {integrity: sha512-A5UW8uIuErLWEoRQvzgXpO1gTjUFtK8r7nU2Z7GewAMxUb7bPvpk11qaKKgxqXlHJWlAvaaxy+Xg28A6bmQ1Tg==}
     hasBin: true
@@ -2401,7 +2399,6 @@ packages:
     resolution: {integrity: sha512-KvC8OPjzdNOe+xQ4XWJV2whQA0aM1kGVczMQ8+dStAO6KfEB140JEVQ9dE76ONZ0/Ylf67ni4tILPJB41U0eow==}
 
 snapshots:
-
   '@astrojs/check@0.9.9(prettier@3.9.0)(typescript@6.0.3)':
     dependencies:
       '@astrojs/language-server': 2.16.10(prettier@3.9.0)(typescript@6.0.3)
