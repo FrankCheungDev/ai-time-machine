@@ -40,6 +40,45 @@ const svgSceneRoutes = [
 
 const stepperDemoRoutes = ["/chapters/rag/", "/chapters/agent/"];
 
+const canonicalChapterLabels = [
+  {
+    route: "/chapters/overview/",
+    homeCard: /00 总览章节/,
+    eyebrow: "Chapter 00",
+  },
+  { route: "/chapters/search/", homeCard: /搜索树 \/ A\*/, eyebrow: "Demo 01" },
+  {
+    route: "/chapters/expert-system/",
+    homeCard: /专家系统规则推理/,
+    eyebrow: "Demo 02",
+  },
+  { route: "/chapters/bayes/", homeCard: /Bayes 更新/, eyebrow: "Demo 03" },
+  {
+    route: "/chapters/decision-boundary/",
+    homeCard: /决策边界/,
+    eyebrow: "Demo 04",
+  },
+  { route: "/chapters/cnn/", homeCard: /CNN 卷积核/, eyebrow: "Demo 05" },
+  {
+    route: "/chapters/attention/",
+    homeCard: /Attention Map/,
+    eyebrow: "Demo 06",
+  },
+  {
+    route: "/chapters/llm-system/",
+    homeCard: /LLM 系统地图/,
+    eyebrow: "Chapter 07",
+  },
+  { route: "/chapters/rag/", homeCard: /RAG Pipeline/, eyebrow: "Demo 08" },
+  { route: "/chapters/agent/", homeCard: /Agent Loop/, eyebrow: "Demo 09" },
+];
+
+async function waitForDemoReady(page: import("@playwright/test").Page) {
+  await expect(
+    page.locator(".demo-shell[data-demo-ready='true']").first(),
+  ).toBeVisible();
+}
+
 function firstDurationMs(durationList: string) {
   const firstDuration = durationList.split(",")[0]?.trim() ?? "0s";
 
@@ -72,6 +111,7 @@ test("RAG chapter presents an interactive pipeline demo", async ({ page }) => {
     "data-role",
     "node",
   );
+  await waitForDemoReady(page);
 
   const nextButton = page.getByRole("button", { name: "下一步" });
   await nextButton.click();
@@ -111,6 +151,7 @@ test("Attention chapter lets users inspect token relationships", async ({
       exact: true,
     }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByRole("button", { name: "模型" }).click();
   await expect(
@@ -159,6 +200,7 @@ test("Agent chapter shows the action loop and repair branch", async ({
       exact: true,
     }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByRole("button", { name: "下一步" }).click();
   await expect(
@@ -187,6 +229,7 @@ test("Search chapter shows strategy expansion differences", async ({
       exact: true,
     }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByRole("button", { name: "A* 启发式" }).click();
   await expect(
@@ -208,6 +251,7 @@ test("Expert-system chapter demonstrates rule conflicts", async ({ page }) => {
       exact: true,
     }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByRole("checkbox", { name: "加入企鹅例外" }).check();
   await expect(
@@ -227,6 +271,7 @@ test("Bayes chapter updates belief from evidence", async ({ page }) => {
   await expect(
     page.getByText("证据如何改变信念？", { exact: true }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByLabel("证据强度").fill("80");
   await expect(page.getByText(/后验信念 \d+%/)).toBeVisible();
@@ -246,6 +291,7 @@ test("Decision-boundary chapter compares learned boundaries", async ({
   await expect(
     page.getByText("机器如何从数据中学习分类边界？", { exact: true }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByRole("button", { name: "过拟合边界" }).click();
   await expect(
@@ -265,6 +311,7 @@ test("CNN chapter shows kernel-driven feature maps", async ({ page }) => {
   await expect(
     page.getByText("机器如何从图像中识别局部特征？", { exact: true }),
   ).toBeVisible();
+  await waitForDemoReady(page);
 
   await page.getByRole("button", { name: "边缘检测" }).click();
   await page.getByRole("button", { name: "下一步" }).click();
@@ -285,6 +332,35 @@ test("Home page hero map does not overlay standalone marker dots on labels", asy
   await page.goto("/");
 
   await expect(page.locator(".system-map > svg > circle")).toHaveCount(0);
+});
+
+test("Home cards and chapter pages use one canonical learning order", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  for (const chapter of canonicalChapterLabels) {
+    const card = page.getByRole("link", { name: chapter.homeCard });
+    await expect(card.locator("span").first()).toHaveText(chapter.eyebrow);
+
+    await page.goto(chapter.route);
+    await expect(page.locator("main > .eyebrow").first()).toHaveText(
+      chapter.eyebrow,
+    );
+    await expect(page.getByText(/MVP Demo/)).toHaveCount(0);
+    await page.goto("/");
+  }
+});
+
+test("Home page highlights the recommended first-time learning path", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const recommendedCard = page.getByRole("link", { name: /总览章节/ });
+  await expect(recommendedCard.getByText("推荐从这里开始")).toBeVisible();
+  await expect(recommendedCard.getByText(/约 5 分钟/)).toBeVisible();
+  await expect(recommendedCard.getByText(/阅读主线/)).toBeVisible();
 });
 
 test("Overview MDX chapter renders the chapter-zero narrative", async ({
@@ -312,7 +388,7 @@ test("Timeline page shows the AI evolution overview", async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByText("Transformer", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "查看 Attention demo" }),
+    page.getByRole("link", { name: "查看 Demo 06：Attention" }),
   ).toBeVisible();
 });
 
@@ -368,7 +444,11 @@ test("Lineage SVG keeps paradigm nodes inside the canvas without overlap", async
     const gap = 8;
 
     for (let index = 0; index < nodes.length; index += 1) {
-      for (let nextIndex = index + 1; nextIndex < nodes.length; nextIndex += 1) {
+      for (
+        let nextIndex = index + 1;
+        nextIndex < nodes.length;
+        nextIndex += 1
+      ) {
         const a = nodes[index];
         const b = nodes[nextIndex];
         const separated =
@@ -398,6 +478,69 @@ test("Lineage routes Agent to Safety around LLM System", async ({ page }) => {
     .getAttribute("d");
 
   expect(agentSafetyPath).toBe("M 1036 337 L 1036 416 L 747 416");
+});
+
+test("Lineage view controls are visible and focusable on desktop", async ({
+  page,
+}) => {
+  await page.goto("/lineage/");
+
+  const controls = page.locator("[data-lineage-view]");
+  await expect(controls).toHaveCount(2);
+
+  const boxes = await controls.evaluateAll((buttons) =>
+    buttons.map((button) => {
+      const rect = button.getBoundingClientRect();
+
+      return {
+        height: rect.height,
+        width: rect.width,
+      };
+    }),
+  );
+
+  for (const box of boxes) {
+    expect(box.height).toBeGreaterThan(0);
+    expect(box.width).toBeGreaterThan(0);
+  }
+
+  const fitButton = page.getByRole("button", { name: "适配屏幕" });
+  await expect(fitButton).toBeVisible();
+  await fitButton.focus();
+  await expect(fitButton).toBeFocused();
+});
+
+test("Lineage node captions explain groups bilingually", async ({ page }) => {
+  await page.goto("/lineage/");
+
+  await expect(
+    page
+      .locator(".node-caption")
+      .filter({ hasText: "符号 / symbolic" })
+      .first(),
+  ).toBeVisible();
+  await expect(
+    page
+      .locator(".node-caption")
+      .filter({ hasText: "基础模型 / foundation" })
+      .first(),
+  ).toBeVisible();
+});
+
+test("Current section is announced in the main navigation", async ({
+  page,
+}) => {
+  await page.goto("/lineage/");
+  await expect(page.getByRole("link", { name: "谱系图" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+
+  await page.goto("/chapters/search/");
+  await expect(page.getByRole("link", { name: "章节主线" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 });
 
 test("Diagrams page explains export and SVG naming conventions", async ({
@@ -444,6 +587,52 @@ test("Chapter pages expose references and simplification notes", async ({
       page.locator("main a[href^='https://']").first(),
     ).toBeVisible();
   }
+});
+
+test("RAG step changes keep the explanation and diagram visible together", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/chapters/rag/");
+  await waitForDemoReady(page);
+
+  await page
+    .locator(".demo-shell")
+    .first()
+    .evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await page.getByRole("button", { name: "下一步" }).click();
+
+  await expect(
+    page.getByRole("heading", { level: 3, name: "把问题转换为向量" }),
+  ).toBeVisible();
+  await expect(page.locator("#arrow-query-embedding")).toHaveAttribute(
+    "data-motion",
+    "draw-in",
+  );
+
+  const layout = await page.evaluate(() => {
+    const scene = document.querySelector(".demo-shell .svg-scene");
+    const content = document.querySelector(".demo-shell .step-content");
+
+    const rect = (element: Element | null) => {
+      const box = element?.getBoundingClientRect();
+
+      return box
+        ? { bottom: box.bottom, top: box.top }
+        : { bottom: 0, top: Number.POSITIVE_INFINITY };
+    };
+
+    return {
+      content: rect(content),
+      scene: rect(scene),
+      viewportHeight: window.innerHeight,
+    };
+  });
+
+  expect(layout.content.top).toBeLessThan(layout.viewportHeight);
+  expect(layout.content.bottom).toBeLessThanOrEqual(layout.viewportHeight);
+  expect(layout.scene.top).toBeLessThan(layout.viewportHeight);
+  expect(layout.scene.bottom).toBeGreaterThan(0);
 });
 
 test("Reduced motion preference collapses decorative transitions", async ({
@@ -525,6 +714,32 @@ test.describe("Mobile responsive foundation", () => {
 
     for (const height of navTargetHeights) {
       expect(height, "header link height").toBeGreaterThanOrEqual(44);
+    }
+  });
+
+  test("keeps long chapter titles compact on phones", async ({ page }) => {
+    for (const width of [375, 390]) {
+      await page.setViewportSize({ width, height: 667 });
+      await page.goto("/chapters/search/");
+
+      const titleMetrics = await page
+        .locator(".page-title")
+        .evaluate((title) => {
+          const rect = title.getBoundingClientRect();
+          const style = getComputedStyle(title);
+
+          return {
+            bottom: rect.bottom,
+            fontSize: Number.parseFloat(style.fontSize),
+            height: rect.height,
+          };
+        });
+
+      expect(titleMetrics.fontSize, `${width}px font size`).toBeLessThanOrEqual(
+        42,
+      );
+      expect(titleMetrics.height, `${width}px title height`).toBeLessThan(150);
+      expect(titleMetrics.bottom, `${width}px title bottom`).toBeLessThan(360);
     }
   });
 

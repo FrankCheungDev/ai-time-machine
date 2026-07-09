@@ -10,6 +10,15 @@ const {
   title,
   description = "交互式人工智能图解史：用图解、动画和轻量交互解释 AI 技术演化。"
 } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const isCurrent = (href: string) => {
+  if (href === "/#mvp") {
+    return pathname.startsWith("/chapters/");
+  }
+
+  return pathname === href;
+};
 ---
 
 <!doctype html>
@@ -27,11 +36,36 @@ const {
         <span>交互式人工智能图解史</span>
       </a>
       <nav aria-label="主导航">
-        <a href="/">总览</a>
-        <a href="/timeline/">时间线</a>
-        <a href="/lineage/">谱系图</a>
-        <a href="/#mvp">章节主线</a>
-        <a href="/diagrams/">图源</a>
+        <a
+          href="/"
+          aria-current={isCurrent("/") ? "page" : undefined}
+        >
+          总览
+        </a>
+        <a
+          href="/timeline/"
+          aria-current={isCurrent("/timeline/") ? "page" : undefined}
+        >
+          时间线
+        </a>
+        <a
+          href="/lineage/"
+          aria-current={isCurrent("/lineage/") ? "page" : undefined}
+        >
+          谱系图
+        </a>
+        <a
+          href="/#mvp"
+          aria-current={isCurrent("/#mvp") ? "page" : undefined}
+        >
+          章节主线
+        </a>
+        <a
+          href="/diagrams/"
+          aria-current={isCurrent("/diagrams/") ? "page" : undefined}
+        >
+          图源
+        </a>
       </nav>
     </header>
     <slot />
