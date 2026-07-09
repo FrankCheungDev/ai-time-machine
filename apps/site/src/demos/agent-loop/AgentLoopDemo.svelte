@@ -42,6 +42,14 @@
     { id: "revise-final", from: "revise", to: "final" },
   ];
 
+  const englishDiagramTitles: Record<string, string> = {
+    plan: "Make a plan",
+    tool: "Call a tool",
+    observe: "Check result",
+    revise: "Revise plan",
+    final: "Give answer",
+  };
+
   function isNodeActive(step: AgentLoopStep, id: string) {
     return step.activeNodeIds.includes(id);
   }
@@ -135,7 +143,10 @@
             class="loop-title"
             x={position.x + 66}
             y={position.y + 58}
-            text-anchor="middle">{step.title}</text
+            text-anchor="middle"
+            >{locale === "en"
+              ? (englishDiagramTitles[step.id] ?? step.title)
+              : step.title}</text
           >
         </g>
       {/each}

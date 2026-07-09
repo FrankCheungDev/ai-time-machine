@@ -17,6 +17,16 @@
     answer: { x: 824, y: 164 },
   };
 
+  const englishDiagramCaptions: Record<string, string> = {
+    query: "Ask question",
+    embedding: "Encode query",
+    "vector-db": "Find passages",
+    reranker: "Rank passages",
+    prompt: "Build prompt",
+    llm: "Use context",
+    answer: "Grounded answer",
+  };
+
   const nodeWidth = 100;
   const nodeHeight = 74;
   const initialDemo = getRagPipelineDemo();
@@ -159,7 +169,10 @@
             class="node-caption"
             x={position.x + nodeWidth / 2}
             y={position.y + 52}
-            text-anchor="middle">{node.description}</text
+            text-anchor="middle"
+            >{locale === "en"
+              ? (englishDiagramCaptions[node.id] ?? node.description)
+              : node.description}</text
           >
         </g>
       {/each}

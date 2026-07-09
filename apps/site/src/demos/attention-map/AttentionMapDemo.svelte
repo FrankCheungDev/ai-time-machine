@@ -10,6 +10,11 @@
   let selectedTokenId = "model";
   let mode: Mode = "attention";
 
+  const englishDiagramLabels: Record<string, string> = {
+    knowledge: "source",
+    retrieve: "fetch",
+  };
+
   $: attentionMapDemo = getAttentionMapDemo(locale);
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
@@ -150,7 +155,9 @@
         <circle id={`token-${token.id}`} cx={token.x} cy={token.y} r="34"
         ></circle>
         <text x={token.x} y={token.y + 5} text-anchor="middle"
-          >{token.label}</text
+          >{locale === "en"
+            ? (englishDiagramLabels[token.id] ?? token.label)
+            : token.label}</text
         >
       </g>
     {/each}
