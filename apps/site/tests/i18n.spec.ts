@@ -254,6 +254,174 @@ test("Chinese routes expose zh-CN document language and an English switch", asyn
   await expect(chapterNavigation).toHaveAttribute("href", "/#mvp");
 });
 
+test("English browser preference redirects a root visit to /en/", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/en\/$/);
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "Interactive Illustrated AI History",
+    }),
+  ).toBeVisible();
+
+  await context.close();
+});
+
+test("manual Chinese preference keeps root visits on Chinese", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addInitScript(() => {
+    localStorage.setItem("ai-history-locale", "zh-CN");
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "交互式人工智能图解史" }),
+  ).toBeVisible();
+
+  await context.close();
+});
+
+test("valid cookie preference wins when local storage is invalid", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addCookies([
+    {
+      name: "ai-history-locale",
+      value: "zh-CN",
+      domain: "127.0.0.1",
+      path: "/",
+    },
+  ]);
+  await context.addInitScript(() => {
+    localStorage.setItem("ai-history-locale", "not-a-locale");
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/$/);
+  await context.close();
+});
+
+test("invalid preferences do not suppress English root detection", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addCookies([
+    {
+      name: "ai-history-locale",
+      value: "not-a-locale",
+      domain: "127.0.0.1",
+      path: "/",
+    },
+  ]);
+  await context.addInitScript(() => {
+    localStorage.setItem("ai-history-locale", "also-not-a-locale");
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/en\/$/);
+  await context.close();
+});
+
+test("cookie preference is used when local storage is unavailable", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addCookies([
+    {
+      name: "ai-history-locale",
+      value: "zh-CN",
+      domain: "127.0.0.1",
+      path: "/",
+    },
+  ]);
+  await context.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get: () => {
+        throw new Error("Storage is unavailable");
+      },
+    });
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/$/);
+  await context.close();
+});
+
+test("the first supported browser language keeps root visits Chinese", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, "languages", {
+      configurable: true,
+      value: ["zh-CN", "en-US"],
+    });
+  });
+  const page = await context.newPage();
+
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/$/);
+  await context.close();
+});
+
+test("English browser preference leaves deep links stable", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: "en-US" });
+  const page = await context.newPage();
+
+  await page.goto("/chapters/rag/");
+
+  await expect(page).toHaveURL(/\/chapters\/rag\/$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+  await context.close();
+});
+
+test("manual switch persists the selected language", async ({ page }) => {
+  await page.goto("/chapters/rag/");
+
+  await page.getByRole("link", { name: "English" }).click();
+
+  await expect(page).toHaveURL(/\/en\/chapters\/rag\/$/);
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("ai-history-locale")))
+    .toBe("en");
+  await expect
+    .poll(() => page.evaluate(() => document.cookie))
+    .toContain("ai-history-locale=en");
+});
+
+test("manual switch navigation works without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  await page.goto("/chapters/rag/");
+  await page.getByRole("link", { name: "English" }).click();
+
+  await expect(page).toHaveURL(/\/en\/chapters\/rag\/$/);
+  await context.close();
+});
+
 test("English primary routes render localized page chrome and content", async ({
   page,
 }) => {

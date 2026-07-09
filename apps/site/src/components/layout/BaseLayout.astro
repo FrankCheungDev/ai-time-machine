@@ -93,15 +93,69 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
     </header>
     <slot />
     <script is:inline define:vars={{ languageStorageKey }}>
+      const isSupportedLanguage = (language) =>
+        language === "en" || language === "zh-CN";
+
+      const getCookieLanguage = () => {
+        const match = document.cookie.match(
+          new RegExp(`(?:^|; )${languageStorageKey}=([^;]+)`),
+        );
+
+        if (!match) {
+          return null;
+        }
+
+        try {
+          return decodeURIComponent(match[1]);
+        } catch {
+          return null;
+        }
+      };
+
+      const getPreferredLanguage = () => {
+        try {
+          const storedLanguage = localStorage.getItem(languageStorageKey);
+          if (isSupportedLanguage(storedLanguage)) {
+            return storedLanguage;
+          }
+        } catch {
+          // Fall back to the cookie when local storage is restricted.
+        }
+
+        const cookieLanguage = getCookieLanguage();
+        return isSupportedLanguage(cookieLanguage) ? cookieLanguage : null;
+      };
+
+      const detectBrowserLanguage = () => {
+        for (const language of navigator.languages ?? []) {
+          const normalizedLanguage = language.toLowerCase();
+          if (normalizedLanguage.startsWith("zh")) {
+            return "zh-CN";
+          }
+          if (normalizedLanguage.startsWith("en")) {
+            return "en";
+          }
+        }
+
+        return null;
+      };
+
+      if (location.pathname === "/") {
+        const language = getPreferredLanguage() ?? detectBrowserLanguage();
+        if (language === "en") {
+          location.replace("/en/");
+        }
+      }
+
       document.querySelector("[data-language-switch]")?.addEventListener("click", (event) => {
         const target = event.currentTarget;
         if (target instanceof HTMLElement && target.dataset.languageTarget) {
           try {
             localStorage.setItem(languageStorageKey, target.dataset.languageTarget);
-            document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
           } catch {
-            document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
+            // Cookie persistence below still covers storage-restricted browsers.
           }
+          document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
         }
       });
     </script>
