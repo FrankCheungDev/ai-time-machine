@@ -390,6 +390,16 @@ test("Lineage SVG keeps paradigm nodes inside the canvas without overlap", async
   expect(layout.overlaps).toEqual([]);
 });
 
+test("Lineage routes Agent to Safety around LLM System", async ({ page }) => {
+  await page.goto("/lineage/");
+
+  const agentSafetyPath = await page
+    .locator("#arrow-agent-safety")
+    .getAttribute("d");
+
+  expect(agentSafetyPath).toBe("M 1036 337 L 1036 416 L 747 416");
+});
+
 test("Diagrams page explains export and SVG naming conventions", async ({
   page,
   request,

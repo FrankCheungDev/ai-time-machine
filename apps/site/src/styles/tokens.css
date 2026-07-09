@@ -322,7 +322,7 @@ main {
   min-width: 860px;
 }
 
-.lineage-panel line {
+.lineage-panel path[id^="arrow-"] {
   stroke: #9ba9a1;
   stroke-width: 3;
 }
