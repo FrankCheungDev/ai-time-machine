@@ -339,36 +339,74 @@ test("Home page hero map keeps the Agent card attached to the connector", async 
 }) => {
   await page.goto("/");
 
-  const mapGeometry = await page.locator(".system-map > svg").evaluate((svg) => {
-    const connector = svg.querySelector(":scope > path");
-    const rects = Array.from(svg.querySelectorAll(":scope > g rect"));
-    const agentCard = rects.at(3);
-    const connectorD = connector?.getAttribute("d") ?? "";
-    const coordinates = Array.from(
-      connectorD.matchAll(/(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g),
-      (match) => ({
-        x: Number.parseFloat(match[1]),
-        y: Number.parseFloat(match[2]),
-      }),
-    );
-    const connectorEnd = coordinates.at(-1);
+  const mapGeometry = await page
+    .locator(".system-map > svg")
+    .evaluate((svg) => {
+      const connector = svg.querySelector(":scope > path");
+      const rects = Array.from(svg.querySelectorAll(":scope > g rect"));
+      const agentCard = rects.at(3);
+      const connectorD = connector?.getAttribute("d") ?? "";
+      const coordinates = Array.from(
+        connectorD.matchAll(/(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g),
+        (match) => ({
+          x: Number.parseFloat(match[1]),
+          y: Number.parseFloat(match[2]),
+        }),
+      );
+      const connectorEnd = coordinates.at(-1);
 
-    if (!agentCard || !connectorEnd) {
-      return null;
-    }
+      if (!agentCard || !connectorEnd) {
+        return null;
+      }
 
-    return {
-      agentCenterY:
-        Number.parseFloat(agentCard.getAttribute("y") ?? "0") +
-        Number.parseFloat(agentCard.getAttribute("height") ?? "0") / 2,
-      connectorEndY: connectorEnd.y,
-    };
-  });
+      return {
+        agentCenterY:
+          Number.parseFloat(agentCard.getAttribute("y") ?? "0") +
+          Number.parseFloat(agentCard.getAttribute("height") ?? "0") / 2,
+        connectorEndY: connectorEnd.y,
+      };
+    });
 
   expect(mapGeometry).not.toBeNull();
   expect(
     Math.abs(mapGeometry!.agentCenterY - mapGeometry!.connectorEndY),
   ).toBeLessThanOrEqual(80);
+});
+
+test("Home page hero map centers each label inside its card", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const labelOffsets = await page
+    .locator(".system-map > svg")
+    .evaluate((svg) => {
+      const groups = Array.from(svg.querySelectorAll(":scope > g"));
+      const rects = Array.from(groups[0]?.querySelectorAll("rect") ?? []);
+      const titles = Array.from(groups[1]?.querySelectorAll("text") ?? []);
+      const subtitles = Array.from(groups[2]?.querySelectorAll("text") ?? []);
+
+      return rects.flatMap((rect, index) => {
+        const rectBox = rect.getBoundingClientRect();
+        const cardCenterX = rectBox.left + rectBox.width / 2;
+
+        return [titles[index], subtitles[index]].map((label) => {
+          const labelBox = label.getBoundingClientRect();
+
+          return {
+            offsetX: Math.abs(labelBox.left + labelBox.width / 2 - cardCenterX),
+            text: label.textContent,
+          };
+        });
+      });
+    });
+
+  for (const label of labelOffsets) {
+    expect(
+      label.offsetX,
+      `${label.text} should be centered`,
+    ).toBeLessThanOrEqual(2);
+  }
 });
 
 test("Home cards and chapter pages use one canonical learning order", async ({
