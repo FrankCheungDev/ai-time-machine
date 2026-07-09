@@ -112,3 +112,60 @@ test("English lineage labels fit the preserved diagram geometry", async ({
     overlappingEdgeLabels: [],
   });
 });
+
+test("mobile headers keep brand, language switch, and navigation separated", async ({
+  page,
+}) => {
+  for (const route of ["/", "/en/"]) {
+    for (const width of [375, 390]) {
+      await page.setViewportSize({ width, height: 667 });
+      await page.goto(route);
+
+      const layout = await page.evaluate(() => {
+        const brand = document.querySelector(".brand")?.getBoundingClientRect();
+        const languageSwitch = document
+          .querySelector(".language-switch")
+          ?.getBoundingClientRect();
+        const navigation = document
+          .querySelector(".site-header nav")
+          ?.getBoundingClientRect();
+        const targetHeights = Array.from(
+          document.querySelectorAll(".site-header a"),
+        ).map((link) => link.getBoundingClientRect().height);
+
+        if (!brand || !languageSwitch || !navigation) {
+          return null;
+        }
+
+        return {
+          brandAndSwitchShareRow:
+            Math.abs(
+              (brand.top + brand.bottom) / 2 -
+                (languageSwitch.top + languageSwitch.bottom) / 2,
+            ) <= 1,
+          brandEndsBeforeSwitch: brand.right <= languageSwitch.left,
+          navigationStartsBelowFirstRow:
+            navigation.top >= Math.max(brand.bottom, languageSwitch.bottom),
+          noHorizontalOverflow:
+            document.documentElement.scrollWidth <= window.innerWidth,
+          targetHeights,
+        };
+      });
+
+      expect(layout, `${route} at ${width}px`).not.toBeNull();
+      expect(layout, `${route} at ${width}px`).toMatchObject({
+        brandAndSwitchShareRow: true,
+        brandEndsBeforeSwitch: true,
+        navigationStartsBelowFirstRow: true,
+        noHorizontalOverflow: true,
+      });
+
+      for (const height of layout?.targetHeights ?? []) {
+        expect(
+          height,
+          `${route} at ${width}px target height`,
+        ).toBeGreaterThanOrEqual(44);
+      }
+    }
+  }
+});
