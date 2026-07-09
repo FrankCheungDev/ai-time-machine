@@ -334,6 +334,43 @@ test("Home page hero map does not overlay standalone marker dots on labels", asy
   await expect(page.locator(".system-map > svg > circle")).toHaveCount(0);
 });
 
+test("Home page hero map keeps the Agent card attached to the connector", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const mapGeometry = await page.locator(".system-map > svg").evaluate((svg) => {
+    const connector = svg.querySelector(":scope > path");
+    const rects = Array.from(svg.querySelectorAll(":scope > g rect"));
+    const agentCard = rects.at(3);
+    const connectorD = connector?.getAttribute("d") ?? "";
+    const coordinates = Array.from(
+      connectorD.matchAll(/(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g),
+      (match) => ({
+        x: Number.parseFloat(match[1]),
+        y: Number.parseFloat(match[2]),
+      }),
+    );
+    const connectorEnd = coordinates.at(-1);
+
+    if (!agentCard || !connectorEnd) {
+      return null;
+    }
+
+    return {
+      agentCenterY:
+        Number.parseFloat(agentCard.getAttribute("y") ?? "0") +
+        Number.parseFloat(agentCard.getAttribute("height") ?? "0") / 2,
+      connectorEndY: connectorEnd.y,
+    };
+  });
+
+  expect(mapGeometry).not.toBeNull();
+  expect(
+    Math.abs(mapGeometry!.agentCenterY - mapGeometry!.connectorEndY),
+  ).toBeLessThanOrEqual(80);
+});
+
 test("Home cards and chapter pages use one canonical learning order", async ({
   page,
 }) => {

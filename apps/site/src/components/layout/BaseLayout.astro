@@ -52,6 +52,7 @@ const isChapterSection = pathname.startsWith("/chapters/");
         <a
           href="/#mvp"
           class:list={[{ "is-active-section": isChapterSection }]}
+          aria-current={isChapterSection ? "page" : undefined}
         >
           章节主线
         </a>
