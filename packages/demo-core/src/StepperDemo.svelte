@@ -36,11 +36,17 @@
 <style>
   .stepper {
     display: grid;
-    gap: 18px;
+    grid-template-areas:
+      "scene content"
+      "scene controls";
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    gap: 14px 18px;
+    align-items: start;
     margin-top: 24px;
   }
 
   .step-scene {
+    grid-area: scene;
     min-width: 0;
   }
 
@@ -49,6 +55,7 @@
   }
 
   .step-content {
+    grid-area: content;
     min-height: 142px;
     padding: 18px;
     border: 1px solid var(--color-line, #d7ddd7);
@@ -73,9 +80,14 @@
   }
 
   .controls {
+    grid-area: controls;
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: stretch;
+  }
+
+  .controls button {
+    flex: 1;
   }
 
   button {
@@ -102,12 +114,13 @@
     opacity: 0.45;
   }
 
-  @media (max-width: 560px) {
+  @media (max-width: 900px) {
     .stepper {
       grid-template-areas:
         "content"
         "controls"
         "scene";
+      grid-template-columns: 1fr;
     }
 
     .step-scene {

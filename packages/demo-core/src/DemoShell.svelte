@@ -1,11 +1,23 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   export let title: string;
   export let question: string;
   export let simplificationNote: string;
   export let learningGoals: string[] = [];
+
+  let isReady = false;
+
+  onMount(() => {
+    isReady = true;
+  });
 </script>
 
-<section class="demo-shell" aria-labelledby="demo-title">
+<section
+  class="demo-shell"
+  aria-labelledby="demo-title"
+  data-demo-ready={isReady ? "true" : undefined}
+>
   <div class="demo-heading">
     <p class="demo-kicker">教学型交互案例</p>
     <h2 id="demo-title">{title}</h2>

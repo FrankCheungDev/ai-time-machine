@@ -8,6 +8,14 @@ const nodeById = Object.fromEntries(
 const lineageNodeWidth = 132;
 const lineageNodeHeight = 72;
 const lineageNodeRadius = 8;
+const lineageGroupLabels: Record<string, string> = {
+  agent: "智能体 / agent",
+  foundation: "基础模型 / foundation",
+  neural: "神经 / neural",
+  safety: "安全评估 / safety",
+  statistical: "统计 / statistical",
+  symbolic: "符号 / symbolic",
+};
 type LineageNode = (typeof aiLineageNodes)[number];
 
 function getLineageEdgeGeometry(
@@ -149,7 +157,7 @@ function getLineageEdgeGeometry(
                 y={node.y + 52}
                 text-anchor="middle"
               >
-                {node.group}
+                {lineageGroupLabels[node.group] ?? node.group}
               </text>
             </g>
           </a>
