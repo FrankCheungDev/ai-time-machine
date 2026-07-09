@@ -1,5 +1,10 @@
 import type { AttentionMapDemo } from "@ai-history/demo-core";
-import { defaultLocale, getLocalizedValue, type Locale } from "../locales";
+import {
+  cloneData,
+  defaultLocale,
+  getLocalizedValue,
+  type Locale,
+} from "../locales";
 
 const links: AttentionMapDemo["links"] = [
   { id: "model-knowledge", from: "model", to: "knowledge", weight: 0.94 },
@@ -163,7 +168,7 @@ export function getAttentionMapDemo(
 ): AttentionMapDemo {
   return {
     ...getLocalizedValue(attentionMapDemos, locale),
-    links,
+    links: cloneData(links),
   };
 }
 

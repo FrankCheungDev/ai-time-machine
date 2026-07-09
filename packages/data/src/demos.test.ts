@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
+import { legacyZhBaseline } from "./fixtures/legacy-zh-baseline";
 import {
   agentLoopDemo,
   aiLineageEdges,
@@ -39,6 +41,72 @@ const demos = [
   cnnKernelDemo,
 ];
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(canonicalize);
+  }
+
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, entry]) => [key, canonicalize(entry)]),
+    );
+  }
+
+  return value;
+}
+
+function contentHash(value: unknown): string {
+  return createHash("sha256")
+    .update(JSON.stringify(canonicalize(value)))
+    .digest("hex");
+}
+
+function withoutEndpointIds(
+  connections: typeof llmSystemConnections,
+): Record<string, unknown>[] {
+  return connections.map((connection) => {
+    const legacyConnection = {
+      ...connection,
+    } as Record<string, unknown>;
+    delete legacyConnection.fromId;
+    delete legacyConnection.toId;
+    return legacyConnection;
+  });
+}
+
+function collectStrings(value: unknown): string[] {
+  if (typeof value === "string") {
+    return [value];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap(collectStrings);
+  }
+
+  if (value !== null && typeof value === "object") {
+    return Object.values(value).flatMap(collectStrings);
+  }
+
+  return [];
+}
+
+function expectMutationIsolation<T, Selected>(
+  getValue: () => T,
+  legacyValue: T,
+  select: (value: T) => Selected,
+  mutate: (value: T) => void,
+): void {
+  const expected = structuredClone(select(legacyValue));
+  const returned = getValue();
+
+  mutate(returned);
+
+  expect.soft(select(getValue())).toEqual(expected);
+  expect.soft(select(legacyValue)).toEqual(expected);
+}
+
 describe("demo acceptance metadata", () => {
   it("gives every MVP demo concrete learning goals", () => {
     for (const demo of demos) {
@@ -56,22 +124,34 @@ describe("demo acceptance metadata", () => {
 });
 
 describe("localized data accessors", () => {
-  it("keeps Chinese default exports backward-compatible", () => {
-    expect(getRagPipelineDemo().title).toBe("RAG：大模型如何连接外部知识？");
+  it("matches all Chinese defaults to the independent pre-task baseline", () => {
+    expect(legacyZhBaseline.sourceCommit).toBe(
+      "be77e685cd07d019236c6b3c5fcd1382730e0017",
+    );
 
-    expect(getRagPipelineDemo()).toEqual(ragPipelineDemo);
-    expect(getAttentionMapDemo()).toEqual(attentionMapDemo);
-    expect(getAgentLoopDemo()).toEqual(agentLoopDemo);
-    expect(getSearchTreeDemo()).toEqual(searchTreeDemo);
-    expect(getExpertSystemDemo()).toEqual(expertSystemDemo);
-    expect(getBayesUpdateDemo()).toEqual(bayesUpdateDemo);
-    expect(getDecisionBoundaryDemo()).toEqual(decisionBoundaryDemo);
-    expect(getCnnKernelDemo()).toEqual(cnnKernelDemo);
-    expect(getAiTimelineEntries()).toEqual(aiTimelineEntries);
-    expect(getAiLineageNodes()).toEqual(aiLineageNodes);
-    expect(getAiLineageEdges()).toEqual(aiLineageEdges);
-    expect(getLlmSystemLayers()).toEqual(llmSystemLayers);
-    expect(getLlmSystemConnections()).toEqual(llmSystemConnections);
+    const currentLegacyExports = {
+      agentLoopDemo,
+      attentionMapDemo,
+      bayesUpdateDemo,
+      cnnKernelDemo,
+      decisionBoundaryDemo,
+      expertSystemDemo,
+      ragPipelineDemo,
+      searchTreeDemo,
+      aiTimelineEntries,
+      aiLineageNodes,
+      aiLineageEdges,
+      llmSystemLayers,
+      llmSystemConnections: withoutEndpointIds(llmSystemConnections),
+    };
+    const currentHashes = Object.fromEntries(
+      Object.entries(currentLegacyExports).map(([name, value]) => [
+        name,
+        contentHash(value),
+      ]),
+    );
+
+    expect(currentHashes).toEqual(legacyZhBaseline.hashes);
   });
 
   it("returns English demo copy while preserving stable graph IDs", () => {
@@ -126,7 +206,7 @@ describe("localized data accessors", () => {
     expect(getAiLineageNodes("en")[0]?.group).toBe("symbolic");
   });
 
-  it("provides complete English copy without Chinese text", () => {
+  it("provides complete English copy without Chinese text or punctuation", () => {
     const englishValues = [
       getRagPipelineDemo("en"),
       getAttentionMapDemo("en"),
@@ -143,7 +223,13 @@ describe("localized data accessors", () => {
       getLlmSystemConnections("en"),
     ];
 
-    expect(JSON.stringify(englishValues)).not.toMatch(/[\u3400-\u9fff]/u);
+    const invalidStrings = collectStrings(englishValues).filter(
+      (value) =>
+        value.trim().length === 0 ||
+        /[\u3400-\u9fff，。；！？：、“”‘’（）【】《》]/u.test(value),
+    );
+
+    expect(invalidStrings).toEqual([]);
   });
 });
 
@@ -267,8 +353,165 @@ describe("localized topology parity", () => {
     expect(getLlmSystemLayers("en").map(({ id }) => id)).toEqual(
       getLlmSystemLayers("zh-CN").map(({ id }) => id),
     );
-    expect(getLlmSystemConnections("en").map(({ id }) => id)).toEqual(
-      getLlmSystemConnections("zh-CN").map(({ id }) => id),
+    const projectConnections = (
+      connections: ReturnType<typeof getLlmSystemConnections>,
+    ) => connections.map(({ id, fromId, toId }) => ({ id, fromId, toId }));
+    const expectedConnections = [
+      {
+        id: "model-context",
+        fromId: "base-model",
+        toId: "context-window",
+      },
+      {
+        id: "retrieval-context",
+        fromId: "retrieval",
+        toId: "context-window",
+      },
+      { id: "model-tools", fromId: "base-model", toId: "tools" },
+      {
+        id: "memory-context",
+        fromId: "memory",
+        toId: "context-window",
+      },
+      { id: "eval-system", fromId: "eval", toId: "whole-system" },
+    ];
+
+    expect(projectConnections(getLlmSystemConnections("zh-CN"))).toEqual(
+      expectedConnections,
+    );
+    expect(projectConnections(getLlmSystemConnections("en"))).toEqual(
+      projectConnections(getLlmSystemConnections("zh-CN")),
+    );
+  });
+});
+
+describe("getter mutation isolation", () => {
+  it("returns defensive deep copies without mutating later reads or defaults", () => {
+    expectMutationIsolation(
+      () => getRagPipelineDemo("zh-CN"),
+      ragPipelineDemo,
+      (demo) => ({
+        description: demo.nodes[0]?.description,
+        edgeTo: demo.edges[0]?.to,
+      }),
+      (demo) => {
+        demo.nodes[0]!.description = "mutated";
+        demo.edges[0]!.to = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getAttentionMapDemo("zh-CN"),
+      attentionMapDemo,
+      (demo) => ({
+        description: demo.tokens[0]?.focusDescription,
+        weight: demo.links[0]?.weight,
+      }),
+      (demo) => {
+        demo.tokens[0]!.focusDescription = "mutated";
+        demo.links[0]!.weight = -1;
+      },
+    );
+    expectMutationIsolation(
+      () => getAgentLoopDemo("zh-CN"),
+      agentLoopDemo,
+      (demo) => demo.steps[0]?.description,
+      (demo) => {
+        demo.steps[0]!.description = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getSearchTreeDemo("zh-CN"),
+      searchTreeDemo,
+      (demo) => ({
+        description: demo.strategies[0]?.description,
+        nodeX: demo.nodes[0]?.x,
+        edgeTo: demo.edges[0]?.to,
+      }),
+      (demo) => {
+        demo.strategies[0]!.description = "mutated";
+        demo.nodes[0]!.x = -1;
+        demo.edges[0]!.to = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getExpertSystemDemo("zh-CN"),
+      expertSystemDemo,
+      (demo) => demo.conditions[0]?.label,
+      (demo) => {
+        demo.conditions[0]!.label = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getBayesUpdateDemo("zh-CN"),
+      bayesUpdateDemo,
+      (demo) => demo.learningGoals[0],
+      (demo) => {
+        demo.learningGoals[0] = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getDecisionBoundaryDemo("zh-CN"),
+      decisionBoundaryDemo,
+      (demo) => ({
+        description: demo.modes[0]?.description,
+        pointX: demo.points[0]?.x,
+      }),
+      (demo) => {
+        demo.modes[0]!.description = "mutated";
+        demo.points[0]!.x = -1;
+      },
+    );
+    expectMutationIsolation(
+      () => getCnnKernelDemo("zh-CN"),
+      cnnKernelDemo,
+      (demo) => ({
+        matrixValue: demo.kernels[0]?.matrix[0]?.[0],
+        gridValue: demo.imageGrid[0]?.[0],
+      }),
+      (demo) => {
+        demo.kernels[0]!.matrix[0]![0] = 99;
+        demo.imageGrid[0]![0] = 99;
+      },
+    );
+    expectMutationIsolation(
+      () => getAiTimelineEntries("zh-CN"),
+      aiTimelineEntries,
+      (entries) => entries[0]?.summary,
+      (entries) => {
+        entries[0]!.summary = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getAiLineageNodes("zh-CN"),
+      aiLineageNodes,
+      (nodes) => nodes[0]?.description,
+      (nodes) => {
+        nodes[0]!.description = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getAiLineageEdges("zh-CN"),
+      aiLineageEdges,
+      (edges) => edges[0]?.label,
+      (edges) => {
+        edges[0]!.label = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getLlmSystemLayers("zh-CN"),
+      llmSystemLayers,
+      (layers) => layers[0]?.role,
+      (layers) => {
+        layers[0]!.role = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getLlmSystemConnections("zh-CN"),
+      llmSystemConnections,
+      (connections) => connections[0]?.label,
+      (connections) => {
+        connections[0]!.label = "mutated";
+      },
     );
   });
 });

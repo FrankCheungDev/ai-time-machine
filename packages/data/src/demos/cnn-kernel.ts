@@ -1,5 +1,10 @@
 import type { CnnKernelDemo } from "@ai-history/demo-core";
-import { defaultLocale, getLocalizedValue, type Locale } from "../locales";
+import {
+  cloneData,
+  defaultLocale,
+  getLocalizedValue,
+  type Locale,
+} from "../locales";
 
 const imageGrid: CnnKernelDemo["imageGrid"] = [
   [0, 0, 1, 1, 1],
@@ -138,7 +143,7 @@ export function getCnnKernelDemo(
 ): CnnKernelDemo {
   return {
     ...getLocalizedValue(cnnKernelDemos, locale),
-    imageGrid,
+    imageGrid: cloneData(imageGrid),
   };
 }
 

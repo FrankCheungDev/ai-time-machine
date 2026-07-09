@@ -1,5 +1,10 @@
 import type { PipelineDemo } from "@ai-history/demo-core";
-import { defaultLocale, getLocalizedValue, type Locale } from "../locales";
+import {
+  cloneData,
+  defaultLocale,
+  getLocalizedValue,
+  type Locale,
+} from "../locales";
 
 const edges = [
   { id: "query-embedding", from: "query", to: "embedding" },
@@ -289,7 +294,7 @@ export function getRagPipelineDemo(
 ): PipelineDemo {
   return {
     ...getLocalizedValue(ragPipelineDemos, locale),
-    edges,
+    edges: cloneData(edges),
   };
 }
 

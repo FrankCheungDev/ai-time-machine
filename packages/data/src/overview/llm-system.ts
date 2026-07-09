@@ -9,6 +9,8 @@ export interface LlmSystemLayer {
 
 export interface LlmSystemConnection {
   id: string;
+  fromId: string;
+  toId: string;
   from: string;
   to: string;
   label: string;
@@ -103,30 +105,40 @@ const localizedLlmSystemConnections = {
   "zh-CN": [
     {
       id: "model-context",
+      fromId: "base-model",
+      toId: "context-window",
       from: "Base Model",
       to: "Context Window",
       label: "读入任务",
     },
     {
       id: "retrieval-context",
+      fromId: "retrieval",
+      toId: "context-window",
       from: "Retrieval",
       to: "Context Window",
       label: "补充证据",
     },
     {
       id: "model-tools",
+      fromId: "base-model",
+      toId: "tools",
       from: "Base Model",
       to: "Tools",
       label: "请求行动",
     },
     {
       id: "memory-context",
+      fromId: "memory",
+      toId: "context-window",
       from: "Memory",
       to: "Context Window",
       label: "带入状态",
     },
     {
       id: "eval-system",
+      fromId: "eval",
+      toId: "whole-system",
       from: "Eval / Safety",
       to: "整套系统",
       label: "约束与验证",
@@ -135,30 +147,40 @@ const localizedLlmSystemConnections = {
   en: [
     {
       id: "model-context",
+      fromId: "base-model",
+      toId: "context-window",
       from: "Base Model",
       to: "Context Window",
       label: "Read the task",
     },
     {
       id: "retrieval-context",
+      fromId: "retrieval",
+      toId: "context-window",
       from: "Retrieval",
       to: "Context Window",
       label: "Add evidence",
     },
     {
       id: "model-tools",
+      fromId: "base-model",
+      toId: "tools",
       from: "Base Model",
       to: "Tools",
       label: "Request an action",
     },
     {
       id: "memory-context",
+      fromId: "memory",
+      toId: "context-window",
       from: "Memory",
       to: "Context Window",
       label: "Bring in state",
     },
     {
       id: "eval-system",
+      fromId: "eval",
+      toId: "whole-system",
       from: "Eval / Safety",
       to: "Entire System",
       label: "Constrain and verify",

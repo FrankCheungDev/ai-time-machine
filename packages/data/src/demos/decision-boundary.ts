@@ -1,5 +1,10 @@
 import type { DecisionBoundaryDemo } from "@ai-history/demo-core";
-import { defaultLocale, getLocalizedValue, type Locale } from "../locales";
+import {
+  cloneData,
+  defaultLocale,
+  getLocalizedValue,
+  type Locale,
+} from "../locales";
 
 const points: DecisionBoundaryDemo["points"] = [
   { id: "p1", x: 120, y: 240, className: "positive" },
@@ -92,7 +97,7 @@ export function getDecisionBoundaryDemo(
 ): DecisionBoundaryDemo {
   return {
     ...getLocalizedValue(decisionBoundaryDemos, locale),
-    points,
+    points: cloneData(points),
   };
 }
 

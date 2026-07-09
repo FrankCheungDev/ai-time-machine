@@ -1,5 +1,10 @@
 import type { SearchTreeDemo } from "@ai-history/demo-core";
-import { defaultLocale, getLocalizedValue, type Locale } from "../locales";
+import {
+  cloneData,
+  defaultLocale,
+  getLocalizedValue,
+  type Locale,
+} from "../locales";
 
 const nodes: SearchTreeDemo["nodes"] = [
   { id: "start", label: "Start", x: 420, y: 54 },
@@ -117,8 +122,8 @@ export function getSearchTreeDemo(
 ): SearchTreeDemo {
   return {
     ...getLocalizedValue(searchTreeDemos, locale),
-    nodes,
-    edges,
+    nodes: cloneData(nodes),
+    edges: cloneData(edges),
   };
 }
 
