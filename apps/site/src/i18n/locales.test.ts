@@ -1,14 +1,26 @@
+import {
+  defaultLocale as dataDefaultLocale,
+  normalizeLocale as dataNormalizeLocale,
+  supportedLocales as dataSupportedLocales,
+} from "@ai-history/data";
 import { describe, expect, it } from "vitest";
 import {
   defaultLocale,
   getPathLocale,
   normalizeLocale,
   stripLocalePrefix,
+  supportedLocales,
   toLocalizedPath,
   withTrailingSlash,
 } from "./locales";
 
 describe("locale helpers", () => {
+  it("re-exports the canonical data-package locale contract", () => {
+    expect(defaultLocale).toBe(dataDefaultLocale);
+    expect(supportedLocales).toBe(dataSupportedLocales);
+    expect(normalizeLocale).toBe(dataNormalizeLocale);
+  });
+
   it("keeps Simplified Chinese as the default locale", () => {
     expect(defaultLocale).toBe("zh-CN");
   });

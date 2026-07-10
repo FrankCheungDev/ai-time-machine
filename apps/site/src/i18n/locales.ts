@@ -1,26 +1,11 @@
-export const supportedLocales = ["zh-CN", "en"] as const;
-export type Locale = (typeof supportedLocales)[number];
-export const defaultLocale: Locale = "zh-CN";
+import { defaultLocale, type Locale } from "@ai-history/data";
 
-export function normalizeLocale(
-  value: string | null | undefined,
-): Locale | undefined {
-  const normalized = value?.trim().toLowerCase();
-
-  if (!normalized) {
-    return undefined;
-  }
-
-  if (normalized === "en" || normalized.startsWith("en-")) {
-    return "en";
-  }
-
-  if (normalized === "zh" || normalized.startsWith("zh-")) {
-    return "zh-CN";
-  }
-
-  return undefined;
-}
+export {
+  defaultLocale,
+  normalizeLocale,
+  supportedLocales,
+  type Locale,
+} from "@ai-history/data";
 
 export function withTrailingSlash(pathname: string): string {
   if (pathname === "" || pathname === "/") {
