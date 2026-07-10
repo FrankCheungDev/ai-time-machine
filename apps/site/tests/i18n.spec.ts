@@ -626,6 +626,17 @@ test("English primary route bodies contain no Han characters", async ({
   }
 });
 
+test("English RAG SVG accessibility label uses English punctuation", async ({
+  page,
+}) => {
+  await page.goto("/en/chapters/rag/");
+
+  await expect(page.locator("[data-mobile-scroll-scene]")).toHaveAttribute(
+    "aria-label",
+    "RAG pipeline flow diagram, can fit the screen or scroll horizontally for the full diagram",
+  );
+});
+
 test("English demo and LLM-system chapters are fully localized", async ({
   page,
 }) => {

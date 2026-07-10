@@ -56,7 +56,7 @@ export const siteCopy = {
       nextLabel: "下一步",
       fitLabel: "适配屏幕",
       detailLabel: "放大查看",
-      scrollSuffix: "可适配屏幕或横向滚动查看完整图解",
+      scrollSuffix: "，可适配屏幕或横向滚动查看完整图解",
     },
   },
   en: {
@@ -84,7 +84,7 @@ export const siteCopy = {
       fitLabel: "Fit screen",
       detailLabel: "Zoom in",
       scrollSuffix:
-        "can fit the screen or scroll horizontally for the full diagram",
+        ", can fit the screen or scroll horizontally for the full diagram",
     },
   },
 } satisfies Record<Locale, SiteCopy>;

@@ -3,9 +3,9 @@
   export let viewBox = "0 0 920 420";
   export let fitLabel = "适配屏幕";
   export let detailLabel = "放大查看";
-  export let scrollSuffix = "可适配屏幕或横向滚动查看完整图解";
+  export let scrollSuffix = "，可适配屏幕或横向滚动查看完整图解";
 
-  $: scrollLabel = `${label}，${scrollSuffix}`;
+  $: scrollLabel = `${label}${scrollSuffix}`;
   $: controlKey =
     label
       .toLowerCase()
