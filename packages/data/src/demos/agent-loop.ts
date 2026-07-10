@@ -40,10 +40,7 @@ const agentStepTopology = [
 ] as const satisfies readonly AgentStepTopology[];
 
 type AgentStepId = (typeof agentStepTopology)[number]["id"];
-type AgentStepCopy = Pick<
-  AgentLoopStep,
-  "title" | "loopLabel" | "description"
->;
+type AgentStepCopy = Pick<AgentLoopStep, "title" | "loopLabel" | "description">;
 
 type AgentBranchTopology = {
   readonly id: string;
@@ -58,10 +55,7 @@ const agentBranchTopology = [
 ] as const satisfies readonly AgentBranchTopology[];
 
 type AgentBranchId = (typeof agentBranchTopology)[number]["id"];
-type AgentBranchCopy = Pick<
-  AgentBranchOption,
-  "label" | "description"
->;
+type AgentBranchCopy = Pick<AgentBranchOption, "label" | "description">;
 
 type AgentLoopCopy = Omit<AgentLoopDemo, "steps" | "branchOptions"> & {
   steps: Record<AgentStepId, AgentStepCopy>;
@@ -180,16 +174,14 @@ export function getAgentLoopDemo(
 
   return cloneData({
     ...metadata,
-    steps: agentStepTopology.map(
-      ({ id, activeNodeIds, activeEdgeIds }) => ({
-        id,
-        title: steps[id].title,
-        loopLabel: steps[id].loopLabel,
-        description: steps[id].description,
-        activeNodeIds: [...activeNodeIds],
-        activeEdgeIds: [...activeEdgeIds],
-      }),
-    ),
+    steps: agentStepTopology.map(({ id, activeNodeIds, activeEdgeIds }) => ({
+      id,
+      title: steps[id].title,
+      loopLabel: steps[id].loopLabel,
+      description: steps[id].description,
+      activeNodeIds: [...activeNodeIds],
+      activeEdgeIds: [...activeEdgeIds],
+    })),
     branchOptions: agentBranchTopology.map(({ id, targetStepId }) => ({
       id,
       label: branchOptions[id].label,

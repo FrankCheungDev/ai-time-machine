@@ -38,10 +38,7 @@ const kernelTopology = [
 ] as const satisfies readonly KernelTopology[];
 
 type KernelId = (typeof kernelTopology)[number]["id"];
-type KernelCopy = Pick<
-  CnnKernel,
-  "label" | "title" | "description"
->;
+type KernelCopy = Pick<CnnKernel, "label" | "title" | "description">;
 
 type ScanStepTopology = {
   readonly id: string;

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  detectBrowserLocale,
-  parseStoredLocale,
-} from "./languagePreference";
+import { detectBrowserLocale, parseStoredLocale } from "./languagePreference";
 
 describe("language preference helpers", () => {
   it("accepts only exact supported values from persistent storage", () => {

@@ -9,11 +9,7 @@ export {
 export { expertSystemDemo, getExpertSystemDemo } from "./demos/expert-system";
 export { getRagPipelineDemo, ragPipelineDemo } from "./demos/rag-pipeline";
 export { getSearchTreeDemo, searchTreeDemo } from "./demos/search-tree";
-export {
-  defaultLocale,
-  normalizeLocale,
-  supportedLocales,
-} from "./locales";
+export { defaultLocale, normalizeLocale, supportedLocales } from "./locales";
 export type { Locale } from "./locales";
 export {
   getLlmSystemConnections,

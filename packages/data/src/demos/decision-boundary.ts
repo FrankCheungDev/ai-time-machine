@@ -1,7 +1,4 @@
-import type {
-  BoundaryMode,
-  DecisionBoundaryDemo,
-} from "@ai-history/demo-core";
+import type { BoundaryMode, DecisionBoundaryDemo } from "@ai-history/demo-core";
 import { cloneData, defaultLocale, type Locale } from "../locales";
 
 const points: DecisionBoundaryDemo["points"] = [
@@ -28,15 +25,9 @@ const boundaryModeTopology = [
 ] as const satisfies readonly BoundaryModeTopology[];
 
 type BoundaryModeId = (typeof boundaryModeTopology)[number]["id"];
-type BoundaryModeCopy = Pick<
-  BoundaryMode,
-  "label" | "title" | "description"
->;
+type BoundaryModeCopy = Pick<BoundaryMode, "label" | "title" | "description">;
 
-type DecisionBoundaryCopy = Omit<
-  DecisionBoundaryDemo,
-  "points" | "modes"
-> & {
+type DecisionBoundaryCopy = Omit<DecisionBoundaryDemo, "points" | "modes"> & {
   modes: Record<BoundaryModeId, BoundaryModeCopy>;
 };
 
@@ -109,8 +100,7 @@ export function getDecisionBoundaryDemo(
   locale: Locale = defaultLocale,
 ): DecisionBoundaryDemo {
   const copy =
-    decisionBoundaryCopies[locale] ??
-    decisionBoundaryCopies[defaultLocale];
+    decisionBoundaryCopies[locale] ?? decisionBoundaryCopies[defaultLocale];
   const { modes, ...metadata } = copy;
 
   return cloneData({

@@ -1,8 +1,4 @@
-import {
-  normalizeLocale,
-  supportedLocales,
-  type Locale,
-} from "./locales";
+import { normalizeLocale, supportedLocales, type Locale } from "./locales";
 import { languageStorageKey } from "./siteCopy";
 
 export function parseStoredLocale(
