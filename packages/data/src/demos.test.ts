@@ -414,9 +414,13 @@ describe("getter mutation isolation", () => {
     expectMutationIsolation(
       () => getAgentLoopDemo("zh-CN"),
       agentLoopDemo,
-      (demo) => demo.steps[0]?.description,
+      (demo) => ({
+        description: demo.steps[0]?.description,
+        activeNodeId: demo.steps[0]?.activeNodeIds[0],
+      }),
       (demo) => {
         demo.steps[0]!.description = "mutated";
+        demo.steps[0]!.activeNodeIds[0] = "mutated";
       },
     );
     expectMutationIsolation(
