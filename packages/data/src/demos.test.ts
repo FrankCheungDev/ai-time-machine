@@ -458,10 +458,12 @@ describe("getter mutation isolation", () => {
       decisionBoundaryDemo,
       (demo) => ({
         description: demo.modes[0]?.description,
+        path: demo.modes[0]?.path,
         pointX: demo.points[0]?.x,
       }),
       (demo) => {
         demo.modes[0]!.description = "mutated";
+        demo.modes[0]!.path = "mutated";
         demo.points[0]!.x = -1;
       },
     );
