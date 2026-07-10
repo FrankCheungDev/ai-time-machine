@@ -6,7 +6,7 @@ import {
   toLocalizedPath,
   type Locale,
 } from "../../i18n/locales";
-import { getSiteCopy, languageStorageKey } from "../../i18n/siteCopy";
+import { getSiteCopy } from "../../i18n/siteCopy";
 
 interface Props {
   title: string;
@@ -89,83 +89,10 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
       </a>
     </header>
     <slot />
-    <script is:inline define:vars={{ languageStorageKey }}>
-      const isSupportedLanguage = (language) =>
-        language === "en" || language === "zh-CN";
+    <script>
+      import { initializeLanguagePreference } from "../../i18n/languagePreference";
 
-      const getCookieLanguage = () => {
-        const match = document.cookie.match(
-          new RegExp(`(?:^|; )${languageStorageKey}=([^;]+)`),
-        );
-
-        if (!match) {
-          return null;
-        }
-
-        try {
-          return decodeURIComponent(match[1]);
-        } catch {
-          return null;
-        }
-      };
-
-      const getPreferredLanguage = () => {
-        try {
-          const storedLanguage = localStorage.getItem(languageStorageKey);
-          if (isSupportedLanguage(storedLanguage)) {
-            return storedLanguage;
-          }
-        } catch {
-          // Fall back to the cookie when local storage is restricted.
-        }
-
-        const cookieLanguage = getCookieLanguage();
-        return isSupportedLanguage(cookieLanguage) ? cookieLanguage : null;
-      };
-
-      const detectBrowserLanguage = () => {
-        for (const language of navigator.languages ?? []) {
-          const normalizedLanguage = language.trim().toLowerCase();
-          if (
-            normalizedLanguage === "en" ||
-            normalizedLanguage.startsWith("en-")
-          ) {
-            return "en";
-          }
-          if (
-            normalizedLanguage === "zh" ||
-            normalizedLanguage.startsWith("zh-")
-          ) {
-            return "zh-CN";
-          }
-        }
-
-        return null;
-      };
-
-      if (location.pathname === "/") {
-        const language = getPreferredLanguage() ?? detectBrowserLanguage();
-        if (language === "en") {
-          location.replace("/en/");
-        }
-      }
-
-      document
-        .querySelector("[data-language-switch]")
-        ?.addEventListener("click", (event) => {
-          const target = event.currentTarget;
-          if (target instanceof HTMLElement && target.dataset.languageTarget) {
-            try {
-              localStorage.setItem(
-                languageStorageKey,
-                target.dataset.languageTarget,
-              );
-            } catch {
-              // Cookie persistence below still covers storage-restricted browsers.
-            }
-            document.cookie = `${languageStorageKey}=${target.dataset.languageTarget}; path=/; max-age=31536000; SameSite=Lax`;
-          }
-        });
+      initializeLanguagePreference();
     </script>
   </body>
 </html>

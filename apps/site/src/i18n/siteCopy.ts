@@ -25,7 +25,6 @@ export interface SiteCopy {
     diagrams: string;
   };
   language: {
-    currentLabel: string;
     switchLabel: string;
     switchAriaLabel: string;
   };
@@ -46,7 +45,6 @@ export const siteCopy = {
       diagrams: "图源",
     },
     language: {
-      currentLabel: "中文",
       switchLabel: "English",
       switchAriaLabel: "Switch language to English",
     },
@@ -74,7 +72,6 @@ export const siteCopy = {
       diagrams: "Diagram sources",
     },
     language: {
-      currentLabel: "English",
       switchLabel: "中文",
       switchAriaLabel: "切换语言为中文",
     },
