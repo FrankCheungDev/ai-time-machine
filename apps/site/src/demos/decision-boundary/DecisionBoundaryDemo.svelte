@@ -1,10 +1,27 @@
 <script lang="ts">
   import { DemoShell, SvgScene } from "@ai-history/demo-core";
-  import { decisionBoundaryDemo } from "@ai-history/data";
+  import { getDecisionBoundaryDemo, type Locale } from "@ai-history/data";
+  import { getSiteCopy } from "../../i18n/siteCopy";
+
+  export let locale: Locale = "zh-CN";
 
   let activeModeId = "linear";
   let outlierY = 94;
-  $: activeMode = decisionBoundaryDemo.modes.find((mode) => mode.id === activeModeId) ?? decisionBoundaryDemo.modes[0];
+  $: decisionBoundaryDemo = getDecisionBoundaryDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          modeAriaLabel: "Boundary mode",
+          sceneLabel: "Decision boundary comparison",
+        }
+      : {
+          modeAriaLabel: "边界模式",
+          sceneLabel: "决策边界比较",
+        };
+  $: activeMode =
+    decisionBoundaryDemo.modes.find((mode) => mode.id === activeModeId) ??
+    decisionBoundaryDemo.modes[0];
 </script>
 
 <DemoShell
@@ -12,23 +29,45 @@
   question={decisionBoundaryDemo.question}
   simplificationNote={decisionBoundaryDemo.simplificationNote}
   learningGoals={decisionBoundaryDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="mode-buttons" aria-label="边界模式">
+  <div class="mode-buttons" aria-label={copy.modeAriaLabel}>
     {#each decisionBoundaryDemo.modes as mode}
-      <button type="button" class:active={mode.id === activeModeId} on:click={() => (activeModeId = mode.id)}>
+      <button
+        type="button"
+        class:active={mode.id === activeModeId}
+        on:click={() => (activeModeId = mode.id)}
+      >
         {mode.label}
       </button>
     {/each}
   </div>
 
-  <SvgScene label="Decision boundary comparison" viewBox="0 0 700 380">
+  <SvgScene
+    label={copy.sceneLabel}
+    viewBox="0 0 700 380"
+    fitLabel={demoCoreCopy.fitLabel}
+    detailLabel={demoCoreCopy.detailLabel}
+    scrollSuffix={demoCoreCopy.scrollSuffix}
+  >
     <rect class="plot" x="54" y="40" width="590" height="300" rx="8"></rect>
-    <path id={`boundary-${activeMode.id}`} class="boundary" d={activeMode.path}></path>
+    <path id={`boundary-${activeMode.id}`} class="boundary" d={activeMode.path}
+    ></path>
     {#each decisionBoundaryDemo.points as point}
       <circle class={point.className} cx={point.x} cy={point.y} r="13"></circle>
     {/each}
-    <circle id="outlier-point" class="negative outlier" cx="470" cy={outlierY} r="15"></circle>
-    <text x="470" y={outlierY - 24} text-anchor="middle">{decisionBoundaryDemo.outlierLabel}</text>
+    <circle
+      id="outlier-point"
+      class="negative outlier"
+      cx="470"
+      cy={outlierY}
+      r="15"
+    ></circle>
+    <text x="470" y={outlierY - 24} text-anchor="middle"
+      >{decisionBoundaryDemo.outlierLabel}</text
+    >
   </SvgScene>
 
   <label class="outlier-control">

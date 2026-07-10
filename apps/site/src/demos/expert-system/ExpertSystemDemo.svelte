@@ -1,20 +1,35 @@
 <script lang="ts">
   import { DemoShell } from "@ai-history/demo-core";
-  import { expertSystemDemo } from "@ai-history/data";
+  import { getExpertSystemDemo, type Locale } from "@ai-history/data";
+  import { getSiteCopy } from "../../i18n/siteCopy";
 
+  export let locale: Locale = "zh-CN";
+
+  const initialDemo = getExpertSystemDemo();
   const initialSelected = Object.fromEntries(
-    [...expertSystemDemo.conditions, expertSystemDemo.exceptionCondition].map((condition) => [
-      condition.id,
-      condition.defaultSelected
-    ])
+    [...initialDemo.conditions, initialDemo.exceptionCondition].map(
+      (condition) => [condition.id, condition.defaultSelected],
+    ),
   );
 
   let selected: Record<string, boolean> = initialSelected;
 
-  $: matchedRules = expertSystemDemo.rules.filter((rule) => rule.ifAll.every((conditionId) => selected[conditionId]));
+  $: expertSystemDemo = getExpertSystemDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? { conditionsAriaLabel: "Condition selection", ifLabel: "IF" }
+      : { conditionsAriaLabel: "条件选择", ifLabel: "IF" };
+  $: matchedRules = expertSystemDemo.rules.filter((rule) =>
+    rule.ifAll.every((conditionId) => selected[conditionId]),
+  );
   $: hasConflict = matchedRules.length > 1;
-  $: resultTitle = hasConflict ? expertSystemDemo.conflictTitle : expertSystemDemo.stableTitle;
-  $: resultDescription = hasConflict ? expertSystemDemo.conflictDescription : expertSystemDemo.stableDescription;
+  $: resultTitle = hasConflict
+    ? expertSystemDemo.conflictTitle
+    : expertSystemDemo.stableTitle;
+  $: resultDescription = hasConflict
+    ? expertSystemDemo.conflictDescription
+    : expertSystemDemo.stableDescription;
 
   function toggle(conditionId: string) {
     selected = { ...selected, [conditionId]: !selected[conditionId] };
@@ -26,12 +41,19 @@
   question={expertSystemDemo.question}
   simplificationNote={expertSystemDemo.simplificationNote}
   learningGoals={expertSystemDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
   <div class="rule-demo">
-    <div class="conditions" aria-label="条件选择">
+    <div class="conditions" aria-label={copy.conditionsAriaLabel}>
       {#each expertSystemDemo.conditions as condition}
         <label>
-          <input type="checkbox" checked={selected[condition.id]} on:change={() => toggle(condition.id)} />
+          <input
+            type="checkbox"
+            checked={selected[condition.id]}
+            on:change={() => toggle(condition.id)}
+          />
           <span>{condition.label}</span>
         </label>
       {/each}
@@ -47,8 +69,12 @@
 
     <div class="rule-grid">
       {#each expertSystemDemo.rules as rule}
-        <article class:matched={matchedRules.some((matchedRule) => matchedRule.id === rule.id)}>
-          <span>IF {rule.ifAll.join(" + ")}</span>
+        <article
+          class:matched={matchedRules.some(
+            (matchedRule) => matchedRule.id === rule.id,
+          )}
+        >
+          <span>{copy.ifLabel} {rule.ifAll.join(" + ")}</span>
           <strong>{rule.then}</strong>
           <p>{rule.explanation}</p>
         </article>

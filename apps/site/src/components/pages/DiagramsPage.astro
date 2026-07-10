@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../layout/BaseLayout.astro";
+import {
+  coreDiagrams,
+  diagramNamingCards,
+  diagramsPageCopy,
+  diagramWorkflowSteps,
+} from "../../i18n/pages";
+import { type Locale, toLocalizedPath } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = diagramsPageCopy[locale];
+const workflowSteps = diagramWorkflowSteps[locale];
+const namingCards = diagramNamingCards[locale];
+const diagrams = coreDiagrams[locale];
+const href = (path: string) => toLocalizedPath(path, locale);
+---
+
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
+  <main class="chapter-main">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="page-title">{copy.heading}</h1>
+    <p class="lede">{copy.lede}</p>
+
+    <section class="section-band" aria-labelledby="export-flow">
+      <p class="eyebrow">{copy.workflowEyebrow}</p>
+      <h2 id="export-flow">{copy.workflowHeading}</h2>
+      <div class="pill-grid">
+        {workflowSteps.map((step) => <div class="pill">{step}</div>)}
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="naming">
+      <p class="eyebrow">{copy.namingEyebrow}</p>
+      <h2 id="naming">{copy.namingHeading}</h2>
+      <div class="demo-grid">
+        {
+          namingCards.map((card) => (
+            <div class="demo-card">
+              <strong>{card.title}</strong>
+              <p>{card.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="downloads">
+      <p class="eyebrow">{copy.downloadsEyebrow}</p>
+      <h2 id="downloads">{copy.downloadsHeading}</h2>
+      <div class="demo-grid overview-grid">
+        <a
+          class="demo-card"
+          href="/diagrams/rag-pipeline.svg"
+          download
+          aria-label={copy.downloadAriaLabel}
+        >
+          <span>SVG</span>
+          <strong>{copy.downloadLabel}</strong>
+          <p>
+            {copy.downloadDescriptionBefore}<code>node-query</code>, <code
+              >arrow-query-embedding</code
+            >{copy.downloadDescriptionAfter}
+          </p>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="core-diagrams">
+      <p class="eyebrow">{copy.coreEyebrow}</p>
+      <h2 id="core-diagrams">{copy.coreHeading}</h2>
+      <div class="demo-grid overview-grid">
+        {
+          diagrams.map((diagram) => (
+            <a class="demo-card" href={href(diagram.route)} data-core-diagram>
+              <span>{copy.diagramLabel}</span>
+              <strong>{diagram.title}</strong>
+              <p>{diagram.note}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="screenshots">
+      <p class="eyebrow">{copy.screenshotsEyebrow}</p>
+      <h2 id="screenshots">{copy.screenshotsHeading}</h2>
+      <p>{copy.screenshotsBody}</p>
+    </section>
+  </main>
+</BaseLayout>

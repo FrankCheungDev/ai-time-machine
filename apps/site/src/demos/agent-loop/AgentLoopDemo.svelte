@@ -1,17 +1,37 @@
 <script lang="ts">
   import { DemoShell, StepperDemo, SvgScene } from "@ai-history/demo-core";
-  import { agentLoopDemo } from "@ai-history/data";
+  import { getAgentLoopDemo, type Locale } from "@ai-history/data";
   import type { AgentLoopStep } from "@ai-history/demo-core";
+  import { getSiteCopy } from "../../i18n/siteCopy";
+  import { resolveAgentBranchNote } from "./agentState";
+
+  export let locale: Locale = "zh-CN";
 
   let currentIndex = 0;
-  let branchNote = "";
+  let selectedBranchId = "";
+
+  $: agentLoopDemo = getAgentLoopDemo(locale);
+  $: branchNote = resolveAgentBranchNote(agentLoopDemo, selectedBranchId);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          sceneLabel: "Agent plan, tool, observation, and revision loop",
+          branchFallback:
+            "Choose a failure path to see how the agent returns from an observation to a revised plan.",
+        }
+      : {
+          sceneLabel: "Agent 计划、工具、观察与修正循环",
+          branchFallback:
+            "选择一个失败路径，观察 Agent 如何从观察结果回到修正计划。",
+        };
 
   const positions: Record<string, { x: number; y: number }> = {
     plan: { x: 90, y: 92 },
     tool: { x: 356, y: 92 },
     observe: { x: 612, y: 92 },
     revise: { x: 476, y: 246 },
-    final: { x: 176, y: 246 }
+    final: { x: 176, y: 246 },
   };
 
   const edges = [
@@ -19,8 +39,16 @@
     { id: "tool-observe", from: "tool", to: "observe" },
     { id: "observe-revise", from: "observe", to: "revise" },
     { id: "revise-tool", from: "revise", to: "tool" },
-    { id: "revise-final", from: "revise", to: "final" }
+    { id: "revise-final", from: "revise", to: "final" },
   ];
+
+  const englishDiagramTitles: Record<string, string> = {
+    plan: "Make a plan",
+    tool: "Call a tool",
+    observe: "Check result",
+    revise: "Revise plan",
+    final: "Give answer",
+  };
 
   function isNodeActive(step: AgentLoopStep, id: string) {
     return step.activeNodeIds.includes(id);
@@ -30,10 +58,12 @@
     return step.activeEdgeIds.includes(id);
   }
 
-  function triggerBranch(targetStepId: string, description: string) {
-    const nextIndex = agentLoopDemo.steps.findIndex((step) => step.id === targetStepId);
+  function triggerBranch(targetStepId: string, branchId: string) {
+    const nextIndex = agentLoopDemo.steps.findIndex(
+      (step) => step.id === targetStepId,
+    );
     currentIndex = Math.max(0, nextIndex);
-    branchNote = description;
+    selectedBranchId = branchId;
   }
 </script>
 
@@ -42,11 +72,34 @@
   question={agentLoopDemo.question}
   simplificationNote={agentLoopDemo.simplificationNote}
   learningGoals={agentLoopDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <StepperDemo steps={agentLoopDemo.steps} bind:currentIndex let:currentStep>
-    <SvgScene label="Agent plan tool observe revise loop" viewBox="0 0 820 430">
+  <StepperDemo
+    steps={agentLoopDemo.steps}
+    bind:currentIndex
+    previousLabel={demoCoreCopy.previousLabel}
+    nextLabel={demoCoreCopy.nextLabel}
+    let:currentStep
+  >
+    <SvgScene
+      label={copy.sceneLabel}
+      viewBox="0 0 820 430"
+      fitLabel={demoCoreCopy.fitLabel}
+      detailLabel={demoCoreCopy.detailLabel}
+      scrollSuffix={demoCoreCopy.scrollSuffix}
+    >
       <defs>
-        <marker id="agent-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <marker
+          id="agent-arrow"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
           <path d="M 0 0 L 10 5 L 0 10 z"></path>
         </marker>
       </defs>
@@ -68,19 +121,45 @@
 
       {#each agentLoopDemo.steps as step}
         {@const position = positions[step.id]}
-        <g class:node-active={isNodeActive(currentStep, step.id)} class:node-muted={!isNodeActive(currentStep, step.id)}>
-          <rect id={`agent-node-${step.id}`} x={position.x} y={position.y} width="132" height="84" rx="8"></rect>
-          <text class="loop-label" x={position.x + 66} y={position.y + 34} text-anchor="middle">{step.loopLabel}</text>
-          <text class="loop-title" x={position.x + 66} y={position.y + 58} text-anchor="middle">{step.title}</text>
+        <g
+          class:node-active={isNodeActive(currentStep, step.id)}
+          class:node-muted={!isNodeActive(currentStep, step.id)}
+        >
+          <rect
+            id={`agent-node-${step.id}`}
+            x={position.x}
+            y={position.y}
+            width="132"
+            height="84"
+            rx="8"
+          ></rect>
+          <text
+            class="loop-label"
+            x={position.x + 66}
+            y={position.y + 34}
+            text-anchor="middle">{step.loopLabel}</text
+          >
+          <text
+            class="loop-title"
+            x={position.x + 66}
+            y={position.y + 58}
+            text-anchor="middle"
+            >{locale === "en"
+              ? (englishDiagramTitles[step.id] ?? step.title)
+              : step.title}</text
+          >
         </g>
       {/each}
     </SvgScene>
   </StepperDemo>
 
   <div class="branch-panel">
-    <p>{branchNote || "选择一个失败路径，观察 Agent 如何从观察结果回到修正计划。"}</p>
+    <p>{branchNote || copy.branchFallback}</p>
     {#each agentLoopDemo.branchOptions as option}
-      <button type="button" on:click={() => triggerBranch(option.targetStepId, option.description)}>
+      <button
+        type="button"
+        on:click={() => triggerBranch(option.targetStepId, option.id)}
+      >
         {option.label}
       </button>
     {/each}

@@ -1,35 +1,8 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
+import StandardDemoChapter from "../../components/pages/StandardDemoChapter.astro";
 import RagPipelineDemo from "../../demos/rag-pipeline/RagPipelineDemo.svelte";
 ---
 
-<BaseLayout
-  title="RAG：大模型如何连接外部知识？"
-  description="一个静态、教学型 RAG Pipeline 交互图解。"
->
-  <main class="chapter-main">
-    <p class="eyebrow">Demo 08</p>
-    <h1 class="page-title">RAG：大模型如何连接外部知识？</h1>
-    <p class="lede">
-      为什么只靠模型参数回答问题不够？这个 demo 用分步 SVG 流程解释检索、
-      重排、拼接上下文和生成回答之间的关系。
-    </p>
-    <RagPipelineDemo client:load />
-
-    <section class="section-band" aria-labelledby="rag-notes">
-      <p class="eyebrow">历史位置</p>
-      <h2 id="rag-notes">RAG 把大模型接回外部知识系统</h2>
-      <p>
-        它之前的问题是：LLM 的参数知识会过期，也不能直接读取私有文档。
-        RAG 解决的是把外部证据放进上下文，让答案更可更新、更可追溯。
-        它没有自动解决错误检索、证据冲突、引用核验和权限控制问题。
-        后续影响是企业知识库问答、搜索增强 Agent 和更严格的事实性评估。
-      </p>
-      <p class="eyebrow">参考资料</p>
-      <ul>
-        <li><a href="https://arxiv.org/abs/2005.11401">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a></li>
-        <li><a href="https://arxiv.org/abs/2312.10997">Retrieval-Augmented Generation for Large Language Models: A Survey</a></li>
-      </ul>
-    </section>
-  </main>
-</BaseLayout>
+<StandardDemoChapter locale="zh-CN" chapterId="rag">
+  <RagPipelineDemo slot="demo" client:load locale="zh-CN" />
+</StandardDemoChapter>

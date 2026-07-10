@@ -1,13 +1,32 @@
 <script lang="ts">
   import { DemoShell } from "@ai-history/demo-core";
-  import { bayesUpdateDemo } from "@ai-history/data";
+  import { getBayesUpdateDemo, type Locale } from "@ai-history/data";
+  import { getSiteCopy } from "../../i18n/siteCopy";
 
-  let prior = bayesUpdateDemo.priorDefault;
-  let evidence = bayesUpdateDemo.evidenceDefault;
+  export let locale: Locale = "zh-CN";
 
+  const initialDemo = getBayesUpdateDemo();
+  let prior = initialDemo.priorDefault;
+  let evidence = initialDemo.evidenceDefault;
+
+  $: bayesUpdateDemo = getBayesUpdateDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          priorStatusLabel: "Prior",
+          posteriorStatusLabel: "Posterior belief",
+          explanationTitle: "The posterior belief changes with the evidence",
+        }
+      : {
+          priorStatusLabel: "先验",
+          posteriorStatusLabel: "后验信念",
+          explanationTitle: "后验信念会随证据改变",
+        };
   $: priorProbability = Math.min(0.95, Math.max(0.05, Number(prior) / 100));
   $: likelihoodRatio = 0.2 + (Number(evidence) / 100) * 4.8;
-  $: posteriorOdds = (priorProbability / (1 - priorProbability)) * likelihoodRatio;
+  $: posteriorOdds =
+    (priorProbability / (1 - priorProbability)) * likelihoodRatio;
   $: posterior = Math.round((posteriorOdds / (1 + posteriorOdds)) * 100);
 </script>
 
@@ -16,32 +35,49 @@
   question={bayesUpdateDemo.question}
   simplificationNote={bayesUpdateDemo.simplificationNote}
   learningGoals={bayesUpdateDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
   <div class="bayes-demo">
     <div class="controls">
       <label>
         <span>{bayesUpdateDemo.priorLabel}: {prior}%</span>
-        <input aria-label="先验信念" type="range" min="5" max="95" bind:value={prior} />
+        <input
+          aria-label={bayesUpdateDemo.priorLabel}
+          type="range"
+          min="5"
+          max="95"
+          bind:value={prior}
+        />
       </label>
       <label>
         <span>{bayesUpdateDemo.evidenceLabel}: {evidence}%</span>
-        <input aria-label="证据强度" type="range" min="0" max="100" bind:value={evidence} />
+        <input
+          aria-label={bayesUpdateDemo.evidenceLabel}
+          type="range"
+          min="0"
+          max="100"
+          bind:value={evidence}
+        />
       </label>
     </div>
 
     <div class="probability-bars" aria-live="polite">
       <div>
-        <span>先验</span>
+        <span>{copy.priorStatusLabel}</span>
         <div class="track"><i style={`width: ${prior}%`}></i></div>
       </div>
       <div>
-        <span>后验信念 {posterior}%</span>
-        <div class="track posterior"><i style={`width: ${posterior}%`}></i></div>
+        <span>{copy.posteriorStatusLabel} {posterior}%</span>
+        <div class="track posterior">
+          <i style={`width: ${posterior}%`}></i>
+        </div>
       </div>
     </div>
 
     <section class="explanation">
-      <h3>后验信念会随证据改变</h3>
+      <h3>{copy.explanationTitle}</h3>
       <p>{bayesUpdateDemo.insight}</p>
     </section>
   </div>

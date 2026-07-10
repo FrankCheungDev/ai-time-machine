@@ -1,11 +1,16 @@
 <script lang="ts">
   export let label: string;
   export let viewBox = "0 0 920 420";
+  export let fitLabel = "适配屏幕";
+  export let detailLabel = "放大查看";
+  export let scrollSuffix = "，可适配屏幕或横向滚动查看完整图解";
 
-  $: scrollLabel = `${label}，可适配屏幕或横向滚动查看完整图解`;
+  $: scrollLabel = `${label}${scrollSuffix}`;
   $: controlKey =
-    label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") ||
-    "diagram";
+    label
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "diagram";
   $: controlName = `svg-scene-view-${controlKey}`;
   $: fitControlId = `${controlName}-fit`;
   $: detailControlId = `${controlName}-detail`;
@@ -29,8 +34,8 @@
   />
 
   <div class="svg-scene-controls">
-    <label for={fitControlId} data-view-option="fit">适配屏幕</label>
-    <label for={detailControlId} data-view-option="detail">放大查看</label>
+    <label for={fitControlId} data-view-option="fit">{fitLabel}</label>
+    <label for={detailControlId} data-view-option="detail">{detailLabel}</label>
   </div>
 
   <div
@@ -105,8 +110,7 @@
     border: 1px solid var(--color-line, #d7ddd7);
     border-radius: 8px;
     background:
-      linear-gradient(180deg, rgba(47, 125, 91, 0.08), transparent 48%),
-      #fbfbf8;
+      linear-gradient(180deg, rgba(47, 125, 91, 0.08), transparent 48%), #fbfbf8;
   }
 
   .svg-scene:focus-visible {

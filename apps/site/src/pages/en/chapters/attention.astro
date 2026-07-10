@@ -1,0 +1,8 @@
+---
+import StandardDemoChapter from "../../../components/pages/StandardDemoChapter.astro";
+import AttentionMapDemo from "../../../demos/attention-map/AttentionMapDemo.svelte";
+---
+
+<StandardDemoChapter locale="en" chapterId="attention">
+  <AttentionMapDemo slot="demo" client:load locale="en" />
+</StandardDemoChapter>

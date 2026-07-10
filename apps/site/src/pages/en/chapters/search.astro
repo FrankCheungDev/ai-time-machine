@@ -1,0 +1,8 @@
+---
+import StandardDemoChapter from "../../../components/pages/StandardDemoChapter.astro";
+import SearchTreeDemo from "../../../demos/search-tree/SearchTreeDemo.svelte";
+---
+
+<StandardDemoChapter locale="en" chapterId="search">
+  <SearchTreeDemo slot="demo" client:load locale="en" />
+</StandardDemoChapter>

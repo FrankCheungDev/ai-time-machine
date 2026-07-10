@@ -1,8 +1,11 @@
 <script lang="ts">
   import { DemoShell, StepperDemo, SvgScene } from "@ai-history/demo-core";
-  import { ragPipelineDemo } from "@ai-history/data";
+  import { getRagPipelineDemo, type Locale } from "@ai-history/data";
   import type { DemoStep } from "@ai-history/demo-core";
   import { gsap } from "gsap";
+  import { getSiteCopy } from "../../i18n/siteCopy";
+
+  export let locale: Locale = "zh-CN";
 
   const positions: Record<string, { x: number; y: number }> = {
     query: { x: 36, y: 164 },
@@ -11,16 +14,40 @@
     reranker: { x: 456, y: 164 },
     prompt: { x: 596, y: 164 },
     llm: { x: 718, y: 164 },
-    answer: { x: 824, y: 164 }
+    answer: { x: 824, y: 164 },
+  };
+
+  const englishDiagramCaptions: Record<string, string> = {
+    query: "Ask question",
+    embedding: "Encode query",
+    "vector-db": "Find passages",
+    reranker: "Rank passages",
+    prompt: "Build prompt",
+    llm: "Use context",
+    answer: "Grounded answer",
   };
 
   const nodeWidth = 100;
   const nodeHeight = 74;
-  let selectedScenarioId = ragPipelineDemo.scenarios?.[1]?.id ?? "";
+  const initialDemo = getRagPipelineDemo();
+  let selectedScenarioId = initialDemo.scenarios?.[1]?.id ?? "";
 
+  $: ragPipelineDemo = getRagPipelineDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          sceneLabel: "RAG pipeline flow diagram",
+          scenarioLabel: "Retrieval scenario",
+        }
+      : {
+          sceneLabel: "RAG Pipeline 流程图",
+          scenarioLabel: "检索场景",
+        };
   $: selectedScenario =
-    ragPipelineDemo.scenarios?.find((scenario) => scenario.id === selectedScenarioId) ??
-    ragPipelineDemo.scenarios?.[0];
+    ragPipelineDemo.scenarios?.find(
+      (scenario) => scenario.id === selectedScenarioId,
+    ) ?? ragPipelineDemo.scenarios?.[0];
 
   function isActive(step: DemoStep, id: string) {
     return step.activeNodeIds.includes(id);
@@ -31,7 +58,10 @@
   }
 
   function prefersReducedMotion() {
-    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
   }
 
   function drawIn(node: SVGLineElement, active: boolean) {
@@ -46,7 +76,12 @@
       gsap.fromTo(
         node,
         { strokeDasharray: "18 10", strokeDashoffset: 28 },
-        { strokeDashoffset: 0, duration: 0.42, ease: "power2.out", overwrite: true }
+        {
+          strokeDashoffset: 0,
+          duration: 0.42,
+          ease: "power2.out",
+          overwrite: true,
+        },
       );
     }
 
@@ -61,11 +96,32 @@
   question={ragPipelineDemo.question}
   simplificationNote={ragPipelineDemo.simplificationNote}
   learningGoals={ragPipelineDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <StepperDemo steps={ragPipelineDemo.steps} let:currentStep>
-    <SvgScene label="RAG pipeline flow diagram">
+  <StepperDemo
+    steps={ragPipelineDemo.steps}
+    previousLabel={demoCoreCopy.previousLabel}
+    nextLabel={demoCoreCopy.nextLabel}
+    let:currentStep
+  >
+    <SvgScene
+      label={copy.sceneLabel}
+      fitLabel={demoCoreCopy.fitLabel}
+      detailLabel={demoCoreCopy.detailLabel}
+      scrollSuffix={demoCoreCopy.scrollSuffix}
+    >
       <defs>
-        <marker id="rag-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <marker
+          id="rag-arrow"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
           <path d="M 0 0 L 10 5 L 0 10 z"></path>
         </marker>
       </defs>
@@ -96,9 +152,28 @@
           class:node-active={isActive(currentStep, node.id)}
           class:node-muted={!isActive(currentStep, node.id)}
         >
-          <rect x={position.x} y={position.y} width={nodeWidth} height={nodeHeight} rx="8"></rect>
-          <text class="node-label" x={position.x + nodeWidth / 2} y={position.y + 30} text-anchor="middle">{node.label}</text>
-          <text class="node-caption" x={position.x + nodeWidth / 2} y={position.y + 52} text-anchor="middle">{node.description}</text>
+          <rect
+            x={position.x}
+            y={position.y}
+            width={nodeWidth}
+            height={nodeHeight}
+            rx="8"
+          ></rect>
+          <text
+            class="node-label"
+            x={position.x + nodeWidth / 2}
+            y={position.y + 30}
+            text-anchor="middle">{node.label}</text
+          >
+          <text
+            class="node-caption"
+            x={position.x + nodeWidth / 2}
+            y={position.y + 52}
+            text-anchor="middle"
+            >{locale === "en"
+              ? (englishDiagramCaptions[node.id] ?? node.description)
+              : node.description}</text
+          >
         </g>
       {/each}
     </SvgScene>
@@ -107,7 +182,7 @@
   {#if ragPipelineDemo.scenarios?.length && selectedScenario}
     <section class="scenario-panel" aria-labelledby="rag-scenario-title">
       <div class="scenario-control">
-        <label for="rag-scenario">检索场景</label>
+        <label for="rag-scenario">{copy.scenarioLabel}</label>
         <select id="rag-scenario" bind:value={selectedScenarioId}>
           {#each ragPipelineDemo.scenarios as scenario}
             <option value={scenario.id}>{scenario.label}</option>

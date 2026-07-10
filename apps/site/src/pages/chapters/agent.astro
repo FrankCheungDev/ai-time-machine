@@ -1,34 +1,8 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
+import StandardDemoChapter from "../../components/pages/StandardDemoChapter.astro";
 import AgentLoopDemo from "../../demos/agent-loop/AgentLoopDemo.svelte";
 ---
 
-<BaseLayout
-  title="Agent：大模型如何执行多步任务？"
-  description="一个静态、教学型 Agent Loop 交互图解。"
->
-  <main class="chapter-main">
-    <p class="eyebrow">Demo 09</p>
-    <h1 class="page-title">Agent：大模型如何执行多步任务？</h1>
-    <p class="lede">
-      为什么 Agent 不是一次回答，而是一个循环控制系统？这个章节把 Agent 放在 LLM 和 RAG 之后，
-      解释计划、工具、观察和修正如何构成多步任务执行。
-    </p>
-    <AgentLoopDemo client:load />
-
-    <section class="section-band" aria-labelledby="agent-notes">
-      <p class="eyebrow">观察指南</p>
-      <h2 id="agent-notes">Agent 的关键不是“更会聊天”，而是进入行动循环</h2>
-      <p>
-        它之前的问题是：普通 LLM 往往只能一次性生成答案，不能持续观察外部状态。
-        Agent 解决的是多步任务控制问题，但没有天然解决工具安全、目标漂移、成本和评估问题。
-        后续影响是工具调用、工作流自动化、多智能体系统和安全评估。
-      </p>
-      <p class="eyebrow">参考资料</p>
-      <ul>
-        <li><a href="https://arxiv.org/abs/2210.03629">ReAct: Synergizing Reasoning and Acting in Language Models</a></li>
-        <li><a href="https://arxiv.org/abs/2302.04761">Toolformer: Language Models Can Teach Themselves to Use Tools</a></li>
-      </ul>
-    </section>
-  </main>
-</BaseLayout>
+<StandardDemoChapter locale="zh-CN" chapterId="agent">
+  <AgentLoopDemo slot="demo" client:load locale="zh-CN" />
+</StandardDemoChapter>

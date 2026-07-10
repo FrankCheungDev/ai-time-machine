@@ -1,0 +1,41 @@
+---
+import { getAiTimelineEntries } from "@ai-history/data";
+import BaseLayout from "../layout/BaseLayout.astro";
+import { timelinePageCopy } from "../../i18n/pages";
+import { type Locale, toLocalizedPath } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = timelinePageCopy[locale];
+const timelineEntries = getAiTimelineEntries(locale);
+const href = (path: string) => toLocalizedPath(path, locale);
+---
+
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
+  <main class="chapter-main">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="page-title">{copy.heading}</h1>
+    <p class="lede">{copy.lede}</p>
+
+    <section class="timeline-list" aria-label={copy.listAriaLabel}>
+      {
+        timelineEntries.map((entry) => (
+          <article id={`timeline-${entry.id}`} class="timeline-item">
+            <span>{entry.year}</span>
+            <p class="eyebrow">{entry.era}</p>
+            <h2>{entry.title}</h2>
+            <p>{entry.summary}</p>
+            {entry.demoHref && (
+              <a class="button" href={href(entry.demoHref)}>
+                {entry.demoLabel}
+              </a>
+            )}
+          </article>
+        ))
+      }
+    </section>
+  </main>
+</BaseLayout>

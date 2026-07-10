@@ -1,15 +1,53 @@
 <script lang="ts">
   import { DemoShell, SvgScene } from "@ai-history/demo-core";
-  import { attentionMapDemo } from "@ai-history/data";
+  import { getAttentionMapDemo, type Locale } from "@ai-history/data";
+  import { getSiteCopy } from "../../i18n/siteCopy";
 
   type Mode = "attention" | "rnn";
+
+  export let locale: Locale = "zh-CN";
 
   let selectedTokenId = "model";
   let mode: Mode = "attention";
 
-  $: selectedToken = attentionMapDemo.tokens.find((token) => token.id === selectedTokenId) ?? attentionMapDemo.tokens[0];
-  $: tokenById = Object.fromEntries(attentionMapDemo.tokens.map((token) => [token.id, token]));
-  $: activeLinks = attentionMapDemo.links.filter((link) => link.from === selectedTokenId || link.to === selectedTokenId);
+  const englishDiagramLabels: Record<string, string> = {
+    knowledge: "source",
+    retrieve: "fetch",
+  };
+
+  $: attentionMapDemo = getAttentionMapDemo(locale);
+  $: demoCoreCopy = getSiteCopy(locale).demoCore;
+  $: copy =
+    locale === "en"
+      ? {
+          modeSwitchAriaLabel: "Mode switch",
+          attentionModeButton: "Attention mode",
+          rnnModeButton: "RNN mode",
+          tokenSelectionAriaLabel: "Select a token",
+          sceneLabel: "Attention token relationship map",
+          attentionObservation: "Attention observation",
+          rnnComparison: "RNN comparison",
+          rnnTitle: "An RNN can only pass information along the sequence",
+        }
+      : {
+          modeSwitchAriaLabel: "模式切换",
+          attentionModeButton: "Attention 模式",
+          rnnModeButton: "RNN 模式",
+          tokenSelectionAriaLabel: "选择 token",
+          sceneLabel: "Attention token 关系图",
+          attentionObservation: "Attention 观察",
+          rnnComparison: "RNN 对比",
+          rnnTitle: "RNN 只能沿序列逐步传递",
+        };
+  $: selectedToken =
+    attentionMapDemo.tokens.find((token) => token.id === selectedTokenId) ??
+    attentionMapDemo.tokens[0];
+  $: tokenById = Object.fromEntries(
+    attentionMapDemo.tokens.map((token) => [token.id, token]),
+  );
+  $: activeLinks = attentionMapDemo.links.filter(
+    (link) => link.from === selectedTokenId || link.to === selectedTokenId,
+  );
 
   function selectToken(id: string) {
     selectedTokenId = id;
@@ -26,23 +64,55 @@
   question={attentionMapDemo.question}
   simplificationNote={attentionMapDemo.simplificationNote}
   learningGoals={attentionMapDemo.learningGoals}
+  demoKicker={demoCoreCopy.demoKicker}
+  learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
+  simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="mode-switch" aria-label="模式切换">
-    <button type="button" class:active={mode === "attention"} on:click={() => (mode = "attention")}>Attention 模式</button>
-    <button type="button" class:active={mode === "rnn"} on:click={() => (mode = "rnn")}>RNN 模式</button>
+  <div class="mode-switch" aria-label={copy.modeSwitchAriaLabel}>
+    <button
+      type="button"
+      class:active={mode === "attention"}
+      on:click={() => (mode = "attention")}
+    >
+      {copy.attentionModeButton}
+    </button>
+    <button
+      type="button"
+      class:active={mode === "rnn"}
+      on:click={() => (mode = "rnn")}
+    >
+      {copy.rnnModeButton}
+    </button>
   </div>
 
-  <div class="token-row" aria-label="选择 token">
+  <div class="token-row" aria-label={copy.tokenSelectionAriaLabel}>
     {#each attentionMapDemo.tokens as token}
-      <button type="button" class:active={selectedTokenId === token.id} on:click={() => selectToken(token.id)}>
+      <button
+        type="button"
+        class:active={selectedTokenId === token.id}
+        on:click={() => selectToken(token.id)}
+      >
         {token.label}
       </button>
     {/each}
   </div>
 
-  <SvgScene label="Attention token relationship map" viewBox="0 0 860 360">
+  <SvgScene
+    label={copy.sceneLabel}
+    viewBox="0 0 860 360"
+    fitLabel={demoCoreCopy.fitLabel}
+    detailLabel={demoCoreCopy.detailLabel}
+    scrollSuffix={demoCoreCopy.scrollSuffix}
+  >
     <defs>
-      <marker id="attention-dot" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="4" markerHeight="4">
+      <marker
+        id="attention-dot"
+        viewBox="0 0 8 8"
+        refX="4"
+        refY="4"
+        markerWidth="4"
+        markerHeight="4"
+      >
         <circle cx="4" cy="4" r="4"></circle>
       </marker>
     </defs>
@@ -78,21 +148,33 @@
     {/if}
 
     {#each attentionMapDemo.tokens as token}
-      <g class:token-active={selectedTokenId === token.id} class:token-muted={mode === "attention" && selectedTokenId !== token.id}>
-        <circle id={`token-${token.id}`} cx={token.x} cy={token.y} r="34"></circle>
-        <text x={token.x} y={token.y + 5} text-anchor="middle">{token.label}</text>
+      <g
+        class:token-active={selectedTokenId === token.id}
+        class:token-muted={mode === "attention" && selectedTokenId !== token.id}
+      >
+        <circle id={`token-${token.id}`} cx={token.x} cy={token.y} r="34"
+        ></circle>
+        <text x={token.x} y={token.y + 5} text-anchor="middle"
+          >{locale === "en"
+            ? (englishDiagramLabels[token.id] ?? token.label)
+            : token.label}</text
+        >
       </g>
     {/each}
   </SvgScene>
 
   <div class="explanation" aria-live="polite">
-    <span>{mode === "attention" ? "Attention 观察" : "RNN 对比"}</span>
+    <span
+      >{mode === "attention"
+        ? copy.attentionObservation
+        : copy.rnnComparison}</span
+    >
     {#if mode === "attention"}
       <h3>{selectedToken.focusTitle}</h3>
       <p>{selectedToken.focusDescription}</p>
       <p>{attentionMapDemo.attentionModeCopy}</p>
     {:else}
-      <h3>RNN 只能沿序列逐步传递</h3>
+      <h3>{copy.rnnTitle}</h3>
       <p>{attentionMapDemo.rnnModeCopy}</p>
     {/if}
   </div>

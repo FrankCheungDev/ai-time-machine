@@ -1,0 +1,101 @@
+---
+import { getLlmSystemConnections, getLlmSystemLayers } from "@ai-history/data";
+import BaseLayout from "../layout/BaseLayout.astro";
+import { llmSystemChapterCopy } from "../../i18n/pages";
+import { toLocalizedPath, type Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = llmSystemChapterCopy[locale];
+const layers = getLlmSystemLayers(locale);
+const connections = getLlmSystemConnections(locale);
+const href = (path: string) => toLocalizedPath(path, locale);
+---
+
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
+  <main class="chapter-main">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="page-title">{copy.title}</h1>
+    <p class="lede">{copy.lede}</p>
+    <p class="chapter-question">{copy.question}</p>
+
+    <section class="section-band" aria-labelledby="system-map-title">
+      <p class="eyebrow">{copy.mapEyebrow}</p>
+      <h2 id="system-map-title">{copy.mapTitle}</h2>
+      <div class="llm-map" aria-label={copy.mapAriaLabel}>
+        {
+          layers.map((layer) => (
+            <article class={`llm-layer ${layer.id}`}>
+              <strong>{layer.label}</strong>
+              <p>{layer.role}</p>
+              <small>{layer.limitation}</small>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="connections-title">
+      <p class="eyebrow">{copy.connectionsEyebrow}</p>
+      <h2 id="connections-title">{copy.connectionsTitle}</h2>
+      <div class="timeline-list compact-list">
+        {
+          connections.map((connection) => (
+            <article class="timeline-item compact-item">
+              <span>{connection.label}</span>
+              <div>
+                <h3>
+                  {connection.from} → {connection.to}
+                </h3>
+                <p>{copy.connectionDescription}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="chapter-notes">
+      <p class="eyebrow">{copy.notesEyebrow}</p>
+      <h2 id="chapter-notes">{copy.notesTitle}</h2>
+      <div class="demo-grid overview-grid">
+        {
+          copy.cards.map((card) => (
+            <div class="demo-card">
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              <p>{card.body}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="actions">
+        <a class="button primary" href={href("/chapters/rag/")}>
+          {copy.ragAction}
+        </a>
+        <a class="button" href={href("/chapters/agent/")}>
+          {copy.agentAction}
+        </a>
+      </div>
+    </section>
+
+    <section class="section-band" aria-labelledby="llm-simplification">
+      <p class="eyebrow">{copy.simplificationEyebrow}</p>
+      <h2 id="llm-simplification">{copy.simplificationTitle}</h2>
+      <p>{copy.simplificationBody}</p>
+      <p class="eyebrow">{copy.referencesEyebrow}</p>
+      <ul>
+        {
+          copy.references.map((reference) => (
+            <li>
+              <a href={reference.href}>{reference.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+</BaseLayout>

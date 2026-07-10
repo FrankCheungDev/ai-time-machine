@@ -5,6 +5,9 @@
   export let question: string;
   export let simplificationNote: string;
   export let learningGoals: string[] = [];
+  export let demoKicker = "教学型交互案例";
+  export let learningGoalsLabel = "学习目标";
+  export let simplificationLabel = "简化说明";
 
   let isReady = false;
 
@@ -19,14 +22,14 @@
   data-demo-ready={isReady ? "true" : undefined}
 >
   <div class="demo-heading">
-    <p class="demo-kicker">教学型交互案例</p>
+    <p class="demo-kicker">{demoKicker}</p>
     <h2 id="demo-title">{title}</h2>
     <p class="question">{question}</p>
   </div>
   <slot />
   {#if learningGoals.length}
     <div class="learning-goals">
-      <strong>学习目标</strong>
+      <strong>{learningGoalsLabel}</strong>
       <ul>
         {#each learningGoals as goal}
           <li>{goal}</li>
@@ -35,7 +38,7 @@
     </div>
   {/if}
   <div class="note">
-    <strong>简化说明</strong>
+    <strong>{simplificationLabel}</strong>
     <p>{simplificationNote}</p>
   </div>
 </section>
