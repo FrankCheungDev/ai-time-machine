@@ -473,10 +473,12 @@ describe("getter mutation isolation", () => {
       (demo) => ({
         matrixValue: demo.kernels[0]?.matrix[0]?.[0],
         gridValue: demo.imageGrid[0]?.[0],
+        scanX: demo.scanSteps[0]?.x,
       }),
       (demo) => {
         demo.kernels[0]!.matrix[0]![0] = 99;
         demo.imageGrid[0]![0] = 99;
+        demo.scanSteps[0]!.x = 99;
       },
     );
     expectMutationIsolation(
