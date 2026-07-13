@@ -426,8 +426,6 @@ export interface LlmSystemChapterCopy {
   notesEyebrow: string;
   notesTitle: string;
   cards: LlmSystemCardCopy[];
-  ragAction: string;
-  agentAction: string;
   simplificationEyebrow: string;
   simplificationTitle: string;
   simplificationBody: string;
@@ -469,8 +467,6 @@ export const llmSystemChapterCopy = {
         body: "错误检索、工具误用、提示注入、权限泄漏和评估盲区仍需要工程约束。",
       },
     ],
-    ragAction: "继续看 RAG Pipeline",
-    agentAction: "继续看 Agent Loop",
     simplificationEyebrow: "简化说明",
     simplificationTitle: "这是系统地图，不是真实编排引擎",
     simplificationBody:
@@ -522,8 +518,6 @@ export const llmSystemChapterCopy = {
         body: "Wrong retrieval, tool misuse, prompt injection, permission leaks, and evaluation blind spots still require engineering controls.",
       },
     ],
-    ragAction: "Continue to the RAG Pipeline",
-    agentAction: "Continue to the Agent Loop",
     simplificationEyebrow: "Simplification note",
     simplificationTitle:
       "This is a system map, not a real orchestration engine",
@@ -550,8 +544,6 @@ export const homePageCopy = {
     heroTitle: "交互式人工智能图解史",
     heroDescription:
       "用可点击、可分步播放、可对比的教学型案例，解释 AI 技术从规则、统计学习、深度学习到大模型、RAG 与 Agent 的演化脉络。",
-    primaryAction: "从总览开始",
-    secondaryAction: "查看章节列表",
     mapAriaLabel: "AI 技术演化主线图",
     mapTitle: "AI 技术演化主线",
     pathEyebrow: "推荐学习顺序",
@@ -565,8 +557,6 @@ export const homePageCopy = {
     heroTitle: "Interactive Illustrated AI History",
     heroDescription:
       "Explore the evolution of AI from rules and statistical learning to deep learning, large models, RAG, and agents through clickable, step-by-step teaching demos.",
-    primaryAction: "Start with the overview",
-    secondaryAction: "View chapter list",
     mapAriaLabel: "AI technical evolution map",
     mapTitle: "AI technical evolution",
     pathEyebrow: "Recommended learning path",
@@ -1114,15 +1104,11 @@ export const overviewChapterCopy = {
   "zh-CN": {
     title: "总览：AI 为什么不是突然变成大模型的？",
     description:
-      "MDX chapter-zero overview for the interactive AI history project.",
+      "沿着规则搜索、知识工程、概率统计、深度学习、Transformer、RAG 与 Agent，理解现代 AI 系统如何逐步形成。",
     eyebrow: "Chapter 00",
     heading: "总览：AI 为什么不是突然变成大模型的？",
     lede: "AI 的主线不是一个模型突然出现，而是规则搜索、知识工程、概率统计、表示学习、Transformer、RAG 与 Agent 不断回应前一阶段瓶颈的结果。",
     question: "AI 为什么不是突然变成大模型的？",
-    closureEyebrow: "Technical Closure",
-    closureHeading: "MDX 章节可渲染",
-    closureBody:
-      "这个页面验证 Astro + MDX 章节闭环：贡献者可以用 Markdown/MDX 写解释文本，同时复用站点布局、设计 token 和 Astro 路由。",
     spineEyebrow: "历史主线",
     spineHeading: "从规则到系统",
     readingEyebrow: "阅读方式",
@@ -1130,21 +1116,15 @@ export const overviewChapterCopy = {
     simplificationHeading: "这是一张学习地图，不是完整 AI 百科",
     simplificationBody:
       "总览章节刻意保留主线和代表性技术，省略大量分支、人物、论文和工程细节。后续章节会用交互 demo 展开每个阶段的一个核心机制直觉。",
-    primaryAction: "打开时间线",
-    secondaryAction: "从搜索章节开始",
   },
   en: {
     title: "Overview: Why did AI not suddenly become large models?",
     description:
-      "Chapter-zero overview for the interactive illustrated AI history project.",
+      "Follow rules and search, knowledge engineering, probability, deep learning, Transformers, RAG, and agents to see how modern AI systems emerged.",
     eyebrow: "Chapter 00",
     heading: "Overview: Why did AI not suddenly become large models?",
     lede: "AI's main thread is not the sudden appearance of one model. It is the result of rules and search, knowledge engineering, probability and statistics, representation learning, Transformer, RAG, and agents repeatedly addressing earlier bottlenecks.",
     question: "Why did AI not suddenly become large models?",
-    closureEyebrow: "Technical Closure",
-    closureHeading: "The MDX Chapter Renders",
-    closureBody:
-      "This page verifies the Astro + MDX chapter loop: contributors can write explanations in Markdown/MDX while reusing the site layout, design tokens, and Astro routing.",
     spineEyebrow: "Historical Spine",
     spineHeading: "From Rules To Systems",
     readingEyebrow: "How To Read",
@@ -1153,8 +1133,6 @@ export const overviewChapterCopy = {
       "This Is A Learning Map, Not A Complete AI Encyclopedia",
     simplificationBody:
       "The overview deliberately keeps the main thread and representative technologies while omitting many branches, people, papers, and engineering details. Later chapters use interactive demos to develop one core mechanism intuition for each era.",
-    primaryAction: "Open the timeline",
-    secondaryAction: "Start with the search chapter",
   },
 } satisfies Record<Locale, Record<string, string>>;
 

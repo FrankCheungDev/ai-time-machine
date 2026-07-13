@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DemoShell, SvgScene } from "@ai-history/demo-core";
   import { getAttentionMapDemo, type Locale } from "@ai-history/data";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   type Mode = "attention" | "rnn";
@@ -16,6 +17,10 @@
   };
 
   $: attentionMapDemo = getAttentionMapDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter(
+    "attention",
+    locale,
+  ).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -60,7 +65,7 @@
 </script>
 
 <DemoShell
-  title={attentionMapDemo.title}
+  title={activityTitle ?? attentionMapDemo.title}
   question={attentionMapDemo.question}
   simplificationNote={attentionMapDemo.simplificationNote}
   learningGoals={attentionMapDemo.learningGoals}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DemoShell, SvgScene } from "@ai-history/demo-core";
   import { getDecisionBoundaryDemo, type Locale } from "@ai-history/data";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   export let locale: Locale = "zh-CN";
@@ -8,6 +9,10 @@
   let activeModeId = "linear";
   let outlierY = 94;
   $: decisionBoundaryDemo = getDecisionBoundaryDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter(
+    "decision-boundary",
+    locale,
+  ).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -25,7 +30,7 @@
 </script>
 
 <DemoShell
-  title={decisionBoundaryDemo.title}
+  title={activityTitle ?? decisionBoundaryDemo.title}
   question={decisionBoundaryDemo.question}
   simplificationNote={decisionBoundaryDemo.simplificationNote}
   learningGoals={decisionBoundaryDemo.learningGoals}

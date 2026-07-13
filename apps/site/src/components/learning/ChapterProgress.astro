@@ -1,0 +1,29 @@
+---
+import type { Locale } from "../../i18n/locales";
+import { learningUiCopy } from "../../i18n/learning";
+import {
+  getLearningPathContext,
+  type LearningChapterId,
+} from "../../learning/learningPath";
+
+interface Props {
+  locale: Locale;
+  chapterId: LearningChapterId;
+}
+
+const { locale, chapterId } = Astro.props;
+const { position, total } = getLearningPathContext(chapterId);
+const copy = learningUiCopy[locale];
+---
+
+<aside class="chapter-progress" data-testid="chapter-progress">
+  <span>{copy.positionLabel(position, total)}</span>
+  <progress
+    class="chapter-position-bar"
+    value={position}
+    max={total}
+    aria-label={copy.positionAriaLabel(position, total)}
+  >
+    {position} / {total}
+  </progress>
+</aside>

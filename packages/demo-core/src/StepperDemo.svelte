@@ -121,9 +121,9 @@
   @media (max-width: 900px) {
     .stepper {
       grid-template-areas:
+        "scene"
         "content"
-        "controls"
-        "scene";
+        "controls";
       grid-template-columns: 1fr;
     }
 

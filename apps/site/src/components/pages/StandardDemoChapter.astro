@@ -6,6 +6,8 @@ import {
   type DemoChapterId,
 } from "../../i18n/pages";
 import type { Locale } from "../../i18n/locales";
+import ChapterJourney from "../learning/ChapterJourney.svelte";
+import ChapterProgress from "../learning/ChapterProgress.astro";
 
 interface Props {
   locale: Locale;
@@ -26,6 +28,7 @@ const common = commonLabels[locale];
 
 <BaseLayout title={copy.title} description={copy.description} locale={locale}>
   <main class="chapter-main">
+    <ChapterProgress {locale} {chapterId} />
     <p class="eyebrow">{copy.eyebrow}</p>
     <h1 class="page-title">{copy.title}</h1>
     <p class="lede">{copy.lede}</p>
@@ -46,5 +49,6 @@ const common = commonLabels[locale];
         }
       </ul>
     </section>
+    <ChapterJourney client:load {locale} {chapterId} />
   </main>
 </BaseLayout>

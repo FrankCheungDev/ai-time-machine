@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DemoShell } from "@ai-history/demo-core";
   import { getCnnKernelDemo, type Locale } from "@ai-history/data";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   export let locale: Locale = "zh-CN";
@@ -8,6 +9,7 @@
   let activeKernelId = "edge";
   let stepIndex = 0;
   $: cnnKernelDemo = getCnnKernelDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter("cnn", locale).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -46,7 +48,7 @@
 </script>
 
 <DemoShell
-  title={cnnKernelDemo.title}
+  title={activityTitle ?? cnnKernelDemo.title}
   question={cnnKernelDemo.question}
   simplificationNote={cnnKernelDemo.simplificationNote}
   learningGoals={cnnKernelDemo.learningGoals}
