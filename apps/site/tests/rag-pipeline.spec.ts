@@ -441,15 +441,60 @@ test("Home page highlights the recommended first-time learning path", async ({
 test("Overview MDX chapter renders the chapter-zero narrative", async ({
   page,
 }) => {
-  await page.goto("/chapters/overview/");
+  const overviewPages = [
+    {
+      route: "/chapters/overview/",
+      heading: "总览：AI 为什么不是突然变成大模型的？",
+      spine: "从规则到系统",
+      reading: "每章看四件事",
+      simplification: "这是一张学习地图，不是完整 AI 百科",
+      references: "参考资料",
+    },
+    {
+      route: "/en/chapters/overview/",
+      heading: "Overview: Why did AI not suddenly become large models?",
+      spine: "From Rules To Systems",
+      reading: "Four Things To Notice In Every Chapter",
+      simplification: "This Is A Learning Map, Not A Complete AI Encyclopedia",
+      references: "References",
+    },
+  ];
+  const internalProofCopy = [
+    "Technical Closure",
+    "MDX 章节可渲染",
+    "The MDX Chapter Renders",
+    "这个页面验证 Astro + MDX 章节闭环：贡献者可以用 Markdown/MDX 写解释文本，同时复用站点布局、设计 token 和 Astro 路由。",
+    "This page verifies the Astro + MDX chapter loop: contributors can write explanations in Markdown/MDX while reusing the site layout, design tokens, and Astro routing.",
+  ];
 
-  await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "总览：AI 为什么不是突然变成大模型的？",
-    }),
-  ).toBeVisible();
-  await expect(page.getByText("MDX 章节可渲染", { exact: true })).toBeVisible();
+  for (const overview of overviewPages) {
+    await page.goto(overview.route);
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: overview.heading }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: overview.spine }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: overview.reading }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: overview.simplification }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(overview.references, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", {
+        name: "Artificial Intelligence: A Modern Approach",
+      }),
+    ).toBeVisible();
+
+    for (const proofCopy of internalProofCopy) {
+      await expect(page.getByText(proofCopy, { exact: true })).toHaveCount(0);
+    }
+  }
 
   await page.goto("/");
   await expect(page.getByRole("link", { name: /00 总览章节/ })).toBeVisible();

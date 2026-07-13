@@ -1119,10 +1119,6 @@ export const overviewChapterCopy = {
     heading: "总览：AI 为什么不是突然变成大模型的？",
     lede: "AI 的主线不是一个模型突然出现，而是规则搜索、知识工程、概率统计、表示学习、Transformer、RAG 与 Agent 不断回应前一阶段瓶颈的结果。",
     question: "AI 为什么不是突然变成大模型的？",
-    closureEyebrow: "Technical Closure",
-    closureHeading: "MDX 章节可渲染",
-    closureBody:
-      "这个页面验证 Astro + MDX 章节闭环：贡献者可以用 Markdown/MDX 写解释文本，同时复用站点布局、设计 token 和 Astro 路由。",
     spineEyebrow: "历史主线",
     spineHeading: "从规则到系统",
     readingEyebrow: "阅读方式",
@@ -1141,10 +1137,6 @@ export const overviewChapterCopy = {
     heading: "Overview: Why did AI not suddenly become large models?",
     lede: "AI's main thread is not the sudden appearance of one model. It is the result of rules and search, knowledge engineering, probability and statistics, representation learning, Transformer, RAG, and agents repeatedly addressing earlier bottlenecks.",
     question: "Why did AI not suddenly become large models?",
-    closureEyebrow: "Technical Closure",
-    closureHeading: "The MDX Chapter Renders",
-    closureBody:
-      "This page verifies the Astro + MDX chapter loop: contributors can write explanations in Markdown/MDX while reusing the site layout, design tokens, and Astro routing.",
     spineEyebrow: "Historical Spine",
     spineHeading: "From Rules To Systems",
     readingEyebrow: "How To Read",
