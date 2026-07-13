@@ -141,6 +141,60 @@ main {
   margin-top: 26px;
 }
 
+.home-learning-progress {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-block-size: 190px;
+  margin-top: 26px;
+}
+
+.home-learning-status {
+  display: grid;
+  gap: 12px;
+}
+
+.home-learning-actions {
+  margin-top: 0;
+}
+
+.hero .home-progress-label {
+  margin: 0;
+  color: var(--color-green);
+  font-weight: 760;
+}
+
+.home-learning-progress .review-links {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.home-learning-progress .review-links a {
+  flex: 0 1 auto;
+}
+
+.home-learning-reset {
+  width: fit-content;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  color: var(--color-muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 680;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.home-reset-confirmation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  color: var(--color-muted);
+}
+
 .button {
   display: inline-flex;
   align-items: center;

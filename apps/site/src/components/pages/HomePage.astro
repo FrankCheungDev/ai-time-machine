@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layout/BaseLayout.astro";
+import HomeLearningProgress from "../learning/HomeLearningProgress.svelte";
 import {
   homeLearningPathCards,
   homeMapNodes,
@@ -27,12 +28,7 @@ const href = (path: string) => toLocalizedPath(path, locale);
         <p class="eyebrow">{copy.heroEyebrow}</p>
         <h1 id="home-title">{copy.heroTitle}</h1>
         <p>{copy.heroDescription}</p>
-        <div class="actions">
-          <a class="button primary" href={href("/chapters/overview/")}
-            >{copy.primaryAction}</a
-          >
-          <a class="button" href="#mvp">{copy.secondaryAction}</a>
-        </div>
+        <HomeLearningProgress locale={locale} client:load />
       </div>
       <div class="system-map" aria-label={copy.mapAriaLabel}>
         <svg viewBox="0 0 620 420" role="img">
