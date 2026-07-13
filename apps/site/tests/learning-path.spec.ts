@@ -394,6 +394,36 @@ test("keeps chapter navigation usable without JavaScript", async ({
   await context.close();
 });
 
+test("completed chapters continue without rewriting progress", async ({
+  page,
+}) => {
+  await seedLearningProgress(page, ["rag"]);
+  await page.addInitScript(() => {
+    const originalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key === "ai-history-learning-progress") {
+        throw new Error("progress writes unavailable");
+      }
+
+      return originalSetItem.call(this, key, value);
+    };
+  });
+  await page.goto("/chapters/rag/");
+
+  const journey = page.getByTestId("chapter-journey");
+  await expect(
+    journey.getByRole("heading", { name: "本章已完成" }),
+  ).toBeVisible();
+
+  const completionLink = journey.getByTestId("complete-and-continue");
+  await expect(completionLink).toHaveRole("link");
+  await expect(completionLink).toHaveText("下一章：Agent Loop");
+  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
+
+  await completionLink.click();
+  await expect(page).toHaveURL(/\/chapters\/agent\/$/);
+});
+
 test("falls back to no-save navigation after a storage write fails", async ({
   page,
 }) => {

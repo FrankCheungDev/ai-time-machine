@@ -155,7 +155,15 @@
     {/if}
 
     {#if nextChapter}
-      {#if continueWithoutSaving}
+      {#if currentChapterComplete}
+        <a
+          class="button primary"
+          data-testid="complete-and-continue"
+          href={nextChapter.href}
+        >
+          <span>{copy.nextChapter(nextChapter.title)}</span>
+        </a>
+      {:else if continueWithoutSaving}
         <a
           class="button primary"
           data-testid="complete-and-continue"
@@ -175,7 +183,7 @@
           <small>{copy.nextChapter(nextChapter.title)}</small>
         </a>
       {/if}
-    {:else}
+    {:else if !currentChapterComplete}
       <button
         class="button primary"
         data-testid="complete-and-continue"
