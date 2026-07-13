@@ -61,7 +61,10 @@
     : undefined;
 
   function syncProgress(): void {
-    progress = readLearningProgress().progress;
+    const snapshot = readLearningProgress();
+    progress = snapshot.progress;
+    showStorageWarning = !snapshot.storageAvailable;
+    continueWithoutSaving = !snapshot.storageAvailable;
   }
 
   onMount(() => {

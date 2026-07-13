@@ -187,6 +187,38 @@ test("narrow English complete home keeps its hydrated height stable", async ({
   expect(Math.abs(hydratedHeight - serverHeight)).toBeLessThanOrEqual(1);
 });
 
+test("390px partial home avoids excess unused progress space", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+  await seedLearningProgress(page, ["overview", "expert-system"]);
+  await page.goto("/");
+
+  const progress = page.getByTestId("home-learning-progress");
+  const resetControl = progress.getByRole("button", {
+    name: "重置学习进度",
+  });
+  await expect(resetControl).toBeVisible();
+
+  const unusedSpace = await resetControl.evaluate((resetButton) => {
+    const progressIsland = resetButton.closest(
+      '[data-testid="home-learning-progress"]',
+    );
+    if (!progressIsland) throw new Error("progress island not found");
+
+    return (
+      progressIsland.getBoundingClientRect().bottom -
+      resetButton.getBoundingClientRect().bottom
+    );
+  });
+
+  expect(unusedSpace).toBeLessThanOrEqual(64);
+  await context.close();
+});
+
 test("home reset confirmation can cancel or clear progress", async ({
   page,
 }) => {
@@ -385,6 +417,58 @@ test("falls back to no-save navigation after a storage write fails", async ({
 
   await completionLink.click();
   await expect(page).toHaveURL(/\/chapters\/agent\/$/);
+});
+
+test("shows no-save chapter navigation immediately when storage reads fail and recovers", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const originalGetItem = Storage.prototype.getItem;
+    let readsAvailable = false;
+
+    Storage.prototype.getItem = function (key) {
+      if (!readsAvailable) {
+        throw new Error("storage unavailable");
+      }
+
+      return originalGetItem.call(this, key);
+    };
+
+    (
+      window as typeof window & {
+        restoreLearningProgressReads: () => void;
+      }
+    ).restoreLearningProgressReads = () => {
+      readsAvailable = true;
+    };
+  });
+  await page.goto("/chapters/rag/");
+
+  const journey = page.getByTestId("chapter-journey");
+  const completionLink = journey.getByTestId("complete-and-continue");
+  await expect(journey.getByTestId("storage-warning")).toHaveText(
+    "本设备无法保存学习进度，章节仍可正常阅读。",
+  );
+  await expect(completionLink).toHaveText(
+    /继续下一章（不保存进度）.*下一章：Agent Loop/,
+  );
+  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
+  await expect(completionLink).toHaveRole("link");
+
+  await page.evaluate(() => {
+    (
+      window as typeof window & {
+        restoreLearningProgressReads: () => void;
+      }
+    ).restoreLearningProgressReads();
+    window.dispatchEvent(
+      new CustomEvent("ai-history:learning-progress-changed"),
+    );
+  });
+
+  await expect(journey.getByTestId("storage-warning")).toHaveCount(0);
+  await expect(completionLink).toHaveText(/标记完成并继续.*下一章：Agent Loop/);
+  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
 });
 
 test("completing Agent alone returns to the first incomplete chapter", async ({

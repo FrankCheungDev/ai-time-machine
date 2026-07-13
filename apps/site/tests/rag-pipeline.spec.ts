@@ -445,6 +445,8 @@ test("Overview MDX chapter renders the chapter-zero narrative", async ({
     {
       route: "/chapters/overview/",
       heading: "总览：AI 为什么不是突然变成大模型的？",
+      description:
+        "沿着规则搜索、知识工程、概率统计、深度学习、Transformer、RAG 与 Agent，理解现代 AI 系统如何逐步形成。",
       spine: "从规则到系统",
       reading: "每章看四件事",
       simplification: "这是一张学习地图，不是完整 AI 百科",
@@ -453,6 +455,8 @@ test("Overview MDX chapter renders the chapter-zero narrative", async ({
     {
       route: "/en/chapters/overview/",
       heading: "Overview: Why did AI not suddenly become large models?",
+      description:
+        "Follow rules and search, knowledge engineering, probability, deep learning, Transformers, RAG, and agents to see how modern AI systems emerged.",
       spine: "From Rules To Systems",
       reading: "Four Things To Notice In Every Chapter",
       simplification: "This Is A Learning Map, Not A Complete AI Encyclopedia",
@@ -469,6 +473,11 @@ test("Overview MDX chapter renders the chapter-zero narrative", async ({
 
   for (const overview of overviewPages) {
     await page.goto(overview.route);
+
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      overview.description,
+    );
 
     await expect(
       page.getByRole("heading", { level: 1, name: overview.heading }),

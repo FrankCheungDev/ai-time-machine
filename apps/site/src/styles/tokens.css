@@ -731,11 +731,16 @@ main {
     flex: 1 1 150px;
   }
 
-  .home-learning-progress {
-    min-block-size: calc(
-      190px + var(--section-padding) + var(--section-padding) +
-        var(--section-padding) + var(--section-padding)
-    );
+  .home-learning-progress .review-links {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .home-learning-progress .review-links a {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
   }
 
   .chapter-main {
