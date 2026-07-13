@@ -1,12 +1,17 @@
 <script lang="ts">
   import { DemoShell, SvgScene } from "@ai-history/demo-core";
   import { getSearchTreeDemo, type Locale } from "@ai-history/data";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   export let locale: Locale = "zh-CN";
 
   let activeStrategyId = "bfs";
   $: searchTreeDemo = getSearchTreeDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter(
+    "search",
+    locale,
+  ).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -36,7 +41,7 @@
 </script>
 
 <DemoShell
-  title={searchTreeDemo.title}
+  title={activityTitle ?? searchTreeDemo.title}
   question={searchTreeDemo.question}
   simplificationNote={searchTreeDemo.simplificationNote}
   learningGoals={searchTreeDemo.learningGoals}

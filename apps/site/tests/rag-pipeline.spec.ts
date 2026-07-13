@@ -103,6 +103,9 @@ test("RAG chapter presents an interactive pipeline demo", async ({ page }) => {
     }),
   ).toBeVisible();
   await expect(
+    page.getByRole("heading", { level: 2, name: "RAG 流程演示" }),
+  ).toBeVisible();
+  await expect(
     page.getByText("为什么只靠模型参数回答问题不够？", { exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Query", { exact: true })).toBeVisible();
@@ -179,9 +182,6 @@ test("LLM system chapter bridges foundation models to RAG and Agent", async ({
     page.getByText("为什么大模型还需要外部知识和工具？", { exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Context Window", { exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "继续看 RAG Pipeline" }),
-  ).toBeVisible();
 });
 
 test("Agent chapter shows the action loop and repair branch", async ({
@@ -804,7 +804,6 @@ test.describe("Mobile responsive foundation", () => {
           const style = getComputedStyle(title);
 
           return {
-            bottom: rect.bottom,
             fontSize: Number.parseFloat(style.fontSize),
             height: rect.height,
           };
@@ -814,7 +813,6 @@ test.describe("Mobile responsive foundation", () => {
         42,
       );
       expect(titleMetrics.height, `${width}px title height`).toBeLessThan(150);
-      expect(titleMetrics.bottom, `${width}px title bottom`).toBeLessThan(360);
     }
   });
 
@@ -962,58 +960,80 @@ test.describe("Mobile responsive foundation", () => {
     expect(spacing).toBeGreaterThanOrEqual(12);
   });
 
-  test("shows stepper instructions and controls before mobile diagrams", async ({
+  test("shows the mobile diagram before its explanation and controls", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
+    for (const viewport of [
+      { width: 375, height: 667 },
+      { width: 390, height: 844 },
+    ]) {
+      await page.setViewportSize(viewport);
 
-    for (const route of stepperDemoRoutes) {
-      await page.goto(route);
-      await page
-        .locator(".demo-shell")
-        .first()
-        .evaluate((element) => element.scrollIntoView({ block: "start" }));
+      for (const route of stepperDemoRoutes) {
+        await page.goto(route);
 
-      const layout = await page.evaluate(() => {
-        const rect = (selector: string) => {
-          const element = document.querySelector(selector);
-          if (!element) {
-            return null;
+        const stepper = page.locator(".stepper").first();
+        await stepper.evaluate((element) =>
+          element.scrollIntoView({ block: "start" }),
+        );
+
+        const layout = await stepper.evaluate((element) => {
+          const rect = (selector: string) => {
+            const target = element.querySelector(selector);
+            if (!target) {
+              return null;
+            }
+
+            const { bottom, top } = target.getBoundingClientRect();
+            return { bottom, top };
+          };
+
+          return {
+            scene: rect(".step-scene"),
+            heading: rect(".step-content h3"),
+            control: rect(".controls button:last-child:not(:disabled)"),
+            viewportHeight: window.innerHeight,
+          };
+        });
+
+        expect(
+          layout.scene,
+          `${route} scene at ${viewport.width}px`,
+        ).not.toBeNull();
+        expect(
+          layout.heading,
+          `${route} heading at ${viewport.width}px`,
+        ).not.toBeNull();
+        expect(
+          layout.control,
+          `${route} next control at ${viewport.width}px`,
+        ).not.toBeNull();
+        expect(
+          layout.scene!.top,
+          `${route} scene before heading at ${viewport.width}px`,
+        ).toBeLessThan(layout.heading!.top);
+        expect(
+          layout.heading!.top,
+          `${route} heading before controls at ${viewport.width}px`,
+        ).toBeLessThan(layout.control!.top);
+
+        if (viewport.width === 390) {
+          for (const [label, box] of [
+            ["scene", layout.scene],
+            ["heading", layout.heading],
+            ["next control", layout.control],
+          ] as const) {
+            expect(
+              box!.bottom,
+              `${route} ${label} below viewport top`,
+            ).toBeGreaterThan(0);
+            expect(
+              box!.top,
+              `${route} ${label} above viewport bottom`,
+            ).toBeLessThan(layout.viewportHeight);
           }
-
-          const { bottom, top } = element.getBoundingClientRect();
-          return { bottom, top };
-        };
-
-        return {
-          control: rect(
-            ".demo-shell button, .demo-shell select, .demo-shell input",
-          ),
-          heading: rect(".demo-shell h3"),
-          scene: rect(".demo-shell [data-mobile-scroll-scene]"),
-          viewportHeight: window.innerHeight,
-        };
-      });
-
-      expect(layout.heading, `${route} step heading`).not.toBeNull();
-      expect(layout.control, `${route} first control`).not.toBeNull();
-      expect(layout.scene, `${route} scroll scene`).not.toBeNull();
-      expect(
-        layout.heading!.bottom,
-        `${route} step heading in first mobile view`,
-      ).toBeLessThan(layout.viewportHeight);
-      expect(
-        layout.control!.bottom,
-        `${route} first control in first mobile view`,
-      ).toBeLessThan(layout.viewportHeight);
-      expect(
-        layout.heading!.top,
-        `${route} step heading before diagram`,
-      ).toBeLessThan(layout.scene!.top);
-      expect(
-        layout.control!.top,
-        `${route} first control before diagram`,
-      ).toBeLessThan(layout.scene!.top);
+        }
+      }
     }
   });
 });

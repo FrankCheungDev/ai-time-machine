@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DemoShell } from "@ai-history/demo-core";
   import { getExpertSystemDemo, type Locale } from "@ai-history/data";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   export let locale: Locale = "zh-CN";
@@ -15,6 +16,10 @@
   let selected: Record<string, boolean> = initialSelected;
 
   $: expertSystemDemo = getExpertSystemDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter(
+    "expert-system",
+    locale,
+  ).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -37,7 +42,7 @@
 </script>
 
 <DemoShell
-  title={expertSystemDemo.title}
+  title={activityTitle ?? expertSystemDemo.title}
   question={expertSystemDemo.question}
   simplificationNote={expertSystemDemo.simplificationNote}
   learningGoals={expertSystemDemo.learningGoals}

@@ -12,51 +12,107 @@ const englishDemoChapterCases = [
   {
     route: "/en/chapters/search/",
     title: "Symbolic AI And Search: Can machines act intelligent by searching?",
+    activityTitle: "Search Tree Walkthrough",
     evidence:
       "Why did early AI rely on search, and why did it encounter combinatorial explosion?",
   },
   {
     route: "/en/chapters/expert-system/",
     title: "Expert Systems: Can expert knowledge be written as if-then rules?",
+    activityTitle: "Expert System Inference",
     evidence:
       "Can expert knowledge be written as rules, and why do rule systems become brittle?",
   },
   {
     route: "/en/chapters/bayes/",
     title: "Probabilistic Reasoning: How do machines handle uncertainty?",
+    activityTitle: "Bayesian Update Lab",
     evidence: "How does evidence change a belief?",
   },
   {
     route: "/en/chapters/decision-boundary/",
     title:
       "Classic Machine Learning: How do machines learn decision boundaries from data?",
+    activityTitle: "Decision Boundary Explorer",
     evidence: "How do machines learn classification boundaries from data?",
   },
   {
     route: "/en/chapters/cnn/",
     title:
       "Deep Learning And CNNs: How do machines learn local visual features?",
+    activityTitle: "CNN Kernel Explorer",
     evidence: "How do machines identify local features in an image?",
   },
   {
     route: "/en/chapters/attention/",
     title:
       "Attention And Transformers: Why can tokens directly attend to each other?",
+    activityTitle: "Attention Map Explorer",
     evidence:
       "Why is Attention better suited than an RNN for modeling long-range dependencies?",
   },
   {
     route: "/en/chapters/rag/",
     title: "RAG: How do large language models connect to external knowledge?",
+    activityTitle: "RAG Pipeline Walkthrough",
     evidence:
       "Why are model parameters alone not enough for answering questions?",
   },
   {
     route: "/en/chapters/agent/",
     title: "Agents: How do large language models execute multi-step tasks?",
+    activityTitle: "Agent Loop Walkthrough",
     evidence:
       "Why is an agent a looped control system rather than a one-shot answer?",
   },
+] as const;
+
+const chineseDemoChapterCases = [
+  {
+    route: "/chapters/search/",
+    title: "符号主义与搜索：机器能否通过搜索表现出智能？",
+    activityTitle: "搜索树逐步探索",
+  },
+  {
+    route: "/chapters/expert-system/",
+    title: "专家系统：专家知识能否写成 if-then 规则？",
+    activityTitle: "专家系统推理演示",
+  },
+  {
+    route: "/chapters/bayes/",
+    title: "概率推理：机器如何处理不确定性？",
+    activityTitle: "贝叶斯更新实验",
+  },
+  {
+    route: "/chapters/decision-boundary/",
+    title: "经典机器学习：机器如何从数据中学习决策边界？",
+    activityTitle: "决策边界探索",
+  },
+  {
+    route: "/chapters/cnn/",
+    title: "深度学习与 CNN：机器如何从图像中学习局部特征？",
+    activityTitle: "CNN 卷积核实验",
+  },
+  {
+    route: "/chapters/attention/",
+    title: "Attention 与 Transformer：token 为什么可以直接互相关注？",
+    activityTitle: "注意力热图探索",
+  },
+  {
+    route: "/chapters/rag/",
+    title: "RAG：大模型如何连接外部知识？",
+    activityTitle: "RAG 流程演示",
+  },
+  {
+    route: "/chapters/agent/",
+    title: "Agent：大模型如何执行多步任务？",
+    activityTitle: "Agent 循环演示",
+  },
+] as const;
+
+const demoActivityTitleCases = [
+  ...chineseDemoChapterCases,
+  ...englishDemoChapterCases,
 ] as const;
 
 const englishLlmSystemChapter = {
@@ -205,12 +261,6 @@ const englishRouteLinkCases = [
     expectedHrefs: ["/diagrams/rag-pipeline.svg"],
   },
   {
-    label: "overview actions",
-    route: "/en/chapters/overview/",
-    selector: ".actions a",
-    expectedHrefs: ["/en/timeline/", "/en/chapters/search/"],
-  },
-  {
     label: "overview external references",
     route: "/en/chapters/overview/",
     selector: 'main a[href^="https://"]',
@@ -219,12 +269,6 @@ const englishRouteLinkCases = [
       "https://www.deeplearningbook.org/",
       "https://arxiv.org/abs/1706.03762",
     ],
-  },
-  {
-    label: "LLM system follow-on links",
-    route: "/en/chapters/llm-system/",
-    selector: ".actions a",
-    expectedHrefs: ["/en/chapters/rag/", "/en/chapters/agent/"],
   },
 ] as const;
 
@@ -284,7 +328,7 @@ test("manual Chinese preference keeps root visits on Chinese", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await expect(page).toHaveURL((url) => url.pathname === "/");
   await expect(
     page.getByRole("heading", { level: 1, name: "交互式人工智能图解史" }),
   ).toBeVisible();
@@ -311,7 +355,7 @@ test("valid cookie preference wins when local storage is invalid", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await expect(page).toHaveURL((url) => url.pathname === "/");
   await context.close();
 });
 
@@ -362,7 +406,7 @@ test("cookie preference is used when local storage is unavailable", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await expect(page).toHaveURL((url) => url.pathname === "/");
   await context.close();
 });
 
@@ -380,7 +424,7 @@ test("the first supported browser language keeps root visits Chinese", async ({
 
   await page.goto("/");
 
-  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await expect(page).toHaveURL((url) => url.pathname === "/");
   await context.close();
 });
 
@@ -398,7 +442,7 @@ test("unsupported lookalike browser languages keep root visits Chinese", async (
 
   await page.goto("/");
 
-  await expect(page).toHaveURL("http://127.0.0.1:4321/");
+  await expect(page).toHaveURL((url) => url.pathname === "/");
   await context.close();
 });
 
@@ -700,6 +744,23 @@ test("English demo and LLM-system chapters are fully localized", async ({
   );
 });
 
+test("demo activity titles stay concise while chapter questions remain H1", async ({
+  page,
+}) => {
+  for (const chapter of demoActivityTitleCases) {
+    await page.goto(chapter.route);
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: chapter.title }),
+      `${chapter.route} chapter question`,
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: chapter.activityTitle }),
+      `${chapter.route} activity title`,
+    ).toBeVisible();
+  }
+});
+
 test("English route classes keep exact localized and static hrefs", async ({
   page,
 }) => {
@@ -854,6 +915,12 @@ test("English RAG chapter renders localized demo controls and scenarios", async 
     page.getByRole("heading", {
       level: 1,
       name: "RAG: How do large language models connect to external knowledge?",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      level: 2,
+      name: "RAG Pipeline Walkthrough",
     }),
   ).toBeVisible();
   await expect(

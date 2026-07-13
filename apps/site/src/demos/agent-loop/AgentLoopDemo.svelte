@@ -2,6 +2,7 @@
   import { DemoShell, StepperDemo, SvgScene } from "@ai-history/demo-core";
   import { getAgentLoopDemo, type Locale } from "@ai-history/data";
   import type { AgentLoopStep } from "@ai-history/demo-core";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
   import { resolveAgentBranchNote } from "./agentState";
 
@@ -11,6 +12,7 @@
   let selectedBranchId = "";
 
   $: agentLoopDemo = getAgentLoopDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter("agent", locale).activityTitle;
   $: branchNote = resolveAgentBranchNote(agentLoopDemo, selectedBranchId);
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
@@ -68,7 +70,7 @@
 </script>
 
 <DemoShell
-  title={agentLoopDemo.title}
+  title={activityTitle ?? agentLoopDemo.title}
   question={agentLoopDemo.question}
   simplificationNote={agentLoopDemo.simplificationNote}
   learningGoals={agentLoopDemo.learningGoals}

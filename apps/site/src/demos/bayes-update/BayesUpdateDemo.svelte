@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DemoShell } from "@ai-history/demo-core";
   import { getBayesUpdateDemo, type Locale } from "@ai-history/data";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   export let locale: Locale = "zh-CN";
@@ -10,6 +11,7 @@
   let evidence = initialDemo.evidenceDefault;
 
   $: bayesUpdateDemo = getBayesUpdateDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter("bayes", locale).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -31,7 +33,7 @@
 </script>
 
 <DemoShell
-  title={bayesUpdateDemo.title}
+  title={activityTitle ?? bayesUpdateDemo.title}
   question={bayesUpdateDemo.question}
   simplificationNote={bayesUpdateDemo.simplificationNote}
   learningGoals={bayesUpdateDemo.learningGoals}

@@ -3,6 +3,7 @@
   import { getRagPipelineDemo, type Locale } from "@ai-history/data";
   import type { DemoStep } from "@ai-history/demo-core";
   import { gsap } from "gsap";
+  import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
 
   export let locale: Locale = "zh-CN";
@@ -33,6 +34,7 @@
   let selectedScenarioId = initialDemo.scenarios?.[1]?.id ?? "";
 
   $: ragPipelineDemo = getRagPipelineDemo(locale);
+  $: activityTitle = getLocalizedLearningChapter("rag", locale).activityTitle;
   $: demoCoreCopy = getSiteCopy(locale).demoCore;
   $: copy =
     locale === "en"
@@ -92,7 +94,7 @@
 </script>
 
 <DemoShell
-  title={ragPipelineDemo.title}
+  title={activityTitle ?? ragPipelineDemo.title}
   question={ragPipelineDemo.question}
   simplificationNote={ragPipelineDemo.simplificationNote}
   learningGoals={ragPipelineDemo.learningGoals}
