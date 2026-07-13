@@ -131,6 +131,62 @@ test("home shows review destinations when the whole path is complete", async ({
   await expect(diagramsLink).toHaveAttribute("href", "/diagrams/");
 });
 
+test("narrow English complete home keeps its hydrated height stable", async ({
+  browser,
+}) => {
+  const viewport = { width: 320, height: 900 };
+  const serverContext = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport,
+  });
+  const serverPage = await serverContext.newPage();
+  await serverPage.goto("/en/");
+  const serverProgress = serverPage.getByTestId("home-learning-progress");
+  await expect(
+    serverProgress.getByRole("link", { name: "Start with the overview" }),
+  ).toBeVisible();
+  const serverHeight = await serverProgress.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  await serverContext.close();
+
+  const hydratedContext = await browser.newContext({ viewport });
+  const hydratedPage = await hydratedContext.newPage();
+  await seedLearningProgress(
+    hydratedPage,
+    chapterCases.map(({ id }) => id),
+  );
+  await hydratedPage.goto("/en/");
+  const hydratedProgress = hydratedPage.getByTestId("home-learning-progress");
+  await expect(
+    hydratedProgress.getByText("Learning path complete"),
+  ).toBeVisible();
+
+  const controls = [
+    hydratedProgress.getByRole("link", { name: "Review the timeline" }),
+    hydratedProgress.getByRole("link", { name: "Review the lineage" }),
+    hydratedProgress.getByRole("link", { name: "Review diagram sources" }),
+    hydratedProgress.getByRole("button", {
+      name: "Reset learning progress",
+    }),
+  ];
+  for (const control of controls) {
+    await expect(control).toBeVisible();
+    expect(
+      await control.evaluate(
+        (element) => element.getBoundingClientRect().height,
+      ),
+    ).toBeGreaterThanOrEqual(44);
+  }
+
+  const hydratedHeight = await hydratedProgress.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  await hydratedContext.close();
+
+  expect(Math.abs(hydratedHeight - serverHeight)).toBeLessThanOrEqual(1);
+});
+
 test("home reset confirmation can cancel or clear progress", async ({
   page,
 }) => {

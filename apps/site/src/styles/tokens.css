@@ -731,6 +731,13 @@ main {
     flex: 1 1 150px;
   }
 
+  .home-learning-progress {
+    min-block-size: calc(
+      190px + var(--section-padding) + var(--section-padding) +
+        var(--section-padding) + var(--section-padding)
+    );
+  }
+
   .chapter-main {
     padding: 42px 0 56px;
   }
