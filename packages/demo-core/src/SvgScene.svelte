@@ -69,6 +69,7 @@
     height: 1px;
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
   }
 
   .svg-scene-controls label {
@@ -135,6 +136,10 @@
   }
 
   @media (max-width: 760px) {
+    .svg-scene-view-input {
+      visibility: visible;
+    }
+
     .svg-scene-controls {
       display: flex;
     }

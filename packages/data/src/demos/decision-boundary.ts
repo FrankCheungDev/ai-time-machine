@@ -36,13 +36,13 @@ const decisionBoundaryCopies = {
     title: "经典机器学习：机器如何从数据中学习决策边界？",
     question: "机器如何从数据中学习分类边界？",
     simplificationNote:
-      "本案例用预设二维点和边界说明归纳偏置，不训练真实模型，也不代表真实分类器性能。",
+      "本案例让预设边界按异常点位置和模式敏感度产生教学型变化，用于说明归纳偏置；它不训练真实模型，也不代表真实分类器性能。",
     learningGoals: [
       "理解经典机器学习如何从样本中学习决策边界。",
       "比较线性、非线性和过拟合边界的归纳偏置。",
       "观察异常点如何影响模型边界和泛化风险。",
     ],
-    outlierLabel: "拖动式异常点",
+    outlierLabel: "可拖动的负类异常点",
     modes: {
       linear: {
         label: "线性边界",
@@ -66,13 +66,13 @@ const decisionBoundaryCopies = {
       "Classic Machine Learning: How do machines learn decision boundaries from data?",
     question: "How do machines learn classification boundaries from data?",
     simplificationNote:
-      "This demo uses preset two-dimensional points and boundaries to illustrate inductive bias. It does not train a real model or represent actual classifier performance.",
+      "This demo changes preset boundaries according to the outlier position and each mode's teaching sensitivity to illustrate inductive bias. It does not train a real model or represent actual classifier performance.",
     learningGoals: [
       "Understand how classic machine learning learns a decision boundary from examples.",
       "Compare the inductive biases of linear, nonlinear, and overfit boundaries.",
       "Observe how an outlier can affect a model boundary and its generalization risk.",
     ],
-    outlierLabel: "Draggable outlier",
+    outlierLabel: "Draggable negative-class outlier",
     modes: {
       linear: {
         label: "Linear boundary",

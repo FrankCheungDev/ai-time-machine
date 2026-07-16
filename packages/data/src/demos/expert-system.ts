@@ -36,9 +36,10 @@ const expertSystemDemos = {
         explanation: "当例外越来越多，规则之间开始互相覆盖甚至冲突。",
       },
     ],
+    noMatchTitle: "没有规则命中",
+    noMatchDescription:
+      "当前条件不足以匹配任何规则，因此系统不会给出结论。规则库需要覆盖这种情况，或明确返回“未知”。",
     stableTitle: "规则链正常触发",
-    stableDescription:
-      "当前条件匹配一条清晰规则：鸟类、有翅膀、状态正常，因此系统给出会飞的结论。",
     conflictTitle: "规则冲突：会飞还是不会飞？",
     conflictDescription:
       "加入企鹅例外后，通用规则和例外规则同时触发，系统必须额外维护优先级和冲突处理。",
@@ -80,9 +81,10 @@ const expertSystemDemos = {
           "As exceptions multiply, rules begin to override or even conflict with one another.",
       },
     ],
+    noMatchTitle: "No rule matches",
+    noMatchDescription:
+      'The current conditions do not satisfy any rule, so the system produces no conclusion. The rule base must cover this case or explicitly return "unknown."',
     stableTitle: "The rule chain fires normally",
-    stableDescription:
-      "The current conditions match a clear rule: the object is a bird, has wings, and is healthy, so the system concludes that it can fly.",
     conflictTitle: "Rule conflict: can it fly or not?",
     conflictDescription:
       "After the penguin exception is added, the general rule and the exception fire together, so the system needs extra priority and conflict-resolution logic.",

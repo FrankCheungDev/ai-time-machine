@@ -3,6 +3,7 @@
   import { getCnnKernelDemo, type Locale } from "@ai-history/data";
   import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
+  import { calculateFeatureMapResponses } from "./cnnState";
 
   export let locale: Locale = "zh-CN";
 
@@ -33,14 +34,12 @@
     cnnKernelDemo.kernels.find((kernel) => kernel.id === activeKernelId) ??
     cnnKernelDemo.kernels[0];
   $: activeStep = cnnKernelDemo.scanSteps[stepIndex];
-  $: response = activeKernel.matrix
-    .flatMap((row, y) =>
-      row.map(
-        (value, x) =>
-          value * cnnKernelDemo.imageGrid[activeStep.y + y][activeStep.x + x],
-      ),
-    )
-    .reduce((sum, value) => sum + value, 0);
+  $: featureMapResponses = calculateFeatureMapResponses(
+    cnnKernelDemo.imageGrid,
+    activeKernel.matrix,
+    cnnKernelDemo.scanSteps,
+  );
+  $: response = featureMapResponses[stepIndex] ?? 0;
 
   function nextStep() {
     stepIndex = Math.min(cnnKernelDemo.scanSteps.length - 1, stepIndex + 1);
@@ -56,17 +55,21 @@
   learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
   simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="kernel-buttons" aria-label={copy.kernelAriaLabel}>
-    {#each cnnKernelDemo.kernels as kernel}
-      <button
-        type="button"
-        class:active={kernel.id === activeKernelId}
-        on:click={() => (activeKernelId = kernel.id)}
-      >
-        {kernel.label}
-      </button>
-    {/each}
+  <div class="kernel-buttons">
+    <div class="kernel-options" role="group" aria-label={copy.kernelAriaLabel}>
+      {#each cnnKernelDemo.kernels as kernel}
+        <button
+          type="button"
+          class:active={kernel.id === activeKernelId}
+          aria-pressed={kernel.id === activeKernelId}
+          on:click={() => (activeKernelId = kernel.id)}
+        >
+          {kernel.label}
+        </button>
+      {/each}
+    </div>
     <button
+      class="next-step-button"
       type="button"
       on:click={nextStep}
       disabled={stepIndex === cnnKernelDemo.scanSteps.length - 1}
@@ -101,7 +104,7 @@
     <div class="feature-map" aria-label={copy.featureMapAriaLabel}>
       {#each cnnKernelDemo.scanSteps as step, index}
         <span class:filled={index <= stepIndex}
-          >{index <= stepIndex ? response : ""}</span
+          >{index <= stepIndex ? (featureMapResponses[index] ?? "") : ""}</span
         >
       {/each}
     </div>
@@ -120,8 +123,16 @@
   .kernel-buttons {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     gap: 10px;
     margin-top: 20px;
+  }
+
+  .kernel-options {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   button {
@@ -137,7 +148,7 @@
   }
 
   button.active,
-  button:last-child {
+  .next-step-button {
     color: white;
     background: var(--color-green, #2f7d5b);
     border-color: var(--color-green, #2f7d5b);

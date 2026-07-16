@@ -3,6 +3,7 @@
   import { getBayesUpdateDemo, type Locale } from "@ai-history/data";
   import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
+  import { calculatePosteriorPercent } from "./bayesMath";
 
   export let locale: Locale = "zh-CN";
 
@@ -19,17 +20,25 @@
           priorStatusLabel: "Prior",
           posteriorStatusLabel: "Posterior belief",
           explanationTitle: "The posterior belief changes with the evidence",
+          evidenceOpposes: "opposes the belief",
+          evidenceNeutral: "neutral evidence",
+          evidenceSupports: "supports the belief",
         }
       : {
           priorStatusLabel: "先验",
           posteriorStatusLabel: "后验信念",
           explanationTitle: "后验信念会随证据改变",
+          evidenceOpposes: "反对当前信念",
+          evidenceNeutral: "中性证据",
+          evidenceSupports: "支持当前信念",
         };
-  $: priorProbability = Math.min(0.95, Math.max(0.05, Number(prior) / 100));
-  $: likelihoodRatio = 0.2 + (Number(evidence) / 100) * 4.8;
-  $: posteriorOdds =
-    (priorProbability / (1 - priorProbability)) * likelihoodRatio;
-  $: posterior = Math.round((posteriorOdds / (1 + posteriorOdds)) * 100);
+  $: evidenceDirection =
+    Number(evidence) < 50
+      ? copy.evidenceOpposes
+      : Number(evidence) > 50
+        ? copy.evidenceSupports
+        : copy.evidenceNeutral;
+  $: posterior = calculatePosteriorPercent(Number(prior), Number(evidence));
 </script>
 
 <DemoShell
@@ -54,7 +63,9 @@
         />
       </label>
       <label>
-        <span>{bayesUpdateDemo.evidenceLabel}: {evidence}%</span>
+        <span>
+          {bayesUpdateDemo.evidenceLabel}: {evidence}% · {evidenceDirection}
+        </span>
         <input
           aria-label={bayesUpdateDemo.evidenceLabel}
           type="range"

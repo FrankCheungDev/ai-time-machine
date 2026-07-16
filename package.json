@@ -10,16 +10,17 @@
     "test": "pnpm -r --if-present test",
     "lint": "pnpm -r --if-present lint",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "validate:data": "pnpm --filter @ai-history/data validate"
   },
   "devDependencies": {
-    "@playwright/test": "latest",
-    "@types/node": "latest",
-    "prettier": "latest",
+    "@playwright/test": "1.61.1",
+    "@types/node": "26.0.1",
+    "prettier": "3.9.0",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-svelte": "^4.1.1",
-    "typescript": "latest",
-    "vitest": "latest"
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
   },
   "packageManager": "pnpm@11.7.0"
 }

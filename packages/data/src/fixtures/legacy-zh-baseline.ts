@@ -1,19 +1,19 @@
 // Canonical SHA-256 digests generated from the 13 Chinese exports at this commit.
 export const legacyZhBaseline = {
-  sourceCommit: "be77e685cd07d019236c6b3c5fcd1382730e0017",
+  sourceCommit: "c4e94360770e10e274dad8b60134b788a69ce372",
   hashes: {
     agentLoopDemo:
       "d26a75b593d46204be2fbf456017a5655a9b8648da21ded58010108dcdb8a522",
     attentionMapDemo:
       "494cbcc6385fa9cc101c527e9c672b4f180eb9d6842755b91f6293cd1e4b20a1",
     bayesUpdateDemo:
-      "9e92d39b060d1ad429354d5d2314f17eff6d87596abdc4eb02f822b75133304b",
+      "19ea2a61743065958bd706408c93ae25e75db8759c0d4a202ab049b342fd5242",
     cnnKernelDemo:
       "9159f86c658be1c4cc9264795dc085a1ef142c8ef12a6791062c10c921bad0ae",
     decisionBoundaryDemo:
-      "31f126f9371ffe61c407a148940b62e05db46c8acfcf91b1af684ec7d5def497",
+      "3b0daf10ef5992d1fcec23149d12fa38010c5af105c274ca2c2628da6abca534",
     expertSystemDemo:
-      "e898b9f72d5a019192bf207867d2cf2723502017df27aa55d2802712aae39429",
+      "f3ed62bbe2f18f2dfd4bed03691ff70fc13352d7d7be6f18584ec9efeace84a5",
     ragPipelineDemo:
       "92f203f6583a1c358c1d18689c1f3c77fd684227cfaaea54b3be014a3add190b",
     searchTreeDemo:
