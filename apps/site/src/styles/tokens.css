@@ -462,6 +462,33 @@ main {
   color: var(--color-muted);
 }
 
+.timeline-entry {
+  grid-template-columns: minmax(112px, 130px) minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.timeline-entry-meta,
+.timeline-entry-content {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.timeline-entry-year {
+  color: var(--color-blue);
+  font-weight: 780;
+}
+
+.timeline-entry-era {
+  margin: 0;
+}
+
+.timeline-entry-action {
+  align-self: center;
+  justify-self: end;
+  text-align: center;
+}
+
 .lineage-view-controls {
   display: flex;
   gap: 10px;
@@ -685,6 +712,14 @@ main {
 
   .timeline-item {
     grid-template-columns: 1fr;
+  }
+
+  .timeline-entry {
+    gap: 12px;
+  }
+
+  .timeline-entry-action {
+    justify-self: start;
   }
 
   .llm-map {

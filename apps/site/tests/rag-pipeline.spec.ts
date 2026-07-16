@@ -273,8 +273,8 @@ test("Bayes chapter updates belief from evidence", async ({ page }) => {
   ).toBeVisible();
   await waitForDemoReady(page);
 
-  await page.getByLabel("证据强度").fill("80");
-  await expect(page.getByText(/后验信念 \d+%/)).toBeVisible();
+  await page.getByLabel("证据支持度").fill("50");
+  await expect(page.getByText("后验信念 30%", { exact: true })).toBeVisible();
 });
 
 test("Decision-boundary chapter compares learned boundaries", async ({

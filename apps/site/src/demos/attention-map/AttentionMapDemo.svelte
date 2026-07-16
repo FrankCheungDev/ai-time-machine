@@ -73,10 +73,11 @@
   learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
   simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="mode-switch" aria-label={copy.modeSwitchAriaLabel}>
+  <div class="mode-switch" role="group" aria-label={copy.modeSwitchAriaLabel}>
     <button
       type="button"
       class:active={mode === "attention"}
+      aria-pressed={mode === "attention"}
       on:click={() => (mode = "attention")}
     >
       {copy.attentionModeButton}
@@ -84,17 +85,19 @@
     <button
       type="button"
       class:active={mode === "rnn"}
+      aria-pressed={mode === "rnn"}
       on:click={() => (mode = "rnn")}
     >
       {copy.rnnModeButton}
     </button>
   </div>
 
-  <div class="token-row" aria-label={copy.tokenSelectionAriaLabel}>
+  <div class="token-row" role="group" aria-label={copy.tokenSelectionAriaLabel}>
     {#each attentionMapDemo.tokens as token}
       <button
         type="button"
         class:active={selectedTokenId === token.id}
+        aria-pressed={selectedTokenId === token.id}
         on:click={() => selectToken(token.id)}
       >
         {token.label}

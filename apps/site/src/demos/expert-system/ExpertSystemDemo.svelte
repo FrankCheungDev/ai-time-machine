@@ -3,6 +3,7 @@
   import { getExpertSystemDemo, type Locale } from "@ai-history/data";
   import { getLocalizedLearningChapter } from "../../i18n/learning";
   import { getSiteCopy } from "../../i18n/siteCopy";
+  import { resolveExpertSystemResult } from "./expertSystemState";
 
   export let locale: Locale = "zh-CN";
 
@@ -25,16 +26,10 @@
     locale === "en"
       ? { conditionsAriaLabel: "Condition selection", ifLabel: "IF" }
       : { conditionsAriaLabel: "条件选择", ifLabel: "IF" };
-  $: matchedRules = expertSystemDemo.rules.filter((rule) =>
-    rule.ifAll.every((conditionId) => selected[conditionId]),
-  );
-  $: hasConflict = matchedRules.length > 1;
-  $: resultTitle = hasConflict
-    ? expertSystemDemo.conflictTitle
-    : expertSystemDemo.stableTitle;
-  $: resultDescription = hasConflict
-    ? expertSystemDemo.conflictDescription
-    : expertSystemDemo.stableDescription;
+  $: result = resolveExpertSystemResult(expertSystemDemo, selected);
+  $: matchedRules = result.matchedRules;
+  $: hasConflict = result.kind === "conflict";
+  $: hasNoMatch = result.kind === "no-match";
 
   function toggle(conditionId: string) {
     selected = { ...selected, [conditionId]: !selected[conditionId] };
@@ -86,9 +81,14 @@
       {/each}
     </div>
 
-    <section class:conflict={hasConflict} class="result" aria-live="polite">
-      <h3>{resultTitle}</h3>
-      <p>{resultDescription}</p>
+    <section
+      class:conflict={hasConflict}
+      class:no-match={hasNoMatch}
+      class="result"
+      aria-live="polite"
+    >
+      <h3>{result.title}</h3>
+      <p>{result.description}</p>
     </section>
   </div>
 </DemoShell>
@@ -167,6 +167,11 @@
   .result.conflict {
     border-color: var(--color-coral, #c6543f);
     background: #fff2ef;
+  }
+
+  .result.no-match {
+    border-color: var(--color-amber, #b87918);
+    background: #fff8e8;
   }
 
   h3 {

@@ -49,11 +49,16 @@
   learningGoalsLabel={demoCoreCopy.learningGoalsLabel}
   simplificationLabel={demoCoreCopy.simplificationLabel}
 >
-  <div class="strategy-buttons" aria-label={copy.strategyAriaLabel}>
+  <div
+    class="strategy-buttons"
+    role="group"
+    aria-label={copy.strategyAriaLabel}
+  >
     {#each searchTreeDemo.strategies as strategy}
       <button
         type="button"
         class:active={strategy.id === activeStrategyId}
+        aria-pressed={strategy.id === activeStrategyId}
         on:click={() => (activeStrategyId = strategy.id)}
       >
         {strategy.label}

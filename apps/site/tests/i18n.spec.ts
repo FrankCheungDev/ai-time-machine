@@ -824,9 +824,9 @@ test("English Bayes interaction updates the posterior belief", async ({
 }) => {
   await openReadyEnglishDemo(page, "/en/chapters/bayes/");
 
-  await page.getByRole("slider", { name: "Evidence strength" }).fill("80");
+  await page.getByRole("slider", { name: "Evidence support" }).fill("50");
   await expect(
-    page.getByText("Posterior belief 63%", { exact: true }),
+    page.getByText("Posterior belief 30%", { exact: true }),
   ).toBeVisible();
 });
 

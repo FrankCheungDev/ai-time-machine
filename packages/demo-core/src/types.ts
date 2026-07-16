@@ -97,10 +97,11 @@ export interface ExpertSystemDemo extends DemoMetadata {
   conditions: ExpertCondition[];
   exceptionCondition: ExpertCondition;
   rules: ExpertRule[];
+  noMatchTitle: string;
+  noMatchDescription: string;
   conflictTitle: string;
   conflictDescription: string;
   stableTitle: string;
-  stableDescription: string;
 }
 
 export interface SearchTreeNode {

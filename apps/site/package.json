@@ -7,20 +7,20 @@
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro check && ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
-    "test": "vitest run src/**/*.test.ts && playwright test",
-    "test:unit": "vitest run src/**/*.test.ts",
+    "test": "vitest run src && playwright test",
+    "test:unit": "vitest run src",
     "lint": "ASTRO_TELEMETRY_DISABLED=1 astro check"
   },
   "dependencies": {
     "@ai-history/data": "workspace:*",
     "@ai-history/demo-core": "workspace:*",
-    "@astrojs/mdx": "latest",
-    "@astrojs/svelte": "latest",
-    "astro": "latest",
-    "gsap": "latest",
-    "svelte": "latest"
+    "@astrojs/mdx": "7.0.0",
+    "@astrojs/svelte": "9.0.0",
+    "astro": "7.0.3",
+    "gsap": "3.15.0",
+    "svelte": "5.56.4"
   },
   "devDependencies": {
-    "@astrojs/check": "latest"
+    "@astrojs/check": "0.9.9"
   }
 }
