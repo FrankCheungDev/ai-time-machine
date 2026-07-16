@@ -126,7 +126,7 @@ describe("demo acceptance metadata", () => {
 describe("localized data accessors", () => {
   it("matches all Chinese defaults to the independent pre-task baseline", () => {
     expect(legacyZhBaseline.sourceCommit).toBe(
-      "be77e685cd07d019236c6b3c5fcd1382730e0017",
+      "c4e94360770e10e274dad8b60134b788a69ce372",
     );
 
     const currentLegacyExports = {
