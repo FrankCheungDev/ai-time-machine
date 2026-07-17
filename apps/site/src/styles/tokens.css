@@ -544,7 +544,7 @@ main {
 }
 
 .lineage-panel[data-view="detail"] svg {
-  min-width: 860px;
+  min-width: 1040px;
 }
 
 .lineage-panel path[id^="arrow-"] {
@@ -578,6 +578,17 @@ main {
 .lineage-node.agent rect,
 .lineage-node.safety rect {
   stroke: var(--color-coral);
+}
+
+.lineage-node-link {
+  cursor: pointer;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 4;
+}
+
+.lineage-panel a:focus-visible .lineage-node-link {
+  stroke: var(--color-blue);
 }
 
 .lineage-panel text {

@@ -1,4 +1,11 @@
 export { agentLoopDemo, getAgentLoopDemo } from "./demos/agent-loop";
+export { chapterRegistry, getChapterDefinition, isChapterId } from "./chapters";
+export type {
+  ChapterDefinition,
+  ChapterId,
+  ChapterKind,
+  DemoChapterId,
+} from "./chapters";
 export { attentionMapDemo, getAttentionMapDemo } from "./demos/attention-map";
 export { bayesUpdateDemo, getBayesUpdateDemo } from "./demos/bayes-update";
 export { cnnKernelDemo, getCnnKernelDemo } from "./demos/cnn-kernel";

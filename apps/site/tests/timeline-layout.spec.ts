@@ -7,7 +7,7 @@ test("timeline entries keep metadata, content, and action in stable desktop colu
   await page.goto("/timeline/");
 
   const entries = page.locator(".timeline-entry");
-  await expect(entries).toHaveCount(8);
+  await expect(entries).toHaveCount(9);
 
   const layout = await entries.evaluateAll((items) =>
     items.map((item) => {

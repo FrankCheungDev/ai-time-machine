@@ -1,8 +1,9 @@
 ---
 import { getAiTimelineEntries } from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
-import { timelinePageCopy } from "../../i18n/pages";
-import { type Locale, toLocalizedPath } from "../../i18n/locales";
+import { timelineActionLabel, timelinePageCopy } from "../../i18n/pages";
+import type { Locale } from "../../i18n/locales";
+import { getLocalizedLearningChapter } from "../../i18n/learning";
 
 interface Props {
   locale: Locale;
@@ -11,7 +12,7 @@ interface Props {
 const { locale } = Astro.props;
 const copy = timelinePageCopy[locale];
 const timelineEntries = getAiTimelineEntries(locale);
-const href = (path: string) => toLocalizedPath(path, locale);
+const actionLabel = timelineActionLabel[locale];
 ---
 
 <BaseLayout title={copy.title} description={copy.description} locale={locale}>
@@ -22,29 +23,28 @@ const href = (path: string) => toLocalizedPath(path, locale);
 
     <section class="timeline-list" aria-label={copy.listAriaLabel}>
       {
-        timelineEntries.map((entry) => (
-          <article
-            id={`timeline-${entry.id}`}
-            class="timeline-item timeline-entry"
-          >
-            <div class="timeline-entry-meta">
-              <span class="timeline-entry-year">{entry.year}</span>
-              <p class="eyebrow timeline-entry-era">{entry.era}</p>
-            </div>
-            <div class="timeline-entry-content">
-              <h2>{entry.title}</h2>
-              <p>{entry.summary}</p>
-            </div>
-            {entry.demoHref && (
-              <a
-                class="button timeline-entry-action"
-                href={href(entry.demoHref)}
-              >
-                {entry.demoLabel}
+        timelineEntries.map((entry) => {
+          const chapter = getLocalizedLearningChapter(entry.chapterId, locale);
+
+          return (
+            <article
+              id={`timeline-${entry.id}`}
+              class="timeline-item timeline-entry"
+            >
+              <div class="timeline-entry-meta">
+                <span class="timeline-entry-year">{entry.year}</span>
+                <p class="eyebrow timeline-entry-era">{entry.era}</p>
+              </div>
+              <div class="timeline-entry-content">
+                <h2>{entry.title}</h2>
+                <p>{entry.summary}</p>
+              </div>
+              <a class="button timeline-entry-action" href={chapter.href}>
+                {actionLabel(chapter.label, chapter.title)}
               </a>
-            )}
-          </article>
-        ))
+            </article>
+          );
+        })
       }
     </section>
   </main>

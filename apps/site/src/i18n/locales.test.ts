@@ -2,7 +2,7 @@ import {
   defaultLocale as dataDefaultLocale,
   normalizeLocale as dataNormalizeLocale,
   supportedLocales as dataSupportedLocales,
-} from "@ai-history/data";
+} from "@ai-history/data/locales";
 import { describe, expect, it } from "vitest";
 import {
   defaultLocale,

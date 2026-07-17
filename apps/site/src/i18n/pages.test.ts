@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { chapterRegistry } from "@ai-history/data/chapters";
 import {
   coreDiagrams,
   homeLearningPathCards,
@@ -39,4 +40,25 @@ describe("home SVG nodes", () => {
       homeMapNodes["zh-CN"].map((node) => Object.keys(node).sort()),
     );
   });
+});
+
+describe("home learning path cards", () => {
+  it.each(["zh-CN", "en"] as const)(
+    "derives order, routes, labels, and short titles from the registry for %s",
+    (locale) => {
+      expect(
+        homeLearningPathCards[locale].map(({ route, label, title }) => ({
+          route,
+          label,
+          title,
+        })),
+      ).toEqual(
+        chapterRegistry.map((chapter) => ({
+          route: chapter.route,
+          label: `${chapter.kind === "demo" ? "Demo" : "Chapter"} ${chapter.number}`,
+          title: chapter.shortTitle[locale],
+        })),
+      );
+    },
+  );
 });
