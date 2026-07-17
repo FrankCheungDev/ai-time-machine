@@ -905,23 +905,65 @@ test("English Attention interaction changes the token and mode", async ({
   ).toBeVisible();
 });
 
-test("English Agent interaction selects the localized failure branch", async ({
+test("English Agent interaction completes the localized retry scenario", async ({
   page,
 }) => {
   await openReadyEnglishDemo(page, "/en/chapters/agent/");
 
-  await page.getByRole("button", { name: "Simulate a tool failure" }).click();
+  const scenarioGroup = page.getByRole("group", { name: "Agent scenario" });
+  const successScenario = scenarioGroup.getByRole("button", {
+    name: "Normal success",
+  });
+  const failureScenario = scenarioGroup.getByRole("button", {
+    name: "Tool fails first",
+  });
+
+  await expect(successScenario).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Next" }).click();
+  await failureScenario.click();
+  await expect(page.getByText("1 / 7", { exact: true })).toBeVisible();
+  await expect(failureScenario).toHaveAttribute("aria-pressed", "true");
+  await expect(successScenario).toHaveAttribute("aria-pressed", "false");
   await expect(
     page.getByRole("heading", {
       level: 3,
-      name: "Observe failure and revise the plan",
+      name: "Break down the task and make a plan",
     }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "The tool returns no result or outdated information, so the agent must inspect the failure and revise its plan.",
+      "The first tool call fails, so the agent must revise the plan, call the tool again, and inspect the retry result.",
       { exact: true },
     ),
+  ).toBeVisible();
+
+  for (let index = 0; index < 4; index += 1) {
+    await page.getByRole("button", { name: "Next" }).click();
+  }
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Retry the tool with the revised plan",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Generate the final answer" }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Observe a usable retry result",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Generate the final answer" }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Generate the final answer" }),
   ).toBeVisible();
 });
 

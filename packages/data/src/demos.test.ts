@@ -251,7 +251,6 @@ describe("localized data accessors", () => {
     );
 
     const currentLegacyExports = {
-      agentLoopDemo,
       attentionMapDemo,
       bayesUpdateDemo,
       decisionBoundaryDemo,
@@ -317,6 +316,111 @@ describe("localized data accessors", () => {
     expect(getAgentLoopDemo("en").title).toBe(
       "Agents: How do large language models execute multi-step tasks?",
     );
+  });
+
+  it("defines valid Agent success and retry scenario traces", () => {
+    const demo = getAgentLoopDemo("zh-CN");
+    const nodeIds = demo.nodes.map(({ id }) => id);
+    const edgeIds = demo.edges.map(({ id }) => id);
+    const stepIds = demo.steps.map(({ id }) => id);
+
+    expect(nodeIds).toEqual(["plan", "tool", "observe", "revise", "final"]);
+    expect(new Set(nodeIds).size).toBe(5);
+    expect(demo.edges).toEqual([
+      { id: "plan-tool", from: "plan", to: "tool" },
+      { id: "tool-observe", from: "tool", to: "observe" },
+      { id: "observe-revise", from: "observe", to: "revise" },
+      { id: "revise-tool", from: "revise", to: "tool" },
+      { id: "observe-final", from: "observe", to: "final" },
+    ]);
+    expect(new Set(edgeIds).size).toBe(5);
+    expect(demo.nodes.find(({ id }) => id === "final")!.x).toBeGreaterThan(
+      demo.nodes.find(({ id }) => id === "observe")!.x,
+    );
+    expect(demo.nodes.find(({ id }) => id === "revise")!.y).toBeGreaterThan(
+      demo.nodes.find(({ id }) => id === "observe")!.y,
+    );
+
+    expect(stepIds).toEqual([
+      "plan",
+      "tool-primary",
+      "observe-success",
+      "observe-failure",
+      "revise",
+      "tool-retry",
+      "observe-retry",
+      "final",
+    ]);
+    expect(new Set(stepIds).size).toBe(8);
+    expect(demo.defaultScenarioId).toBe("success");
+    expect(
+      demo.scenarios.map(({ id, stepIds: scenarioStepIds }) => ({
+        id,
+        stepIds: scenarioStepIds,
+      })),
+    ).toEqual([
+      {
+        id: "success",
+        stepIds: ["plan", "tool-primary", "observe-success", "final"],
+      },
+      {
+        id: "tool-failure",
+        stepIds: [
+          "plan",
+          "tool-primary",
+          "observe-failure",
+          "revise",
+          "tool-retry",
+          "observe-retry",
+          "final",
+        ],
+      },
+    ]);
+
+    const nodeIdSet = new Set(nodeIds);
+    const edgeById = new Map(demo.edges.map((edge) => [edge.id, edge]));
+    const stepById = new Map(demo.steps.map((step) => [step.id, step]));
+
+    for (const edge of demo.edges) {
+      expect(nodeIdSet.has(edge.from), edge.id).toBe(true);
+      expect(nodeIdSet.has(edge.to), edge.id).toBe(true);
+    }
+
+    for (const step of demo.steps) {
+      expect(nodeIdSet.has(step.nodeId), step.id).toBe(true);
+      expect(step.activeNodeIds, step.id).toEqual([step.nodeId]);
+      expect(
+        step.activeEdgeIds.every((edgeId) => edgeById.has(edgeId)),
+        step.id,
+      ).toBe(true);
+    }
+
+    expect(demo.scenarios.some(({ id }) => id === demo.defaultScenarioId)).toBe(
+      true,
+    );
+
+    for (const scenario of demo.scenarios) {
+      const scenarioSteps = scenario.stepIds.map((stepId) => {
+        const step = stepById.get(stepId);
+        expect(step, `${scenario.id}:${stepId}`).toBeDefined();
+        return step!;
+      });
+
+      for (let index = 1; index < scenarioSteps.length; index += 1) {
+        const previousStep = scenarioSteps[index - 1]!;
+        const currentStep = scenarioSteps[index]!;
+        expect(
+          currentStep.activeEdgeIds.some((edgeId) => {
+            const edge = edgeById.get(edgeId);
+            return (
+              edge?.from === previousStep.nodeId &&
+              edge.to === currentStep.nodeId
+            );
+          }),
+          `${scenario.id}:${previousStep.id}->${currentStep.id}`,
+        ).toBe(true);
+      }
+    }
   });
 
   it("defines deterministic search costs and algorithm IDs", () => {
@@ -430,15 +534,16 @@ describe("localized topology parity", () => {
     expect(enAttention.links).toEqual(zhAttention.links);
 
     const projectAgent = (demo: ReturnType<typeof getAgentLoopDemo>) => ({
-      steps: demo.steps.map(({ id, activeNodeIds, activeEdgeIds }) => ({
+      nodes: demo.nodes.map(({ id, x, y }) => ({ id, x, y })),
+      edges: demo.edges,
+      steps: demo.steps.map(({ id, nodeId, activeNodeIds, activeEdgeIds }) => ({
         id,
+        nodeId,
         activeNodeIds,
         activeEdgeIds,
       })),
-      branches: demo.branchOptions.map(({ id, targetStepId }) => ({
-        id,
-        targetStepId,
-      })),
+      scenarios: demo.scenarios.map(({ id, stepIds }) => ({ id, stepIds })),
+      defaultScenarioId: demo.defaultScenarioId,
     });
     expect(projectAgent(getAgentLoopDemo("en"))).toEqual(
       projectAgent(getAgentLoopDemo("zh-CN")),
@@ -594,12 +699,18 @@ describe("getter mutation isolation", () => {
       () => getAgentLoopDemo("zh-CN"),
       agentLoopDemo,
       (demo) => ({
+        nodeDescription: demo.nodes[0]?.description,
+        edgeTo: demo.edges[0]?.to,
         description: demo.steps[0]?.description,
         activeNodeId: demo.steps[0]?.activeNodeIds[0],
+        scenarioStepId: demo.scenarios[0]?.stepIds[0],
       }),
       (demo) => {
+        demo.nodes[0]!.description = "mutated";
+        demo.edges[0]!.to = "mutated";
         demo.steps[0]!.description = "mutated";
         demo.steps[0]!.activeNodeIds[0] = "mutated";
+        demo.scenarios[0]!.stepIds[0] = "mutated";
       },
     );
     expectMutationIsolation(

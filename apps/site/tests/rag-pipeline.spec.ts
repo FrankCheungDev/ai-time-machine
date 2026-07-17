@@ -188,7 +188,7 @@ test("LLM system chapter bridges foundation models to RAG and Agent", async ({
   await expect(page.getByText("Context Window", { exact: true })).toBeVisible();
 });
 
-test("Agent chapter shows the action loop and repair branch", async ({
+test("Agent chapter completes the full failure and retry loop", async ({
   page,
 }) => {
   await page.goto("/chapters/agent/");
@@ -206,15 +206,108 @@ test("Agent chapter shows the action loop and repair branch", async ({
   ).toBeVisible();
   await waitForDemoReady(page);
 
+  const scenarioGroup = page.getByRole("group", { name: "Agent 场景" });
+  const successScenario = scenarioGroup.getByRole("button", {
+    name: "正常成功",
+  });
+  const failureScenario = scenarioGroup.getByRole("button", {
+    name: "工具先失败",
+  });
+
+  await expect(successScenario).toHaveAttribute("aria-pressed", "true");
+  await expect(failureScenario).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByText("1 / 4", { exact: true })).toBeVisible();
+
   await page.getByRole("button", { name: "下一步" }).click();
   await expect(
     page.getByRole("heading", { level: 3, name: "调用工具获取真实信息" }),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "模拟工具失败" }).click();
+  await failureScenario.click();
+  await expect(page.getByText("1 / 7", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "拆解任务并制定计划" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "观察到工具调用失败" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "生成最终答案" }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "下一步" }).click();
   await expect(
     page.getByRole("heading", { level: 3, name: "观察失败并修正计划" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "生成最终答案" }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "按修正后的计划再次调用工具",
+    }),
+  ).toBeVisible();
+  await expect(page.locator("#agent-node-tool").locator("..")).toHaveClass(
+    /node-active/,
+  );
+  await expect(page.locator("#agent-edge-revise-tool")).toHaveClass(
+    /edge-active/,
+  );
+  await expect(page.locator("#agent-edge-observe-final")).toHaveClass(
+    /edge-muted/,
+  );
+  await expect(page.locator("#agent-edge-observe-revise")).toHaveAttribute(
+    "d",
+    / C /,
+  );
+  await expect(page.locator("#agent-edge-revise-tool")).toHaveAttribute(
+    "d",
+    / C /,
+  );
+  await expect(
+    page.getByRole("heading", { level: 3, name: "生成最终答案" }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "观察到重试结果可用" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "生成最终答案" }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "生成最终答案" }),
+  ).toBeVisible();
+  await expect(page.locator("#agent-edge-revise-final")).toHaveCount(0);
+  await expect(page.locator("#agent-edge-observe-final")).toHaveClass(
+    /edge-active/,
+  );
+
+  await successScenario.click();
+  await expect(page.getByText("1 / 4", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "拆解任务并制定计划" }),
+  ).toBeVisible();
+  await expect(successScenario).toHaveAttribute("aria-pressed", "true");
+  await expect(failureScenario).toHaveAttribute("aria-pressed", "false");
+
+  for (let index = 0; index < 3; index += 1) {
+    await page.getByRole("button", { name: "下一步" }).click();
+  }
+  await expect(
+    page.getByRole("heading", { level: 3, name: "生成最终答案" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "观察失败并修正计划" }),
+  ).toHaveCount(0);
 });
 
 test("Search chapter shows strategy expansion differences", async ({

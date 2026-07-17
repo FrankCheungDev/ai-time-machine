@@ -64,20 +64,37 @@ export interface AttentionMapDemo extends DemoMetadata {
   links: AttentionLink[];
 }
 
-export interface AgentLoopStep extends DemoStep {
-  loopLabel: string;
-}
-
-export interface AgentBranchOption {
+export interface AgentLoopNode {
   id: string;
   label: string;
-  targetStepId: string;
   description: string;
+  x: number;
+  y: number;
+}
+
+export interface AgentLoopEdge {
+  id: string;
+  from: string;
+  to: string;
+}
+
+export interface AgentLoopStep extends DemoStep {
+  nodeId: string;
+}
+
+export interface AgentLoopScenario {
+  id: string;
+  label: string;
+  description: string;
+  stepIds: string[];
 }
 
 export interface AgentLoopDemo extends DemoMetadata {
+  nodes: AgentLoopNode[];
+  edges: AgentLoopEdge[];
   steps: AgentLoopStep[];
-  branchOptions: AgentBranchOption[];
+  scenarios: AgentLoopScenario[];
+  defaultScenarioId: string;
 }
 
 export interface ExpertCondition {
