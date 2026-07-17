@@ -40,24 +40,123 @@ test("expert system explains an exception-only match", async ({ page }) => {
   );
 });
 
-test("CNN feature map preserves each scanned window response", async ({
+test("Search exposes deterministic expansion and A* scores", async ({
   page,
 }) => {
+  await page.goto("/chapters/search/");
+  await waitForDemoReady(page);
+
+  const expansionLine = page
+    .locator(".state-line")
+    .filter({ hasText: "展开序列" });
+  const frontierPeak = page
+    .locator(".status-metrics > div")
+    .filter({ hasText: "frontier 峰值" });
+
+  await expect(expansionLine).toContainText("Start");
+  await expect(page.getByText("步骤 1 / 8", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(page.locator("#search-node-a").locator("..")).toHaveAttribute(
+    "data-search-state",
+    "current",
+  );
+  await expect(
+    page.locator("#search-node-start").locator(".."),
+  ).toHaveAttribute("data-search-state", "expanded");
+  await expect(page.locator("g[data-search-state='frontier']")).toHaveCount(4);
+
+  for (let index = 0; index < 6; index += 1) {
+    await page.getByRole("button", { name: "下一步" }).click();
+  }
+
+  await expect(expansionLine).toContainText(
+    "Start → A → B → C → A1 → A2 → B1 → Goal",
+  );
+  await expect(frontierPeak).toContainText("4");
+  const resultNote = page.locator(".result-note.found");
+  await expect(resultNote).toContainText("最终路径: Start → C → Goal");
+  await expect(resultNote).toContainText("路径成本: 2");
+
+  await page.getByRole("button", { name: "DFS 深度优先" }).click();
+  await expect(page.getByText("步骤 1 / 8", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "上一步" })).toBeDisabled();
+
+  await page.getByRole("button", { name: "A* 启发式" }).click();
+  await expect(
+    page.getByText("g=0 h=2 f=2", { exact: true }).first(),
+  ).toBeVisible();
+  await expect(
+    page.locator(".state-line").filter({ hasText: "frontier 顺序" }),
+  ).toContainText("C (g=1 h=1 f=2) → B (g=1 h=3 f=4) → A (g=1 h=4 f=5)");
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(expansionLine).toContainText("Start → C → Goal");
+  await expect(page.getByText("步骤 3 / 3", { exact: true })).toBeVisible();
+  await expect(page.locator("g[data-search-path='true']")).toHaveCount(3);
+  await expect(page.locator("g[data-search-state='frontier']")).toHaveCount(2);
+  await expect(page.locator("#search-node-goal").locator("..")).toHaveAttribute(
+    "data-search-state",
+    "current",
+  );
+});
+
+test("CNN scans and normalizes the complete feature map", async ({ page }) => {
   await page.goto("/chapters/cnn/");
   await waitForDemoReady(page);
 
   await page.getByRole("button", { name: "平滑卷积" }).click();
-  await page.getByRole("button", { name: "下一步" }).click();
-  await page.getByRole("button", { name: "下一步" }).click();
+  const featureMap = page.getByRole("table", { name: /特征图/ });
+  const featureCells = featureMap.getByRole("cell");
 
-  await expect(page.locator('[aria-label="特征图"] > span')).toHaveText([
-    "3",
-    "6",
-    "9",
+  await expect(page.getByText("1/9 ×", { exact: true })).toBeVisible();
+  await expect(featureCells).toHaveText([
+    "0.33",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
   ]);
   await expect(
-    page.getByText("当前窗口响应: 9", { exact: true }),
+    page.getByText("加权和 3 ÷ 9 = 0.33", { exact: true }),
   ).toBeVisible();
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.getByText("加权和 6 ÷ 9 = 0.67", { exact: true }),
+  ).toBeVisible();
+
+  for (let index = 0; index < 7; index += 1) {
+    await page.getByRole("button", { name: "下一步" }).click();
+  }
+
+  await expect(featureCells).toHaveText([
+    "0.33",
+    "0.67",
+    "1",
+    "0.33",
+    "0.67",
+    "1",
+    "0.33",
+    "0.67",
+    "1",
+  ]);
+  await expect(
+    page.getByText("当前窗口响应: 1", { exact: true }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "上一步" }).click();
+  await expect(featureCells.nth(8)).toHaveText("");
+  await expect(page.getByRole("button", { name: "下一步" })).toBeEnabled();
+
+  await page.getByRole("button", { name: "边缘检测" }).click();
+  await expect(featureCells).toHaveText(["3", "", "", "", "", "", "", "", ""]);
+  await expect(page.getByRole("button", { name: "上一步" })).toBeDisabled();
 });
 
 test("decision boundary reacts when the outlier moves", async ({ page }) => {

@@ -109,22 +109,23 @@ export interface SearchTreeNode {
   label: string;
   x: number;
   y: number;
+  heuristicCost: number;
 }
 
 export interface SearchTreeEdge {
   id: string;
   from: string;
   to: string;
+  cost: number;
 }
 
+export type SearchAlgorithm = "bfs" | "dfs" | "astar";
+
 export interface SearchStrategy {
-  id: string;
+  id: SearchAlgorithm;
   label: string;
   title: string;
   description: string;
-  activeNodeIds: string[];
-  activeEdgeIds: string[];
-  frontierLabel: string;
 }
 
 export interface SearchTreeDemo extends DemoMetadata {
@@ -168,6 +169,7 @@ export interface CnnKernel {
   title: string;
   description: string;
   matrix: number[][];
+  normalizationDivisor: number;
 }
 
 export interface CnnScanStep {

@@ -40,6 +40,38 @@ test.describe("Demo control accessibility", () => {
     await expect(detailOption).toBeChecked();
   });
 
+  test("CNN matrices expose table semantics and dynamic names", async ({
+    page,
+  }) => {
+    await page.goto("/chapters/cnn/");
+    await waitForDemoReady(page);
+
+    const imageGrid = page.getByRole("table", {
+      name: /输入图像网格，5 行 5 列；扫描步骤 1 \/ 9/,
+    });
+    const kernelMatrix = page.getByRole("table", {
+      name: /边缘检测卷积核矩阵，3 行 3 列/,
+    });
+    const featureMap = page.getByRole("table", {
+      name: /特征图，3 行 3 列；已计算 1 \/ 9 个位置/,
+    });
+
+    await expect(imageGrid.getByRole("cell")).toHaveCount(25);
+    await expect(kernelMatrix.getByRole("cell")).toHaveCount(9);
+    await expect(featureMap.getByRole("cell")).toHaveCount(9);
+    await expect(featureMap.getByRole("cell").first()).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+
+    await page.getByRole("button", { name: "下一步" }).click();
+    await expect(
+      page.getByRole("table", {
+        name: /特征图，3 行 3 列；已计算 2 \/ 9 个位置/,
+      }),
+    ).toBeVisible();
+  });
+
   const selectionGroups = [
     {
       route: "/chapters/search/",

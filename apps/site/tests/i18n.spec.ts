@@ -797,12 +797,21 @@ test("English search interaction changes the active strategy", async ({
   await openReadyEnglishDemo(page, "/en/chapters/search/");
 
   await page.getByRole("button", { name: "A* heuristic" }).click();
+  await expect(page.getByText("Step 1 / 3", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("g=0 h=2 f=2", { exact: true }).first(),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", {
       level: 3,
       name: "A* uses a heuristic to move toward the goal",
     }),
   ).toBeVisible();
+
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByText(/Final path: Start → C → Goal/)).toBeVisible();
+  await expect(page.getByText(/Path cost: 2/)).toBeVisible();
 });
 
 test("English expert-system interaction reveals a rule conflict", async ({
@@ -853,6 +862,14 @@ test("English CNN interaction changes the kernel and scan step", async ({
 
   await page.getByRole("button", { name: "Smoothing convolution" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await expect(
+    page.getByText("Weighted sum 6 ÷ 9 = 0.67", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("table", {
+      name: /Feature map, 3 rows by 3 columns\. 2 of 9 positions calculated/,
+    }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", {
       level: 3,
