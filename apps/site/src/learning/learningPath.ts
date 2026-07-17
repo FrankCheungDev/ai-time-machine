@@ -1,22 +1,12 @@
-const definitions = [
-  { id: "overview", route: "/chapters/overview/", kind: "chapter" },
-  { id: "search", route: "/chapters/search/", kind: "demo" },
-  { id: "expert-system", route: "/chapters/expert-system/", kind: "demo" },
-  { id: "bayes", route: "/chapters/bayes/", kind: "demo" },
-  {
-    id: "decision-boundary",
-    route: "/chapters/decision-boundary/",
-    kind: "demo",
-  },
-  { id: "cnn", route: "/chapters/cnn/", kind: "demo" },
-  { id: "attention", route: "/chapters/attention/", kind: "demo" },
-  { id: "llm-system", route: "/chapters/llm-system/", kind: "chapter" },
-  { id: "rag", route: "/chapters/rag/", kind: "demo" },
-  { id: "agent", route: "/chapters/agent/", kind: "demo" },
-] as const;
+import {
+  chapterRegistry,
+  isChapterId,
+  type ChapterId,
+  type ChapterKind,
+} from "@ai-history/data/chapters";
 
-export type LearningChapterId = (typeof definitions)[number]["id"];
-export type LearningChapterKind = (typeof definitions)[number]["kind"];
+export type LearningChapterId = ChapterId;
+export type LearningChapterKind = ChapterKind;
 
 export interface LearningChapter {
   id: LearningChapterId;
@@ -32,14 +22,14 @@ export interface LearningPathContext {
   next?: LearningChapter;
 }
 
-export const learningPath: readonly LearningChapter[] = definitions;
-
-const learningChapterIds = new Set<string>(learningPath.map(({ id }) => id));
+export const learningPath: readonly LearningChapter[] = chapterRegistry.map(
+  ({ id, route, kind }) => ({ id, route, kind }),
+);
 
 export function isLearningChapterId(
   value: unknown,
 ): value is LearningChapterId {
-  return typeof value === "string" && learningChapterIds.has(value);
+  return isChapterId(value);
 }
 
 export function getLearningPathContext(

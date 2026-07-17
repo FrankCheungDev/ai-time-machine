@@ -1,3 +1,8 @@
+import {
+  chapterRegistry,
+  type ChapterId,
+  type DemoChapterId as CanonicalDemoChapterId,
+} from "@ai-history/data/chapters";
 import type { Locale } from "./locales";
 
 export const commonLabels = {
@@ -401,9 +406,9 @@ export const demoChapterCopy = {
       ],
     },
   },
-} satisfies Record<string, Record<Locale, DemoChapterCopy>>;
+} satisfies Record<CanonicalDemoChapterId, Record<Locale, DemoChapterCopy>>;
 
-export type DemoChapterId = keyof typeof demoChapterCopy;
+export type DemoChapterId = CanonicalDemoChapterId;
 
 interface LlmSystemCardCopy {
   label: string;
@@ -540,31 +545,29 @@ export const llmSystemChapterCopy = {
 export const homePageCopy = {
   "zh-CN": {
     title: "总览",
-    heroEyebrow: "中文优先 · 图解优先 · 静态可部署",
+    heroEyebrow: "从规则到智能体 · 图解学习",
     heroTitle: "交互式人工智能图解史",
     heroDescription:
       "用可点击、可分步播放、可对比的教学型案例，解释 AI 技术从规则、统计学习、深度学习到大模型、RAG 与 Agent 的演化脉络。",
     mapAriaLabel: "AI 技术演化主线图",
     mapTitle: "AI 技术演化主线",
     pathEyebrow: "推荐学习顺序",
-    pathTitle: "第一版主线：从总览到 8 个交互 demo 和 1 个系统桥接章",
-    overviewEyebrow: "Overview Artifacts",
-    overviewTitle: "用时间线、谱系图和图源规范把项目组织起来",
+    pathTitle: "沿着 10 个章节理解 AI 如何一步步演化",
+    overviewEyebrow: "延伸探索",
+    overviewTitle: "从不同视角回看 AI 的演化脉络",
   },
   en: {
     title: "Overview",
-    heroEyebrow: "Chinese-first · Diagram-first · Static deployment",
+    heroEyebrow: "From rules to agents · Learn visually",
     heroTitle: "Interactive Illustrated AI History",
     heroDescription:
       "Explore the evolution of AI from rules and statistical learning to deep learning, large models, RAG, and agents through clickable, step-by-step teaching demos.",
     mapAriaLabel: "AI technical evolution map",
     mapTitle: "AI technical evolution",
     pathEyebrow: "Recommended learning path",
-    pathTitle:
-      "First edition spine: one overview, eight interactive demos, and one system bridge chapter",
-    overviewEyebrow: "Overview Artifacts",
-    overviewTitle:
-      "Organize the project with a timeline, lineage map, and diagram source guide",
+    pathTitle: "Follow ten chapters to see how AI evolved step by step",
+    overviewEyebrow: "Explore Further",
+    overviewTitle: "Revisit AI's evolution from different perspectives",
   },
 } satisfies Record<Locale, Record<string, string>>;
 
@@ -588,7 +591,7 @@ export const homeMapNodes = {
   ],
 } satisfies Record<Locale, HomeMapNode[]>;
 
-interface HomeLearningCard {
+export interface HomeLearningCard {
   route: string;
   label: string;
   title: string;
@@ -597,149 +600,103 @@ interface HomeLearningCard {
   meta?: string;
 }
 
-export const homeLearningPathCards = {
-  "zh-CN": [
-    {
-      route: "/chapters/overview/",
-      label: "Chapter 00",
-      title: "00 总览章节",
+type HomeLearningCardCopy = Omit<HomeLearningCard, "route" | "label" | "title">;
+
+const homeLearningPathCardCopy = {
+  "zh-CN": {
+    overview: {
       description:
-        "用 MDX 串起规则、统计学习、深度学习、RAG 与 Agent 的演化主线。",
+        "用一张学习地图串起规则、统计学习、深度学习、RAG 与 Agent 的演化主线。",
       recommendation: "推荐从这里开始",
       meta: "约 5 分钟 · 阅读主线",
     },
-    {
-      route: "/chapters/search/",
-      label: "Demo 01",
-      title: "搜索树 / A*",
+    search: {
       description: "切换 BFS、DFS、A*，观察搜索策略如何影响 frontier。",
     },
-    {
-      route: "/chapters/expert-system/",
-      label: "Demo 02",
-      title: "专家系统规则推理",
+    "expert-system": {
       description: "选择条件并加入例外，观察 if-then 规则如何产生冲突。",
     },
-    {
-      route: "/chapters/bayes/",
-      label: "Demo 03",
-      title: "Bayes 更新",
+    bayes: {
       description: "拖动先验与证据强度，看信念如何被证据更新。",
     },
-    {
-      route: "/chapters/decision-boundary/",
-      label: "Demo 04",
-      title: "决策边界",
+    "decision-boundary": {
       description: "比较线性、非线性、过拟合边界，理解数据驱动学习。",
     },
-    {
-      route: "/chapters/cnn/",
-      label: "Demo 05",
-      title: "CNN 卷积核",
+    cnn: {
       description: "选择 kernel 并推进窗口，观察 feature map 如何生成。",
     },
-    {
-      route: "/chapters/attention/",
-      label: "Demo 06",
-      title: "Attention Map",
+    attention: {
       description: "点击 token，比较 Attention 直接连接和 RNN 链式传递。",
     },
-    {
-      route: "/chapters/llm-system/",
-      label: "Chapter 07",
-      title: "LLM 系统地图",
+    "llm-system": {
       description: "理解上下文、检索、工具、记忆和评估为什么围绕大模型出现。",
     },
-    {
-      route: "/chapters/rag/",
-      label: "Demo 08",
-      title: "RAG Pipeline",
+    rag: {
       description:
         "观察问题如何经过 embedding、检索、重排、prompt、LLM 和引用答案。",
     },
-    {
-      route: "/chapters/agent/",
-      label: "Demo 09",
-      title: "Agent Loop",
+    agent: {
       description:
         "执行 plan、tool call、observation、revise、final answer 的循环。",
     },
-  ],
-  en: [
-    {
-      route: "/chapters/overview/",
-      label: "Chapter 00",
-      title: "00 Overview Chapter",
+  },
+  en: {
+    overview: {
       description:
-        "Use MDX to connect the evolution from rules and statistical learning to deep learning, RAG, and agents.",
+        "Use one learning map to connect the evolution from rules and statistical learning to deep learning, RAG, and agents.",
       recommendation: "Recommended starting point",
       meta: "About 5 minutes · Read the main thread",
     },
-    {
-      route: "/chapters/search/",
-      label: "Demo 01",
-      title: "Search Trees / A*",
+    search: {
       description:
         "Switch among BFS, DFS, and A* to see how search strategies affect the frontier.",
     },
-    {
-      route: "/chapters/expert-system/",
-      label: "Demo 02",
-      title: "Expert System Rule Reasoning",
+    "expert-system": {
       description:
         "Select conditions and add exceptions to see how if-then rules produce conflicts.",
     },
-    {
-      route: "/chapters/bayes/",
-      label: "Demo 03",
-      title: "Bayesian Updating",
+    bayes: {
       description:
         "Adjust the prior and evidence strength to see how evidence updates belief.",
     },
-    {
-      route: "/chapters/decision-boundary/",
-      label: "Demo 04",
-      title: "Decision Boundaries",
+    "decision-boundary": {
       description:
         "Compare linear, nonlinear, and overfit boundaries to understand data-driven learning.",
     },
-    {
-      route: "/chapters/cnn/",
-      label: "Demo 05",
-      title: "CNN Kernels",
+    cnn: {
       description:
         "Choose a kernel and advance the window to see how a feature map is produced.",
     },
-    {
-      route: "/chapters/attention/",
-      label: "Demo 06",
-      title: "Attention Map",
+    attention: {
       description:
         "Select a token and compare direct Attention connections with RNN chain propagation.",
     },
-    {
-      route: "/chapters/llm-system/",
-      label: "Chapter 07",
-      title: "LLM System Map",
+    "llm-system": {
       description:
         "Understand why context, retrieval, tools, memory, and evaluation surround large models.",
     },
-    {
-      route: "/chapters/rag/",
-      label: "Demo 08",
-      title: "RAG Pipeline",
+    rag: {
       description:
         "Follow a question through embedding, retrieval, reranking, prompting, the LLM, and a cited answer.",
     },
-    {
-      route: "/chapters/agent/",
-      label: "Demo 09",
-      title: "Agent Loop",
+    agent: {
       description:
         "Run the loop of planning, tool calls, observation, revision, and a final answer.",
     },
-  ],
-} satisfies Record<Locale, HomeLearningCard[]>;
+  },
+} satisfies Record<Locale, Record<ChapterId, HomeLearningCardCopy>>;
+
+export const homeLearningPathCards = Object.fromEntries(
+  (["zh-CN", "en"] as const).map((locale) => [
+    locale,
+    chapterRegistry.map((chapter) => ({
+      route: chapter.route,
+      label: `${chapter.kind === "demo" ? "Demo" : "Chapter"} ${chapter.number}`,
+      title: chapter.shortTitle[locale],
+      ...homeLearningPathCardCopy[locale][chapter.id],
+    })),
+  ]),
+) as Record<Locale, HomeLearningCard[]>;
 
 interface HomeOverviewCard {
   route: string;
@@ -766,9 +723,9 @@ export const homeOverviewCards = {
     },
     {
       route: "/diagrams/",
-      label: "Guide",
-      title: "图源与导出说明",
-      description: "说明 SVG 命名、截图状态和贡献者图源工作流。",
+      label: "Diagrams",
+      title: "可复用图解与导出",
+      description: "查看可下载的图解资源，以及适合分享和复习的重点画面。",
     },
   ],
   en: [
@@ -788,10 +745,10 @@ export const homeOverviewCards = {
     },
     {
       route: "/diagrams/",
-      label: "Guide",
-      title: "Diagram Sources And Exports",
+      label: "Diagrams",
+      title: "Reusable Diagrams And Exports",
       description:
-        "Learn the SVG naming, screenshot-state, and source workflow conventions for contributors.",
+        "Browse downloadable diagrams and key views designed for sharing and review.",
     },
   ],
 } satisfies Record<Locale, HomeOverviewCard[]>;
@@ -815,6 +772,16 @@ export const timelinePageCopy = {
     listAriaLabel: "AI technical evolution events",
   },
 } satisfies Record<Locale, Record<string, string>>;
+
+export const timelineActionLabel = {
+  "zh-CN": (chapterLabel: string, chapterTitle: string) =>
+    `查看 ${chapterLabel}：${chapterTitle}`,
+  en: (chapterLabel: string, chapterTitle: string) =>
+    `View ${chapterLabel}: ${chapterTitle}`,
+} satisfies Record<
+  Locale,
+  (chapterLabel: string, chapterTitle: string) => string
+>;
 
 export const lineagePageCopy = {
   "zh-CN": {

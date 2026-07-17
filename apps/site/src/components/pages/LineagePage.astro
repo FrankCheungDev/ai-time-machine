@@ -3,7 +3,8 @@ import { getAiLineageEdges, getAiLineageNodes } from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
 import { lineageGroupLabels, lineagePageCopy } from "../../i18n/pages";
 import { getSiteCopy } from "../../i18n/siteCopy";
-import { type Locale, toLocalizedPath } from "../../i18n/locales";
+import type { Locale } from "../../i18n/locales";
+import { getLocalizedLearningChapter } from "../../i18n/learning";
 
 interface Props {
   locale: Locale;
@@ -15,28 +16,25 @@ const siteCopy = getSiteCopy(locale);
 const groupLabels: Record<string, string> = lineageGroupLabels[locale];
 const lineageNodes = getAiLineageNodes(locale);
 const lineageEdges = getAiLineageEdges(locale);
-const href = (path: string) => toLocalizedPath(path, locale);
 const nodeById = Object.fromEntries(
   lineageNodes.map((node) => [node.id, node]),
 );
 const lineageNodeWidth = 132;
 const lineageNodeHeight = 72;
 const lineageNodeRadius = 8;
-const wrappedEnglishEdgeIds = new Set([
-  "symbolic-expert",
-  "statistical-neural",
-  "neural-transformer",
-  "transformer-llm-system",
-  "llm-system-agent",
-]);
+const englishEdgeLabelLines: Record<string, string[]> = {
+  "symbolic-expert": ["Knowledge", "engineering"],
+  "statistical-neural": ["Learning", "boundaries"],
+  "classical-ml-neural": ["Representation", "learning"],
+  "neural-transformer": ["Sequence", "modeling"],
+  "transformer-llm-system": ["Foundation model", "applications"],
+  "llm-system-rag": ["Connecting", "external knowledge"],
+  "llm-system-agent": ["Tools and", "loops"],
+};
 type LineageNode = (typeof lineageNodes)[number];
 
 function getLineageEdgeLabelLines(edgeId: string, label: string) {
-  if (locale !== "en" || !wrappedEnglishEdgeIds.has(edgeId)) {
-    return [label];
-  }
-
-  return label.split(" ");
+  return locale === "en" ? (englishEdgeLabelLines[edgeId] ?? [label]) : [label];
 }
 
 function getLineageEdgeGeometry(
@@ -74,7 +72,7 @@ function getLineageEdgeGeometry(
     return {
       path: `M ${x1} ${y1} L ${x2} ${y2}`,
       labelX: (x1 + x2) / 2,
-      labelY: (y1 + y2) / 2 - 10,
+      labelY: Math.min(from.y, to.y) - 12,
     };
   }
 
@@ -118,7 +116,7 @@ function getLineageEdgeGeometry(
       data-view="fit"
       data-mobile-scroll-scene
     >
-      <svg viewBox="0 0 1120 480" role="img" aria-labelledby="lineage-title">
+      <svg viewBox="0 0 1240 540" role="img" aria-labelledby="lineage-title">
         <title id="lineage-title">{copy.svgTitle}</title>
         <defs>
           <marker
@@ -140,7 +138,7 @@ function getLineageEdgeGeometry(
             const to = nodeById[edge.to];
             const geometry = getLineageEdgeGeometry(edge.id, from, to);
             const labelLines = getLineageEdgeLabelLines(edge.id, edge.label);
-            const labelLineHeight = 9;
+            const labelLineHeight = 11;
             const labelStartY =
               geometry.labelY - ((labelLines.length - 1) * labelLineHeight) / 2;
             return (
@@ -157,7 +155,6 @@ function getLineageEdgeGeometry(
                   y={geometry.labelY}
                   text-anchor="middle"
                   aria-label={edge.label}
-                  style={labelLines.length > 1 ? "font-size: 8px" : undefined}
                 >
                   {labelLines.length === 1
                     ? edge.label
@@ -165,10 +162,6 @@ function getLineageEdgeGeometry(
                         <tspan
                           x={geometry.labelX}
                           y={labelStartY + index * labelLineHeight}
-                          textLength={line.length > 12 ? 48 : undefined}
-                          lengthAdjust={
-                            line.length > 12 ? "spacingAndGlyphs" : undefined
-                          }
                         >
                           {line}
                         </tspan>
@@ -180,42 +173,64 @@ function getLineageEdgeGeometry(
         }
 
         {
-          lineageNodes.map((node) => (
-            <a
-              href={node.href ? href(node.href) : "#"}
-              aria-label={`${node.label}${copy.nodeAriaSeparator}${node.description}`}
-            >
-              <g id={`node-${node.id}`} class={`lineage-node ${node.group}`}>
-                <rect
-                  x={node.x}
-                  y={node.y}
-                  width={lineageNodeWidth}
-                  height={lineageNodeHeight}
-                  rx={lineageNodeRadius}
-                />
-                <text
-                  x={node.x + lineageNodeWidth / 2}
-                  y={node.y + 32}
-                  text-anchor="middle"
-                  style={
-                    locale === "en" && node.label.length > 16
-                      ? "font-size: 13px"
-                      : undefined
-                  }
+          lineageNodes.map((node) => {
+            const accessibleName = `${node.label}${copy.nodeAriaSeparator}${node.description}`;
+            const chapter = node.chapterId
+              ? getLocalizedLearningChapter(node.chapterId, locale)
+              : undefined;
+
+            return (
+              <>
+                <g
+                  id={`node-${node.id}`}
+                  class={`lineage-node ${node.group}`}
+                  role={chapter ? undefined : "img"}
+                  aria-label={chapter ? undefined : accessibleName}
                 >
-                  {node.label}
-                </text>
-                <text
-                  class="node-caption"
-                  x={node.x + lineageNodeWidth / 2}
-                  y={node.y + 52}
-                  text-anchor="middle"
-                >
-                  {groupLabels[node.group] ?? node.group}
-                </text>
-              </g>
-            </a>
-          ))
+                  <rect
+                    x={node.x}
+                    y={node.y}
+                    width={lineageNodeWidth}
+                    height={lineageNodeHeight}
+                    rx={lineageNodeRadius}
+                  />
+                  <text
+                    x={node.x + lineageNodeWidth / 2}
+                    y={node.y + 32}
+                    text-anchor="middle"
+                    style={
+                      locale === "en" && node.label.length > 16
+                        ? "font-size: 13px"
+                        : undefined
+                    }
+                  >
+                    {node.label}
+                  </text>
+                  <text
+                    class="node-caption"
+                    x={node.x + lineageNodeWidth / 2}
+                    y={node.y + 52}
+                    text-anchor="middle"
+                  >
+                    {groupLabels[node.group] ?? node.group}
+                  </text>
+                </g>
+                {chapter && (
+                  <a href={chapter.href} aria-label={accessibleName}>
+                    <rect
+                      class="lineage-node-link"
+                      x={node.x}
+                      y={node.y}
+                      width={lineageNodeWidth}
+                      height={lineageNodeHeight}
+                      rx={lineageNodeRadius}
+                      fill="transparent"
+                    />
+                  </a>
+                )}
+              </>
+            );
+          })
         }
       </svg>
     </section>

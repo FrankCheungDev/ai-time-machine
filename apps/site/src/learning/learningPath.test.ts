@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { chapterRegistry } from "@ai-history/data/chapters";
 import {
   getFirstIncompleteChapter,
   getLearningPathContext,
@@ -26,6 +27,9 @@ describe("learningPath", () => {
     ).toEqual(expected);
     expect(new Set(learningPath.map(({ id }) => id)).size).toBe(10);
     expect(new Set(learningPath.map(({ route }) => route)).size).toBe(10);
+    expect(learningPath).toEqual(
+      chapterRegistry.map(({ id, route, kind }) => ({ id, route, kind })),
+    );
   });
 
   it("returns bounded previous and next chapters", () => {

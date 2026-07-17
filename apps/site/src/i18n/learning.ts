@@ -1,41 +1,10 @@
 import {
-  getLearningPathContext,
-  type LearningChapterId,
-  type LearningChapterKind,
-} from "../learning/learningPath";
+  getChapterDefinition,
+  type ChapterId,
+  type ChapterKind,
+  type DemoChapterId,
+} from "@ai-history/data/chapters";
 import { toLocalizedPath, type Locale } from "./locales";
-
-type DemoLearningChapterId = Exclude<
-  LearningChapterId,
-  "overview" | "llm-system"
->;
-
-const chapterTitles = {
-  "zh-CN": {
-    overview: "总览",
-    search: "搜索树 / A*",
-    "expert-system": "专家系统规则推理",
-    bayes: "贝叶斯更新",
-    "decision-boundary": "决策边界",
-    cnn: "CNN 卷积核",
-    attention: "注意力机制",
-    "llm-system": "LLM 系统地图",
-    rag: "RAG Pipeline",
-    agent: "Agent Loop",
-  },
-  en: {
-    overview: "Overview",
-    search: "Search Trees / A*",
-    "expert-system": "Expert System Rule Reasoning",
-    bayes: "Bayesian Updating",
-    "decision-boundary": "Decision Boundaries",
-    cnn: "CNN Kernels",
-    attention: "Attention",
-    "llm-system": "LLM System Map",
-    rag: "RAG Pipeline",
-    agent: "Agent Loop",
-  },
-} satisfies Record<Locale, Record<LearningChapterId, string>>;
 
 const activityTitles = {
   "zh-CN": {
@@ -58,7 +27,7 @@ const activityTitles = {
     rag: "RAG Pipeline Walkthrough",
     agent: "Agent Loop Walkthrough",
   },
-} satisfies Record<Locale, Record<DemoLearningChapterId, string>>;
+} satisfies Record<Locale, Record<DemoChapterId, string>>;
 
 export interface LearningUiCopy {
   positionLabel: (position: number, total: number) => string;
@@ -140,27 +109,29 @@ export const learningUiCopy = {
 } satisfies Record<Locale, LearningUiCopy>;
 
 export interface LocalizedLearningChapter {
-  id: LearningChapterId;
-  kind: LearningChapterKind;
+  id: ChapterId;
+  kind: ChapterKind;
+  number: string;
+  label: string;
   title: string;
   href: string;
   activityTitle?: string;
 }
 
 export function getLocalizedLearningChapter(
-  id: LearningChapterId,
+  id: ChapterId,
   locale: Locale,
 ): LocalizedLearningChapter {
-  const chapter = getLearningPathContext(id).current;
+  const chapter = getChapterDefinition(id);
   const activityTitle =
-    chapter.kind === "demo"
-      ? activityTitles[locale][id as DemoLearningChapterId]
-      : undefined;
+    chapter.kind === "demo" ? activityTitles[locale][chapter.id] : undefined;
 
   return {
     id: chapter.id,
     kind: chapter.kind,
-    title: chapterTitles[locale][chapter.id],
+    number: chapter.number,
+    label: `${chapter.kind === "demo" ? "Demo" : "Chapter"} ${chapter.number}`,
+    title: chapter.shortTitle[locale],
     href: toLocalizedPath(chapter.route, locale),
     ...(activityTitle ? { activityTitle } : {}),
   };

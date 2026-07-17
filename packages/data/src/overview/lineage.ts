@@ -1,4 +1,11 @@
+import {
+  chapterRegistry,
+  type ChapterDefinition,
+  type ChapterId,
+} from "../chapters";
 import { defaultLocale, getLocalizedValue, type Locale } from "../locales";
+
+type LineageChapterId = Exclude<ChapterId, "overview">;
 
 export interface LineageNode {
   id: string;
@@ -7,7 +14,7 @@ export interface LineageNode {
   x: number;
   y: number;
   description: string;
-  href?: string;
+  chapterId?: LineageChapterId;
 }
 
 export interface LineageEdge {
@@ -17,181 +24,169 @@ export interface LineageEdge {
   label: string;
 }
 
-const localizedLineageNodes = {
-  "zh-CN": [
-    {
-      id: "symbolic",
+type LineageNodeCopy = Omit<LineageNode, "id" | "chapterId">;
+
+const localizedLineageChapterNodeCopy = {
+  "zh-CN": {
+    search: {
       label: "符号主义",
       group: "symbolic",
-      x: 60,
-      y: 110,
+      x: 40,
+      y: 90,
       description: "规则、逻辑、搜索和规划把智能看作可操作的符号结构。",
-      href: "/chapters/search/",
     },
-    {
-      id: "expert",
+    "expert-system": {
       label: "专家系统",
       group: "symbolic",
-      x: 245,
-      y: 110,
+      x: 210,
+      y: 90,
       description: "把领域知识写成规则库，强调可解释推理。",
-      href: "/chapters/expert-system/",
     },
-    {
-      id: "statistical",
+    bayes: {
       label: "统计学习",
       group: "statistical",
-      x: 245,
-      y: 285,
-      description: "用概率和数据描述不确定性，从样本中学习边界。",
-      href: "/chapters/bayes/",
+      x: 210,
+      y: 300,
+      description: "用概率和数据描述不确定性，并从样本中学习规律。",
     },
-    {
-      id: "neural",
+    "decision-boundary": {
+      label: "经典机器学习",
+      group: "statistical",
+      x: 390,
+      y: 300,
+      description: "用特征、目标函数和样本学习可泛化的决策边界。",
+    },
+    cnn: {
       label: "神经网络",
       group: "neural",
-      x: 430,
-      y: 285,
+      x: 570,
+      y: 300,
       description: "用可学习表示和多层组合处理感知任务。",
-      href: "/chapters/cnn/",
     },
-    {
-      id: "transformer",
+    attention: {
       label: "Transformer",
       group: "foundation",
-      x: 615,
-      y: 185,
+      x: 750,
+      y: 190,
       description: "Attention 让 token 直接互相关注，支撑基础模型扩展。",
-      href: "/chapters/attention/",
     },
-    {
-      id: "rag",
-      label: "RAG",
-      group: "foundation",
-      x: 800,
-      y: 90,
-      description: "把外部知识检索进上下文，提高事实性与可更新性。",
-      href: "/chapters/rag/",
-    },
-    {
-      id: "llm-system",
+    "llm-system": {
       label: "LLM 系统",
       group: "foundation",
-      x: 800,
-      y: 265,
+      x: 930,
+      y: 280,
       description: "把模型、上下文、工具、记忆和评估组合成现代 AI 应用。",
-      href: "/chapters/llm-system/",
     },
-    {
-      id: "agent",
-      label: "Agent",
-      group: "agent",
-      x: 970,
-      y: 265,
-      description: "把模型放进计划、工具、观察和修正循环。",
-      href: "/chapters/agent/",
-    },
-    {
-      id: "safety",
-      label: "Safety / Eval",
-      group: "safety",
-      x: 615,
-      y: 380,
-      description: "评估可靠性、偏差、工具安全和多步任务风险。",
-    },
-  ],
-  en: [
-    {
-      id: "symbolic",
-      label: "Symbolic AI",
-      group: "symbolic",
-      x: 60,
-      y: 110,
-      description:
-        "Rules, logic, search, and planning treat intelligence as manipulable symbolic structures.",
-      href: "/chapters/search/",
-    },
-    {
-      id: "expert",
-      label: "Expert Systems",
-      group: "symbolic",
-      x: 245,
-      y: 110,
-      description:
-        "Domain knowledge is written as a rule base with an emphasis on explainable reasoning.",
-      href: "/chapters/expert-system/",
-    },
-    {
-      id: "statistical",
-      label: "Statistical Learning",
-      group: "statistical",
-      x: 245,
-      y: 285,
-      description:
-        "Probability and data describe uncertainty, and boundaries are learned from examples.",
-      href: "/chapters/bayes/",
-    },
-    {
-      id: "neural",
-      label: "Neural Networks",
-      group: "neural",
-      x: 430,
-      y: 285,
-      description:
-        "Learned representations and layered composition handle perception tasks.",
-      href: "/chapters/cnn/",
-    },
-    {
-      id: "transformer",
-      label: "Transformer",
-      group: "foundation",
-      x: 615,
-      y: 185,
-      description:
-        "Attention lets tokens attend to each other directly, supporting the scaling of foundation models.",
-      href: "/chapters/attention/",
-    },
-    {
-      id: "rag",
+    rag: {
       label: "RAG",
       group: "foundation",
-      x: 800,
-      y: 90,
-      description:
-        "External knowledge is retrieved into context to improve factuality and freshness.",
-      href: "/chapters/rag/",
+      x: 930,
+      y: 80,
+      description: "把外部知识检索进上下文，提高事实性与可更新性。",
     },
-    {
-      id: "llm-system",
-      label: "LLM Systems",
-      group: "foundation",
-      x: 800,
-      y: 265,
-      description:
-        "Models, context, tools, memory, and evaluation combine into modern AI applications.",
-      href: "/chapters/llm-system/",
-    },
-    {
-      id: "agent",
+    agent: {
       label: "Agent",
       group: "agent",
-      x: 970,
-      y: 265,
+      x: 1090,
+      y: 280,
+      description: "把模型放进计划、工具、观察和修正循环。",
+    },
+  },
+  en: {
+    search: {
+      label: "Symbolic AI",
+      group: "symbolic",
+      x: 40,
+      y: 90,
+      description:
+        "Rules, logic, search, and planning treat intelligence as manipulable symbolic structures.",
+    },
+    "expert-system": {
+      label: "Expert Systems",
+      group: "symbolic",
+      x: 210,
+      y: 90,
+      description:
+        "Domain knowledge is written as a rule base with an emphasis on explainable reasoning.",
+    },
+    bayes: {
+      label: "Statistical Learning",
+      group: "statistical",
+      x: 210,
+      y: 300,
+      description:
+        "Probability and data describe uncertainty, and patterns are learned from examples.",
+    },
+    "decision-boundary": {
+      label: "Classical ML",
+      group: "statistical",
+      x: 390,
+      y: 300,
+      description:
+        "Features, objectives, and examples are used to learn decision boundaries that generalize.",
+    },
+    cnn: {
+      label: "Neural Networks",
+      group: "neural",
+      x: 570,
+      y: 300,
+      description:
+        "Learned representations and layered composition handle perception tasks.",
+    },
+    attention: {
+      label: "Transformer",
+      group: "foundation",
+      x: 750,
+      y: 190,
+      description:
+        "Attention lets tokens attend to each other directly, supporting the scaling of foundation models.",
+    },
+    "llm-system": {
+      label: "LLM Systems",
+      group: "foundation",
+      x: 930,
+      y: 280,
+      description:
+        "Models, context, tools, memory, and evaluation combine into modern AI applications.",
+    },
+    rag: {
+      label: "RAG",
+      group: "foundation",
+      x: 930,
+      y: 80,
+      description:
+        "External knowledge is retrieved into context to improve factuality and freshness.",
+    },
+    agent: {
+      label: "Agent",
+      group: "agent",
+      x: 1090,
+      y: 280,
       description:
         "The model enters a loop of planning, tools, observation, and revision.",
-      href: "/chapters/agent/",
     },
-    {
-      id: "safety",
-      label: "Safety / Eval",
-      group: "safety",
-      x: 615,
-      y: 380,
-      description:
-        "Evaluation covers reliability, bias, tool safety, and risks in multi-step tasks.",
-    },
-  ],
-} satisfies Record<Locale, LineageNode[]>;
+  },
+} satisfies Record<Locale, Record<LineageChapterId, LineageNodeCopy>>;
+
+const localizedSafetyNode = {
+  "zh-CN": {
+    id: "safety",
+    label: "Safety / Eval",
+    group: "safety",
+    x: 750,
+    y: 430,
+    description: "评估可靠性、偏差、工具安全和多步任务风险。",
+  },
+  en: {
+    id: "safety",
+    label: "Safety / Eval",
+    group: "safety",
+    x: 750,
+    y: 430,
+    description:
+      "Evaluation covers reliability, bias, tool safety, and risks in multi-step tasks.",
+  },
+} satisfies Record<Locale, LineageNode>;
 
 const localizedLineageEdges = {
   "zh-CN": [
@@ -210,6 +205,12 @@ const localizedLineageEdges = {
     {
       id: "statistical-neural",
       from: "statistical",
+      to: "classical-ml",
+      label: "学习决策边界",
+    },
+    {
+      id: "classical-ml-neural",
+      from: "classical-ml",
       to: "neural",
       label: "表示学习",
     },
@@ -260,6 +261,12 @@ const localizedLineageEdges = {
     {
       id: "statistical-neural",
       from: "statistical",
+      to: "classical-ml",
+      label: "Learning boundaries",
+    },
+    {
+      id: "classical-ml-neural",
+      from: "classical-ml",
       to: "neural",
       label: "Representation learning",
     },
@@ -296,10 +303,31 @@ const localizedLineageEdges = {
   ],
 } satisfies Record<Locale, LineageEdge[]>;
 
+function hasLineageNode(
+  chapter: ChapterDefinition,
+): chapter is ChapterDefinition & {
+  id: LineageChapterId;
+  lineageNodeId: string;
+} {
+  return chapter.id !== "overview" && Boolean(chapter.lineageNodeId);
+}
+
 export function getAiLineageNodes(
   locale: Locale = defaultLocale,
 ): LineageNode[] {
-  return getLocalizedValue(localizedLineageNodes, locale);
+  const localizedCopy = getLocalizedValue(
+    localizedLineageChapterNodeCopy,
+    locale,
+  );
+  const chapterNodes = chapterRegistry
+    .filter(hasLineageNode)
+    .map((chapter): LineageNode => ({
+      id: chapter.lineageNodeId,
+      chapterId: chapter.id,
+      ...localizedCopy[chapter.id],
+    }));
+
+  return [...chapterNodes, getLocalizedValue(localizedSafetyNode, locale)];
 }
 
 export function getAiLineageEdges(

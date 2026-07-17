@@ -8,6 +8,7 @@ import {
   aiTimelineEntries,
   attentionMapDemo,
   bayesUpdateDemo,
+  chapterRegistry,
   cnnKernelDemo,
   decisionBoundaryDemo,
   expertSystemDemo,
@@ -18,6 +19,7 @@ import {
   getAttentionMapDemo,
   getBayesUpdateDemo,
   getCnnKernelDemo,
+  getChapterDefinition,
   getDecisionBoundaryDemo,
   getExpertSystemDemo,
   getLlmSystemConnections,
@@ -26,6 +28,7 @@ import {
   getSearchTreeDemo,
   llmSystemConnections,
   llmSystemLayers,
+  isChapterId,
   ragPipelineDemo,
   searchTreeDemo,
 } from "./index";
@@ -123,6 +126,124 @@ describe("demo acceptance metadata", () => {
   });
 });
 
+describe("chapter registry", () => {
+  it("keeps ten unique chapters in the 00-09 learning order", () => {
+    expect(
+      chapterRegistry.map(({ id, route, kind, number }) => ({
+        id,
+        route,
+        kind,
+        number,
+      })),
+    ).toEqual([
+      {
+        id: "overview",
+        route: "/chapters/overview/",
+        kind: "chapter",
+        number: "00",
+      },
+      {
+        id: "search",
+        route: "/chapters/search/",
+        kind: "demo",
+        number: "01",
+      },
+      {
+        id: "expert-system",
+        route: "/chapters/expert-system/",
+        kind: "demo",
+        number: "02",
+      },
+      {
+        id: "bayes",
+        route: "/chapters/bayes/",
+        kind: "demo",
+        number: "03",
+      },
+      {
+        id: "decision-boundary",
+        route: "/chapters/decision-boundary/",
+        kind: "demo",
+        number: "04",
+      },
+      {
+        id: "cnn",
+        route: "/chapters/cnn/",
+        kind: "demo",
+        number: "05",
+      },
+      {
+        id: "attention",
+        route: "/chapters/attention/",
+        kind: "demo",
+        number: "06",
+      },
+      {
+        id: "llm-system",
+        route: "/chapters/llm-system/",
+        kind: "chapter",
+        number: "07",
+      },
+      {
+        id: "rag",
+        route: "/chapters/rag/",
+        kind: "demo",
+        number: "08",
+      },
+      {
+        id: "agent",
+        route: "/chapters/agent/",
+        kind: "demo",
+        number: "09",
+      },
+    ]);
+    expect(new Set(chapterRegistry.map(({ id }) => id)).size).toBe(10);
+    expect(new Set(chapterRegistry.map(({ route }) => route)).size).toBe(10);
+    expect(new Set(chapterRegistry.map(({ number }) => number)).size).toBe(10);
+  });
+
+  it("links every non-overview chapter to timeline and lineage IDs", () => {
+    const linkedChapters = chapterRegistry.filter(
+      (chapter) => "timelineId" in chapter || "lineageNodeId" in chapter,
+    );
+
+    expect(linkedChapters).toHaveLength(9);
+    expect(
+      linkedChapters.every(
+        (chapter) => "timelineId" in chapter && Boolean(chapter.timelineId),
+      ),
+    ).toBe(true);
+    expect(
+      linkedChapters.every(
+        (chapter) =>
+          "lineageNodeId" in chapter && Boolean(chapter.lineageNodeId),
+      ),
+    ).toBe(true);
+    expect(
+      new Set(
+        linkedChapters.map((chapter) =>
+          "timelineId" in chapter ? chapter.timelineId : undefined,
+        ),
+      ).size,
+    ).toBe(9);
+    expect(
+      new Set(
+        linkedChapters.map((chapter) =>
+          "lineageNodeId" in chapter ? chapter.lineageNodeId : undefined,
+        ),
+      ).size,
+    ).toBe(9);
+  });
+
+  it("looks up and validates stable chapter IDs", () => {
+    expect(getChapterDefinition("attention").shortTitle["zh-CN"]).toBe(
+      "注意力机制",
+    );
+    expect(isChapterId("decision-boundary")).toBe(true);
+    expect(isChapterId("safety")).toBe(false);
+  });
+});
+
 describe("localized data accessors", () => {
   it("matches all Chinese defaults to the independent pre-task baseline", () => {
     expect(legacyZhBaseline.sourceCommit).toBe(
@@ -138,9 +259,6 @@ describe("localized data accessors", () => {
       expertSystemDemo,
       ragPipelineDemo,
       searchTreeDemo,
-      aiTimelineEntries,
-      aiLineageNodes,
-      aiLineageEdges,
       llmSystemLayers,
       llmSystemConnections: withoutEndpointIds(llmSystemConnections),
     };
@@ -151,7 +269,14 @@ describe("localized data accessors", () => {
       ]),
     );
 
-    expect(currentHashes).toEqual(legacyZhBaseline.hashes);
+    const expectedHashes = Object.fromEntries(
+      Object.keys(currentLegacyExports).map((name) => [
+        name,
+        legacyZhBaseline.hashes[name as keyof typeof legacyZhBaseline.hashes],
+      ]),
+    );
+
+    expect(currentHashes).toEqual(expectedHashes);
   });
 
   it("returns English demo copy while preserving stable graph IDs", () => {
@@ -199,9 +324,8 @@ describe("localized data accessors", () => {
   it("returns English overview data for timeline and lineage", () => {
     expect(getAiTimelineEntries("en")[0]?.title).toBe("Symbolic AI And Search");
     expect(getAiTimelineEntries("en")[0]?.era).toBe("Rules And Search");
-    expect(getAiTimelineEntries("en")[0]?.demoLabel).toBe(
-      "View Demo 01: Search",
-    );
+    expect(getAiTimelineEntries("en")[0]?.chapterId).toBe("search");
+    expect(getAiTimelineEntries("en")[3]?.chapterId).toBe("decision-boundary");
     expect(getAiLineageNodes("en")[0]?.label).toBe("Symbolic AI");
     expect(getAiLineageNodes("en")[0]?.group).toBe("symbolic");
   });
@@ -335,13 +459,19 @@ describe("localized topology parity", () => {
 
   it("preserves overview IDs, geometry, links, and ordering", () => {
     const projectTimeline = (entries: typeof aiTimelineEntries) =>
-      entries.map(({ id, year, demoHref }) => ({ id, year, demoHref }));
+      entries.map(({ id, year, chapterId }) => ({ id, year, chapterId }));
     expect(projectTimeline(getAiTimelineEntries("en"))).toEqual(
       projectTimeline(getAiTimelineEntries("zh-CN")),
     );
 
     const projectNodes = (nodes: typeof aiLineageNodes) =>
-      nodes.map(({ id, group, x, y, href }) => ({ id, group, x, y, href }));
+      nodes.map(({ id, group, x, y, chapterId }) => ({
+        id,
+        group,
+        x,
+        y,
+        chapterId,
+      }));
     expect(projectNodes(getAiLineageNodes("en"))).toEqual(
       projectNodes(getAiLineageNodes("zh-CN")),
     );

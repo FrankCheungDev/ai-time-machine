@@ -11,6 +11,10 @@ describe("learning i18n", () => {
       expect(en.id).toBe(chapter.id);
       expect(zh.title.length).toBeGreaterThan(0);
       expect(en.title.length).toBeGreaterThan(0);
+      expect(zh.number).toMatch(/^\d{2}$/);
+      expect(en.number).toBe(zh.number);
+      expect(zh.label).toMatch(/^(Chapter|Demo) \d{2}$/);
+      expect(en.label).toBe(zh.label);
       expect(zh.href).toBe(chapter.route);
       expect(en.href).toBe(`/en${chapter.route}`);
     }

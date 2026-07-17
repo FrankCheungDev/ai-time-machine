@@ -1,11 +1,11 @@
-import { defaultLocale, type Locale } from "@ai-history/data";
+import { defaultLocale, type Locale } from "@ai-history/data/locales";
 
 export {
   defaultLocale,
   normalizeLocale,
   supportedLocales,
   type Locale,
-} from "@ai-history/data";
+} from "@ai-history/data/locales";
 
 export function withTrailingSlash(pathname: string): string {
   if (pathname === "" || pathname === "/") {
