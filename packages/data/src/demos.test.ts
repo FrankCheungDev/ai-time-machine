@@ -254,11 +254,9 @@ describe("localized data accessors", () => {
       agentLoopDemo,
       attentionMapDemo,
       bayesUpdateDemo,
-      cnnKernelDemo,
       decisionBoundaryDemo,
       expertSystemDemo,
       ragPipelineDemo,
-      searchTreeDemo,
       llmSystemLayers,
       llmSystemConnections: withoutEndpointIds(llmSystemConnections),
     };
@@ -319,6 +317,54 @@ describe("localized data accessors", () => {
     expect(getAgentLoopDemo("en").title).toBe(
       "Agents: How do large language models execute multi-step tasks?",
     );
+  });
+
+  it("defines deterministic search costs and algorithm IDs", () => {
+    const demo = getSearchTreeDemo("zh-CN");
+
+    expect(
+      demo.nodes.map(({ label, heuristicCost }) => [label, heuristicCost]),
+    ).toEqual([
+      ["Start", 2],
+      ["A", 4],
+      ["B", 3],
+      ["C", 1],
+      ["A1", 5],
+      ["A2", 4],
+      ["B1", 4],
+      ["Goal", 0],
+    ]);
+    expect(demo.edges.every(({ cost }) => cost === 1)).toBe(true);
+    expect(demo.strategies.map(({ id }) => id)).toEqual([
+      "bfs",
+      "dfs",
+      "astar",
+    ]);
+  });
+
+  it("defines normalized CNN kernels and all nine valid windows", () => {
+    const demo = getCnnKernelDemo("zh-CN");
+
+    expect(
+      demo.kernels.map(({ id, normalizationDivisor }) => ({
+        id,
+        normalizationDivisor,
+      })),
+    ).toEqual([
+      { id: "edge", normalizationDivisor: 1 },
+      { id: "blur", normalizationDivisor: 9 },
+    ]);
+    expect(demo.scanSteps.map(({ x, y }) => [x, y])).toEqual([
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ]);
   });
 
   it("returns English overview data for timeline and lineage", () => {
@@ -399,15 +445,14 @@ describe("localized topology parity", () => {
     );
 
     const projectSearch = (demo: ReturnType<typeof getSearchTreeDemo>) => ({
-      nodes: demo.nodes.map(({ id, x, y }) => ({ id, x, y })),
+      nodes: demo.nodes.map(({ id, x, y, heuristicCost }) => ({
+        id,
+        x,
+        y,
+        heuristicCost,
+      })),
       edges: demo.edges,
-      strategies: demo.strategies.map(
-        ({ id, activeNodeIds, activeEdgeIds }) => ({
-          id,
-          activeNodeIds,
-          activeEdgeIds,
-        }),
-      ),
+      strategies: demo.strategies.map(({ id }) => id),
     });
     expect(projectSearch(getSearchTreeDemo("en"))).toEqual(
       projectSearch(getSearchTreeDemo("zh-CN")),
@@ -449,7 +494,11 @@ describe("localized topology parity", () => {
 
     const projectCnn = (demo: ReturnType<typeof getCnnKernelDemo>) => ({
       imageGrid: demo.imageGrid,
-      kernels: demo.kernels.map(({ id, matrix }) => ({ id, matrix })),
+      kernels: demo.kernels.map(({ id, matrix, normalizationDivisor }) => ({
+        id,
+        matrix,
+        normalizationDivisor,
+      })),
       scanSteps: demo.scanSteps.map(({ id, x, y }) => ({ id, x, y })),
     });
     expect(projectCnn(getCnnKernelDemo("en"))).toEqual(
@@ -559,12 +608,16 @@ describe("getter mutation isolation", () => {
       (demo) => ({
         description: demo.strategies[0]?.description,
         nodeX: demo.nodes[0]?.x,
+        heuristicCost: demo.nodes[0]?.heuristicCost,
         edgeTo: demo.edges[0]?.to,
+        edgeCost: demo.edges[0]?.cost,
       }),
       (demo) => {
         demo.strategies[0]!.description = "mutated";
         demo.nodes[0]!.x = -1;
+        demo.nodes[0]!.heuristicCost = -1;
         demo.edges[0]!.to = "mutated";
+        demo.edges[0]!.cost = -1;
       },
     );
     expectMutationIsolation(
@@ -602,11 +655,13 @@ describe("getter mutation isolation", () => {
       cnnKernelDemo,
       (demo) => ({
         matrixValue: demo.kernels[0]?.matrix[0]?.[0],
+        normalizationDivisor: demo.kernels[0]?.normalizationDivisor,
         gridValue: demo.imageGrid[0]?.[0],
         scanX: demo.scanSteps[0]?.x,
       }),
       (demo) => {
         demo.kernels[0]!.matrix[0]![0] = 99;
+        demo.kernels[0]!.normalizationDivisor = 99;
         demo.imageGrid[0]![0] = 99;
         demo.scanSteps[0]!.x = 99;
       },

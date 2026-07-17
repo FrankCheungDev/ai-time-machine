@@ -16,11 +16,13 @@ const imageGrid: CnnKernelDemo["imageGrid"] = [
 type KernelTopology = {
   readonly id: string;
   readonly matrix: readonly (readonly number[])[];
+  readonly normalizationDivisor: number;
 };
 
 const kernelTopology = [
   {
     id: "edge",
+    normalizationDivisor: 1,
     matrix: [
       [-1, 0, 1],
       [-1, 0, 1],
@@ -29,6 +31,7 @@ const kernelTopology = [
   },
   {
     id: "blur",
+    normalizationDivisor: 9,
     matrix: [
       [1, 1, 1],
       [1, 1, 1],
@@ -50,6 +53,12 @@ const scanStepTopology = [
   { id: "s1", x: 0, y: 0 },
   { id: "s2", x: 1, y: 0 },
   { id: "s3", x: 2, y: 0 },
+  { id: "s4", x: 0, y: 1 },
+  { id: "s5", x: 1, y: 1 },
+  { id: "s6", x: 2, y: 1 },
+  { id: "s7", x: 0, y: 2 },
+  { id: "s8", x: 1, y: 2 },
+  { id: "s9", x: 2, y: 2 },
 ] as const satisfies readonly ScanStepTopology[];
 
 type ScanStepId = (typeof scanStepTopology)[number]["id"];
@@ -99,6 +108,30 @@ const cnnKernelCopies = {
         title: "生成右侧响应",
         description: "多个局部响应组合成 feature map。",
       },
+      s4: {
+        title: "下移到第二行",
+        description: "相同 kernel 继续扫描下一排局部窗口。",
+      },
+      s5: {
+        title: "再次跨过边界",
+        description: "同一条明暗边界会在不同垂直位置产生相近响应。",
+      },
+      s6: {
+        title: "完成第二行响应",
+        description: "第二行的三个局部响应写入 feature map。",
+      },
+      s7: {
+        title: "扫描最后一行",
+        description: "窗口到达最后一排有效位置。",
+      },
+      s8: {
+        title: "记录最后一个边界响应",
+        description: "重复使用同一组 kernel 权重体现参数共享。",
+      },
+      s9: {
+        title: "完成完整特征图",
+        description: "九个局部响应组成完整的 3×3 feature map。",
+      },
     },
   },
   en: {
@@ -141,6 +174,34 @@ const cnnKernelCopies = {
         title: "Generate the response on the right",
         description: "Multiple local responses combine into a feature map.",
       },
+      s4: {
+        title: "Move down to the second row",
+        description:
+          "The same kernel continues scanning the next row of local windows.",
+      },
+      s5: {
+        title: "Cross the boundary again",
+        description:
+          "The same brightness boundary produces a similar response at another vertical position.",
+      },
+      s6: {
+        title: "Complete the second response row",
+        description:
+          "The three local responses in the second row enter the feature map.",
+      },
+      s7: {
+        title: "Scan the final row",
+        description: "The window reaches the final row of valid positions.",
+      },
+      s8: {
+        title: "Record the final boundary response",
+        description:
+          "Reusing the same kernel weights illustrates parameter sharing.",
+      },
+      s9: {
+        title: "Complete the feature map",
+        description: "Nine local responses form the complete 3×3 feature map.",
+      },
     },
   },
 } satisfies Record<Locale, CnnKernelCopy>;
@@ -154,11 +215,12 @@ export function getCnnKernelDemo(
   return cloneData({
     ...metadata,
     imageGrid,
-    kernels: kernelTopology.map(({ id, matrix }) => ({
+    kernels: kernelTopology.map(({ id, matrix, normalizationDivisor }) => ({
       id,
       label: kernels[id].label,
       title: kernels[id].title,
       description: kernels[id].description,
+      normalizationDivisor,
       matrix: matrix.map((row) => [...row]),
     })),
     scanSteps: scanStepTopology.map(({ id, x, y }) => ({
