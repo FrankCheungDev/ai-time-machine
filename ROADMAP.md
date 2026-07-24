@@ -10,13 +10,26 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 - Eight teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Timeline, lineage map, diagram source page, reusable RAG SVG, and contributor guides.
 
-## Next Iterations
+## Post-MVP Iterations
 
-- Add a Safety / Eval chapter after the MVP spine.
-- Expand downloadable diagram assets beyond RAG.
-- Add richer source references for historical claims and named papers.
-- Consider shared Compare, Slider, StoryBranch, and Canvas primitives if more demos need them.
-- Add bilingual content once the Chinese-first structure is stable.
+The bilingual MVP and learning-path foundation are complete. Post-MVP work now
+follows the staged process in
+[Post-MVP iteration process](docs/POST_MVP_ITERATION_PROCESS.md):
+
+- **v1.0.1 — Release closure and extension architecture:** align contributor
+  docs, add publishing metadata and deployment guidance, split chapter-owned
+  content, and derive more navigation and test coverage from the chapter
+  registry.
+- **v1.1 — Safety / Evaluation and diagram assets:** add the next teaching
+  chapter and turn the diagram page into a reusable asset library covering all
+  demos.
+- **v1.2 — Historical depth and learning validation:** add source-backed
+  milestone events, lightweight concept checks, and privacy-reviewed product
+  signals.
+
+Each milestone must keep the static, scripted teaching boundary and pass the
+format, data, type, build, unit, browser, visual, accessibility, and teaching
+correctness gates defined in the process document.
 
 ## Non-Goals For MVP
 
