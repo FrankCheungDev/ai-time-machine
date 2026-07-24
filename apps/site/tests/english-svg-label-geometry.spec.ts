@@ -22,6 +22,13 @@ const diagrams = [
     shapeSelector: 'circle[id^="token-"]',
     shapeType: "circle",
   },
+  {
+    name: "Safety",
+    nodeCount: 7,
+    route: "/en/chapters/safety/",
+    shapeSelector: 'g[id^="safety-node-"] > rect',
+    shapeType: "rect",
+  },
 ] as const;
 
 const viewports = [

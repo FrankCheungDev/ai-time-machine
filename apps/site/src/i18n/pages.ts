@@ -406,6 +406,51 @@ export const demoChapterCopy = {
       ],
     },
   },
+  safety: {
+    "zh-CN": {
+      eyebrow: "Demo 10",
+      title: "安全评估：系统如何发现并修复风险？",
+      description: "一个静态、教学型红队与安全评估交互图解。",
+      lede: "为什么可靠的 AI 系统需要红队、护栏和持续评估？这个章节把风险从抽象担忧拆成攻击样本、权限边界、人工复核和回归测试的反馈回路。",
+      notesId: "safety-notes",
+      notesEyebrow: "历史位置",
+      notesTitle: "安全不是模型外的一次检查，而是系统反馈回路",
+      notesBody:
+        "它之前的问题是：Agent 和 RAG 把模型接入了外部知识与行动，但工具误用、提示注入、事实性退化和目标漂移仍然可能发生。安全评估用红队样本、护栏、权限和持续回归把风险变成可观察、可修复的问题。它不能证明系统绝对安全，却能让已知失败更早暴露。",
+      references: [
+        {
+          href: "https://arxiv.org/abs/2302.07459",
+          label: "Red Teaming Language Models with Language Models",
+        },
+        {
+          href: "https://airc.nist.gov/AI_RMF_Knowledge_Base/Playbook",
+          label: "NIST AI Risk Management Framework Playbook",
+        },
+      ],
+    },
+    en: {
+      eyebrow: "Demo 10",
+      title: "Safety Evaluation: How can systems find and fix risk?",
+      description: "A static teaching diagram for red teaming and evaluation.",
+      lede: "Why do reliable AI systems need red teams, guardrails, and continuous evaluation? This chapter turns abstract risk into a feedback loop of attack cases, permission boundaries, human review, and regression tests.",
+      notesId: "safety-notes",
+      notesEyebrow: "Historical position",
+      notesTitle:
+        "Safety is a system feedback loop, not a one-time check outside the model",
+      notesBody:
+        "The previous problem was that RAG and agents connected models to external knowledge and actions, while tool misuse, prompt injection, factuality regression, and goal drift could still occur. Safety evaluation uses red-team cases, guardrails, permissions, and continuous regression to make risk observable and fixable. It cannot prove absolute safety, but it can expose known failures earlier.",
+      references: [
+        {
+          href: "https://arxiv.org/abs/2302.07459",
+          label: "Red Teaming Language Models with Language Models",
+        },
+        {
+          href: "https://airc.nist.gov/AI_RMF_Knowledge_Base/Playbook",
+          label: "NIST AI Risk Management Framework Playbook",
+        },
+      ],
+    },
+  },
 } satisfies Record<CanonicalDemoChapterId, Record<Locale, DemoChapterCopy>>;
 
 export type DemoChapterId = CanonicalDemoChapterId;
@@ -552,7 +597,7 @@ export const homePageCopy = {
     mapAriaLabel: "AI 技术演化主线图",
     mapTitle: "AI 技术演化主线",
     pathEyebrow: "推荐学习顺序",
-    pathTitle: "沿着 10 个章节理解 AI 如何一步步演化",
+    pathTitle: "沿着 11 个章节理解 AI 如何一步步演化",
     overviewEyebrow: "延伸探索",
     overviewTitle: "从不同视角回看 AI 的演化脉络",
   },
@@ -565,7 +610,7 @@ export const homePageCopy = {
     mapAriaLabel: "AI technical evolution map",
     mapTitle: "AI technical evolution",
     pathEyebrow: "Recommended learning path",
-    pathTitle: "Follow ten chapters to see how AI evolved step by step",
+    pathTitle: "Follow eleven chapters to see how AI evolved step by step",
     overviewEyebrow: "Explore Further",
     overviewTitle: "Revisit AI's evolution from different perspectives",
   },
@@ -639,6 +684,10 @@ const homeLearningPathCardCopy = {
       description:
         "执行 plan、tool call、observation、revise、final answer 的循环。",
     },
+    safety: {
+      description:
+        "沿着红队、护栏、权限、复核和回归评估，理解安全如何变成持续反馈回路。",
+    },
   },
   en: {
     overview: {
@@ -682,6 +731,10 @@ const homeLearningPathCardCopy = {
     agent: {
       description:
         "Run the loop of planning, tool calls, observation, revision, and a final answer.",
+    },
+    safety: {
+      description:
+        "Follow red teaming, guardrails, permissions, review, and regression evaluation as a continuous safety loop.",
     },
   },
 } satisfies Record<Locale, Record<ChapterId, HomeLearningCardCopy>>;

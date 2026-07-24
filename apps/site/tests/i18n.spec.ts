@@ -65,6 +65,13 @@ const englishDemoChapterCases = [
     evidence:
       "Why is an agent a looped control system rather than a one-shot answer?",
   },
+  {
+    route: "/en/chapters/safety/",
+    title: "Safety Evaluation: How can systems find and fix risk?",
+    activityTitle: "Red-Team Risk Walkthrough",
+    evidence:
+      "Why do reliable AI systems need red teams, guardrails, and continuous evaluation?",
+  },
 ] as const;
 
 const chineseDemoChapterCases = [
@@ -107,6 +114,11 @@ const chineseDemoChapterCases = [
     route: "/chapters/agent/",
     title: "Agent：大模型如何执行多步任务？",
     activityTitle: "Agent 循环演示",
+  },
+  {
+    route: "/chapters/safety/",
+    title: "安全评估：系统如何发现并修复风险？",
+    activityTitle: "红队闯关",
   },
 ] as const;
 
@@ -179,6 +191,13 @@ const englishChapterReferenceCases = [
       "https://arxiv.org/abs/2302.04761",
     ],
   },
+  {
+    route: "/en/chapters/safety/",
+    expectedHrefs: [
+      "https://arxiv.org/abs/2302.07459",
+      "https://airc.nist.gov/AI_RMF_Knowledge_Base/Playbook",
+    ],
+  },
 ] as const;
 
 const englishRouteLinkCases = [
@@ -197,6 +216,7 @@ const englishRouteLinkCases = [
       "/en/chapters/llm-system/",
       "/en/chapters/rag/",
       "/en/chapters/agent/",
+      "/en/chapters/safety/",
     ],
   },
   {
@@ -219,6 +239,7 @@ const englishRouteLinkCases = [
       "/en/chapters/llm-system/",
       "/en/chapters/rag/",
       "/en/chapters/agent/",
+      "/en/chapters/safety/",
     ],
   },
   {
@@ -235,6 +256,7 @@ const englishRouteLinkCases = [
       "/en/chapters/llm-system/",
       "/en/chapters/rag/",
       "/en/chapters/agent/",
+      "/en/chapters/safety/",
     ],
   },
   {

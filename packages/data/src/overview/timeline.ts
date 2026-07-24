@@ -83,6 +83,13 @@ const localizedTimelineEntryCopy = {
       summary:
         "LLM 被放进计划、工具调用、观察和修正循环，开始执行多步任务而不只是一次性回答。",
     },
+    safety: {
+      era: "Reliable AI Systems",
+      year: "2020s",
+      title: "Safety And Evaluation",
+      summary:
+        "红队、护栏和回归评估把模型风险变成可复现、可修复和可持续监测的系统问题。",
+    },
   },
   en: {
     search: {
@@ -147,6 +154,13 @@ const localizedTimelineEntryCopy = {
       title: "Agent",
       summary:
         "An LLM enters a loop of planning, tool calls, observation, and revision, allowing it to execute multi-step tasks instead of only answering once.",
+    },
+    safety: {
+      era: "Reliable AI Systems",
+      year: "2020s",
+      title: "Safety And Evaluation",
+      summary:
+        "Red teams, guardrails, and regression evaluation turn model risk into a reproducible, fixable, and continuously monitored system problem.",
     },
   },
 } satisfies Record<Locale, Record<TimelineChapterId, TimelineEntryCopy>>;

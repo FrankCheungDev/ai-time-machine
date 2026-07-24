@@ -91,6 +91,13 @@ const localizedLineageChapterNodeCopy = {
       y: 280,
       description: "把模型放进计划、工具、观察和修正循环。",
     },
+    safety: {
+      label: "Safety / Eval",
+      group: "safety",
+      x: 750,
+      y: 430,
+      description: "评估可靠性、偏差、工具安全和多步任务风险。",
+    },
   },
   en: {
     search: {
@@ -165,28 +172,16 @@ const localizedLineageChapterNodeCopy = {
       description:
         "The model enters a loop of planning, tools, observation, and revision.",
     },
+    safety: {
+      label: "Safety / Eval",
+      group: "safety",
+      x: 750,
+      y: 430,
+      description:
+        "Evaluation covers reliability, bias, tool safety, and risks in multi-step tasks.",
+    },
   },
 } satisfies Record<Locale, Record<LineageChapterId, LineageNodeCopy>>;
-
-const localizedSafetyNode = {
-  "zh-CN": {
-    id: "safety",
-    label: "Safety / Eval",
-    group: "safety",
-    x: 750,
-    y: 430,
-    description: "评估可靠性、偏差、工具安全和多步任务风险。",
-  },
-  en: {
-    id: "safety",
-    label: "Safety / Eval",
-    group: "safety",
-    x: 750,
-    y: 430,
-    description:
-      "Evaluation covers reliability, bias, tool safety, and risks in multi-step tasks.",
-  },
-} satisfies Record<Locale, LineageNode>;
 
 const localizedLineageEdges = {
   "zh-CN": [
@@ -327,7 +322,7 @@ export function getAiLineageNodes(
       ...localizedCopy[chapter.id],
     }));
 
-  return [...chapterNodes, getLocalizedValue(localizedSafetyNode, locale)];
+  return chapterNodes;
 }
 
 export function getAiLineageEdges(

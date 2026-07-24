@@ -26,10 +26,12 @@ import {
   getLlmSystemLayers,
   getRagPipelineDemo,
   getSearchTreeDemo,
+  getSafetyEvalDemo,
   llmSystemConnections,
   llmSystemLayers,
   isChapterId,
   ragPipelineDemo,
+  safetyEvalDemo,
   searchTreeDemo,
 } from "./index";
 
@@ -42,6 +44,7 @@ const demos = [
   bayesUpdateDemo,
   decisionBoundaryDemo,
   cnnKernelDemo,
+  safetyEvalDemo,
 ];
 
 function canonicalize(value: unknown): unknown {
@@ -124,10 +127,33 @@ describe("demo acceptance metadata", () => {
       ).toBe(true);
     }
   });
+
+  it("keeps Safety / Eval as a complete, localized feedback loop", () => {
+    const zh = getSafetyEvalDemo("zh-CN");
+    const en = getSafetyEvalDemo("en");
+
+    expect(zh.steps).toHaveLength(6);
+    expect(zh.scenarios).toHaveLength(3);
+    expect(zh.steps.map(({ id }) => id)).toEqual(en.steps.map(({ id }) => id));
+    expect(zh.nodes.map(({ id }) => id)).toEqual(en.nodes.map(({ id }) => id));
+    expect(
+      zh.edges.every(
+        ({ from, to }) =>
+          zh.nodes.some(({ id }) => id === from) &&
+          zh.nodes.some(({ id }) => id === to),
+      ),
+    ).toBe(true);
+    expect(zh.steps.some(({ findingTone }) => findingTone === "risk")).toBe(
+      true,
+    );
+    expect(zh.steps.some(({ findingTone }) => findingTone === "pass")).toBe(
+      true,
+    );
+  });
 });
 
 describe("chapter registry", () => {
-  it("keeps ten unique chapters in the 00-09 learning order", () => {
+  it("keeps eleven unique chapters in the 00-10 learning order", () => {
     expect(
       chapterRegistry.map(({ id, route, kind, number }) => ({
         id,
@@ -196,10 +222,16 @@ describe("chapter registry", () => {
         kind: "demo",
         number: "09",
       },
+      {
+        id: "safety",
+        route: "/chapters/safety/",
+        kind: "demo",
+        number: "10",
+      },
     ]);
-    expect(new Set(chapterRegistry.map(({ id }) => id)).size).toBe(10);
-    expect(new Set(chapterRegistry.map(({ route }) => route)).size).toBe(10);
-    expect(new Set(chapterRegistry.map(({ number }) => number)).size).toBe(10);
+    expect(new Set(chapterRegistry.map(({ id }) => id)).size).toBe(11);
+    expect(new Set(chapterRegistry.map(({ route }) => route)).size).toBe(11);
+    expect(new Set(chapterRegistry.map(({ number }) => number)).size).toBe(11);
   });
 
   it("links every non-overview chapter to timeline and lineage IDs", () => {
@@ -207,7 +239,7 @@ describe("chapter registry", () => {
       (chapter) => "timelineId" in chapter || "lineageNodeId" in chapter,
     );
 
-    expect(linkedChapters).toHaveLength(9);
+    expect(linkedChapters).toHaveLength(10);
     expect(
       linkedChapters.every(
         (chapter) => "timelineId" in chapter && Boolean(chapter.timelineId),
@@ -225,14 +257,14 @@ describe("chapter registry", () => {
           "timelineId" in chapter ? chapter.timelineId : undefined,
         ),
       ).size,
-    ).toBe(9);
+    ).toBe(10);
     expect(
       new Set(
         linkedChapters.map((chapter) =>
           "lineageNodeId" in chapter ? chapter.lineageNodeId : undefined,
         ),
       ).size,
-    ).toBe(9);
+    ).toBe(10);
   });
 
   it("looks up and validates stable chapter IDs", () => {
@@ -240,7 +272,7 @@ describe("chapter registry", () => {
       "注意力机制",
     );
     expect(isChapterId("decision-boundary")).toBe(true);
-    expect(isChapterId("safety")).toBe(false);
+    expect(isChapterId("safety")).toBe(true);
   });
 });
 

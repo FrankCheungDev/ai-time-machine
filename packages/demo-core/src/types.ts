@@ -97,6 +97,42 @@ export interface AgentLoopDemo extends DemoMetadata {
   defaultScenarioId: string;
 }
 
+export interface SafetyEvalNode {
+  id: string;
+  label: string;
+  description: string;
+  x: number;
+  y: number;
+}
+
+export interface SafetyEvalEdge {
+  id: string;
+  from: string;
+  to: string;
+}
+
+export interface SafetyEvalScenario {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  risk: string;
+  mitigation: string;
+}
+
+export interface SafetyEvalStep extends DemoStep {
+  finding: string;
+  findingTone: "risk" | "guardrail" | "pass";
+}
+
+export interface SafetyEvalDemo extends DemoMetadata {
+  nodes: SafetyEvalNode[];
+  edges: SafetyEvalEdge[];
+  steps: SafetyEvalStep[];
+  scenarios: SafetyEvalScenario[];
+  defaultScenarioId: string;
+}
+
 export interface ExpertCondition {
   id: string;
   label: string;

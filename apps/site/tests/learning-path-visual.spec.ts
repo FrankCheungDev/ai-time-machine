@@ -25,7 +25,7 @@ test("shows partial learning progress in the mobile home hero", async ({
 
   await page.goto("/");
   await expect(page.getByTestId("home-learning-progress")).toContainText(
-    "已完成 2 / 10",
+    "已完成 2 / 11",
   );
 
   await expect(page).toHaveScreenshot("home-partial-progress.png", {

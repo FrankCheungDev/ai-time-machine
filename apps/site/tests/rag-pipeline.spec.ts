@@ -11,6 +11,7 @@ const chapterRoutes = [
   "/chapters/llm-system/",
   "/chapters/rag/",
   "/chapters/agent/",
+  "/chapters/safety/",
 ];
 
 const primaryRoutes = [
@@ -27,6 +28,7 @@ const scrollSceneRoutes = [
   "/chapters/attention/",
   "/chapters/rag/",
   "/chapters/agent/",
+  "/chapters/safety/",
   "/lineage/",
 ];
 
@@ -36,9 +38,14 @@ const svgSceneRoutes = [
   "/chapters/attention/",
   "/chapters/rag/",
   "/chapters/agent/",
+  "/chapters/safety/",
 ];
 
-const stepperDemoRoutes = ["/chapters/rag/", "/chapters/agent/"];
+const stepperDemoRoutes = [
+  "/chapters/rag/",
+  "/chapters/agent/",
+  "/chapters/safety/",
+];
 
 const canonicalChapterLabels = [
   {
@@ -75,6 +82,11 @@ const canonicalChapterLabels = [
   },
   { route: "/chapters/rag/", homeCard: /RAG Pipeline/, eyebrow: "Demo 08" },
   { route: "/chapters/agent/", homeCard: /Agent Loop/, eyebrow: "Demo 09" },
+  {
+    route: "/chapters/safety/",
+    homeCard: /安全评估/,
+    eyebrow: "Demo 10",
+  },
 ];
 
 async function waitForDemoReady(page: import("@playwright/test").Page) {
@@ -709,15 +721,13 @@ test("Lineage routes Agent to Safety around LLM System", async ({ page }) => {
   expect(agentSafetyPath).toBe("M 1156 352 L 1156 466 L 882 466");
 });
 
-test("Lineage keeps Safety / Eval as a non-link concept node", async ({
-  page,
-}) => {
+test("Lineage links Safety / Eval to its chapter", async ({ page }) => {
   await page.goto("/lineage/");
 
   await expect(page.locator('.lineage-panel a[href="#"]')).toHaveCount(0);
   await expect(
-    page.getByRole("img", { name: /Safety \/ Eval：/ }),
-  ).toBeVisible();
+    page.getByRole("link", { name: /Safety \/ Eval：/ }),
+  ).toHaveAttribute("href", "/chapters/safety/");
 });
 
 test("Lineage view controls are visible and focusable on desktop", async ({

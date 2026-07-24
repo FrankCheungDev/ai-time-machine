@@ -7,8 +7,8 @@ The project is an explorable explanation, not a real AI training or inference pl
 ## Current MVP
 
 - Astro static site with MDX and Svelte islands.
-- Ten chapter routes from overview through Agent.
-- Eight teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, RAG pipeline, and Agent loop.
+- Eleven chapter routes from overview through Safety / Eval.
+- Nine teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, RAG pipeline, Agent loop, and Safety / Eval.
 - Overview pages for timeline, technical lineage, and reusable diagram sources.
 - Contributor docs for design, motion, diagrams, demos, and templates.
 

@@ -31,6 +31,12 @@ describe("learning i18n", () => {
     expect(getLocalizedLearningChapter("rag", "en").activityTitle).toBe(
       "RAG Pipeline Walkthrough",
     );
+    expect(getLocalizedLearningChapter("safety", "zh-CN").activityTitle).toBe(
+      "红队闯关",
+    );
+    expect(getLocalizedLearningChapter("safety", "en").activityTitle).toBe(
+      "Red-Team Risk Walkthrough",
+    );
   });
 
   it("formats dynamic progress copy", () => {

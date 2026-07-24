@@ -16,6 +16,7 @@ export {
 export { expertSystemDemo, getExpertSystemDemo } from "./demos/expert-system";
 export { getRagPipelineDemo, ragPipelineDemo } from "./demos/rag-pipeline";
 export { getSearchTreeDemo, searchTreeDemo } from "./demos/search-tree";
+export { getSafetyEvalDemo, safetyEvalDemo } from "./demos/safety-eval";
 export { defaultLocale, normalizeLocale, supportedLocales } from "./locales";
 export type { Locale } from "./locales";
 export {

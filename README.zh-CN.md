@@ -16,6 +16,7 @@
 - RAG Pipeline 教学原型
 - Attention Map 教学原型
 - Agent Loop 教学原型
+- Safety / Eval 红队与安全评估教学原型
 
 ## 本地开发
 
