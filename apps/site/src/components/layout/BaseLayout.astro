@@ -12,15 +12,39 @@ interface Props {
   title: string;
   description?: string;
   locale?: Locale;
+  noindex?: boolean;
+  alternatePath?: string | false;
+  languageSwitchPath?: string;
 }
 
 const pathname = Astro.url.pathname;
 const locale = Astro.props.locale ?? getPathLocale(pathname);
 const copy = getSiteCopy(locale);
-const { title, description = copy.defaultDescription } = Astro.props;
+const {
+  title,
+  description = copy.defaultDescription,
+  noindex = false,
+  alternatePath = pathname,
+  languageSwitchPath = pathname,
+} = Astro.props;
+const fullTitle = `${title} | ${copy.siteTitle}`;
+const siteBase = Astro.site ?? Astro.url.origin;
+const canonicalPath = toLocalizedPath(pathname, locale);
+const canonicalUrl = new URL(canonicalPath, siteBase);
+const socialImageUrl = new URL("/social-card.png", siteBase);
+const chineseUrl =
+  alternatePath === false
+    ? undefined
+    : new URL(toLocalizedPath(alternatePath, defaultLocale), siteBase);
+const englishUrl =
+  alternatePath === false
+    ? undefined
+    : new URL(toLocalizedPath(alternatePath, "en"), siteBase);
+const ogLocale = locale === "en" ? "en_US" : "zh_CN";
+const alternateOgLocale = locale === "en" ? "zh_CN" : "en_US";
 
 const switchLocale: Locale = locale === "en" ? defaultLocale : "en";
-const languageSwitchHref = toLocalizedPath(pathname, switchLocale);
+const languageSwitchHref = toLocalizedPath(languageSwitchPath, switchLocale);
 const isCurrentPage = (href: string) =>
   pathname === toLocalizedPath(href, locale);
 const isChapterSection =
@@ -37,7 +61,33 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <title>{title} | {copy.siteTitle}</title>
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {!noindex && <link rel="canonical" href={canonicalUrl} />}
+    {chineseUrl && <link rel="alternate" hreflang="zh-CN" href={chineseUrl} />}
+    {englishUrl && <link rel="alternate" hreflang="en" href={englishUrl} />}
+    {
+      chineseUrl && (
+        <link rel="alternate" hreflang="x-default" href={chineseUrl} />
+      )
+    }
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={copy.siteTitle} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={alternateOgLocale} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={copy.socialImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={copy.socialImageAlt} />
+    <title>{fullTitle}</title>
   </head>
   <body>
     <header class="site-header">

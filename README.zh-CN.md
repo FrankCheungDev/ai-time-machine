@@ -52,6 +52,11 @@ pnpm format:check
 Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md)。
 
+## 部署
+
+生产与 PR 预览检查、发布步骤、冒烟测试、回滚方案和分析工具决策见
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)。
+
 ## 参与贡献
 
 贡献前请阅读 `CONTRIBUTING.md`、`docs/DEMO_GUIDE.md`、

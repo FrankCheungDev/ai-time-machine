@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="页面未找到 / Page Not Found"
+  description="请求的页面不存在。The requested page does not exist."
+  locale="zh-CN"
+  noindex
+  alternatePath={false}
+  languageSwitchPath="/"
+>
+  <main class="chapter-main">
+    <p class="eyebrow">404</p>
+    <h1 class="page-title">页面未找到 / Page Not Found</h1>
+    <p class="lede">
+      这个地址没有对应内容，请返回中文首页或英文首页。There is no page at this
+      address. Continue from the Chinese or English home page.
+    </p>
+    <div class="actions">
+      <a class="button primary" href="/">返回中文首页</a>
+      <a class="button" href="/en/">Go To English Home</a>
+    </div>
+  </main>
+</BaseLayout>

@@ -16,6 +16,7 @@ export interface DemoCoreCopy {
 export interface SiteCopy {
   siteTitle: string;
   defaultDescription: string;
+  socialImageAlt: string;
   navLabel: string;
   nav: {
     home: string;
@@ -36,6 +37,8 @@ export const siteCopy = {
     siteTitle: "交互式人工智能图解史",
     defaultDescription:
       "交互式人工智能图解史：用图解、动画和轻量交互解释 AI 技术演化。",
+    socialImageAlt:
+      "交互式人工智能图解史，从规则与搜索到大模型、RAG 和 Agent 的演化主线",
     navLabel: "主导航",
     nav: {
       home: "总览",
@@ -63,6 +66,8 @@ export const siteCopy = {
     siteTitle: "Interactive Illustrated AI History",
     defaultDescription:
       "An interactive illustrated history of AI, explaining technical evolution with diagrams, animation, and lightweight demos.",
+    socialImageAlt:
+      "Interactive Illustrated AI History, tracing the path from rules and search to large models, RAG, and agents",
     navLabel: "Primary navigation",
     nav: {
       home: "Overview",
