@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Interactive Illustrated AI History</title>
+  <desc id="description">The evolution of artificial intelligence from rules and search to large models, RAG, and agents.</desc>
+  <rect width="1200" height="630" fill="#f5f3ea"/>
+  <rect x="72" y="72" width="1056" height="486" rx="24" fill="#ffffff" stroke="#d7ddd7" stroke-width="4"/>
+  <rect x="116" y="116" width="104" height="104" rx="20" fill="#2f7d5b"/>
+  <text x="168" y="184" fill="#ffffff" font-family="system-ui, sans-serif" font-size="42" font-weight="800" text-anchor="middle">AI</text>
+  <text x="260" y="158" fill="#17201d" font-family="system-ui, sans-serif" font-size="28" font-weight="700">交互式人工智能图解史</text>
+  <text x="260" y="198" fill="#5f6864" font-family="system-ui, sans-serif" font-size="24">Interactive Illustrated AI History</text>
+  <path d="M150 390 C285 250 405 250 520 345 S760 470 1025 282" fill="none" stroke="#2f7d5b" stroke-width="10" stroke-linecap="round"/>
+  <g fill="#ffffff" stroke="#2f7d5b" stroke-width="7">
+    <circle cx="150" cy="390" r="28"/>
+    <circle cx="410" cy="288" r="28"/>
+    <circle cx="660" cy="402" r="28"/>
+    <circle cx="1025" cy="282" r="28"/>
+  </g>
+  <g fill="#17201d" font-family="system-ui, sans-serif" font-size="22" font-weight="700" text-anchor="middle">
+    <text x="150" y="455">规则 / Rules</text>
+    <text x="410" y="238">学习 / Learning</text>
+    <text x="660" y="470">大模型 / LLMs</text>
+    <text x="1025" y="232">Agent</text>
+  </g>
+  <text x="116" y="520" fill="#5f6864" font-family="system-ui, sans-serif" font-size="22">atlas.z-ai.cc · Diagrams, animation, and lightweight teaching demos</text>
+</svg>

@@ -31,3 +31,6 @@ pnpm test
 ```
 
 Include screenshots or short recordings for visual and interaction changes.
+
+For preview, production, smoke-test, and rollback steps, see
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).

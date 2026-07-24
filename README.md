@@ -52,6 +52,12 @@ Post-MVP work is sequenced in
 It covers release hardening and extension architecture, Safety / Evaluation and
 diagram assets, then source-backed historical depth and learning validation.
 
+## Deployment
+
+Production and pull-request preview checks, release steps, smoke tests, rollback,
+and the analytics decision are documented in
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
 ## Contributing
 
 See `CONTRIBUTING.md`, `docs/DEMO_GUIDE.md`, `docs/DIAGRAM_GUIDE.md`, `docs/DESIGN.md`, and `docs/MOTION.md`.
