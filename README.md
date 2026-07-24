@@ -4,12 +4,18 @@ An interactive atlas for explaining how AI evolved from symbolic search and expe
 
 The project is an explorable explanation, not a real AI training or inference platform. Demos are scripted, precomputed, or illustrative so learners can focus on mechanism intuition without API keys, backend services, GPUs, or databases.
 
+Visit the public site at [atlas.z-ai.cc](https://atlas.z-ai.cc). Chinese is the
+default language, with a complete English learning path under `/en/`.
+
 ## Current MVP
 
 - Astro static site with MDX and Svelte islands.
 - Ten chapter routes from overview through Agent.
 - Eight teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, RAG pipeline, and Agent loop.
+- Complete Chinese and English routes, copy, demo state, and references.
+- Resumable local learning progress with chapter completion and previous/next navigation.
 - Overview pages for timeline, technical lineage, and reusable diagram sources.
+- CI coverage for formatting, types, data contracts, static builds, unit tests, browser behavior, visual regressions, accessibility controls, and teaching correctness.
 - Contributor docs for design, motion, diagrams, demos, and templates.
 
 ## Local Development
@@ -21,6 +27,7 @@ pnpm validate:data
 pnpm lint
 pnpm build
 pnpm test
+pnpm format:check
 ```
 
 ## Key Routes
@@ -34,6 +41,16 @@ pnpm test
 - `/timeline/`
 - `/lineage/`
 - `/diagrams/`
+
+Prefix any route with `/en` for its English version, for example
+`/en/chapters/rag/`.
+
+## Roadmap
+
+Post-MVP work is sequenced in
+[`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md).
+It covers release hardening and extension architecture, Safety / Evaluation and
+diagram assets, then source-backed historical depth and learning validation.
 
 ## Contributing
 
