@@ -34,3 +34,15 @@ Before capturing, choose a state that shows one core idea. Keep the title, activ
 ## Export Notes
 
 Prefer SVG for diagrams that need interaction. Export PNG only for share previews, documentation thumbnails, or platforms that cannot embed SVG.
+
+The published library is defined in
+`packages/data/src/assets/diagram-assets.ts`. Every record owns a chapter,
+representative state, SVG/PNG paths, stable node and arrow IDs, version, update
+date, license, and teaching simplification. The diagrams page renders from this
+manifest, and data tests verify every file and declared ID.
+
+Regenerate all nine source/preview pairs after changing the generator:
+
+```sh
+pnpm render:diagrams
+```

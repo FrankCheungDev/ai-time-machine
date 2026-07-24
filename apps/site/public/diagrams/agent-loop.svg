@@ -1,0 +1,39 @@
+<svg id="diagram-agent-loop" data-state="retry-after-tool-failure" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title-agent-loop desc-agent-loop">
+  <title id="title-agent-loop">Agent Loop · Recovering From Tool Failure</title>
+  <desc id="desc-agent-loop">A failed observation revises the plan before another tool call. Representative state: retry-after-tool-failure. Tool results and retry paths are scripted; no external action runs.</desc>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba9a1" /></marker>
+    <marker id="arrowhead-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" /></marker>
+    <style>
+  .title { fill: #17201d; font: 800 28px system-ui, sans-serif; }
+  .subtitle { fill: #5f6864; font: 14px system-ui, sans-serif; }
+  .label { fill: #17201d; font: 750 16px system-ui, sans-serif; }
+  .small { fill: #5f6864; font: 12px system-ui, sans-serif; }
+  .tiny { fill: #5f6864; font: 11px system-ui, sans-serif; }
+  .node { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
+  .active { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
+  .risk { fill: #fff1ed; stroke: #c6543f; stroke-width: 3; }
+  .fixed { fill: #f6eff9; stroke: #8a5a9d; stroke-width: 3; }
+  .arrow { fill: none; stroke: #9ba9a1; stroke-width: 3; marker-end: url(#arrowhead); }
+  .arrow-active { fill: none; stroke: #2f7d5b; stroke-width: 4; marker-end: url(#arrowhead-active); }
+  .pill { fill: #eef4fb; stroke: #3469a6; stroke-width: 1.5; }
+</style>
+  </defs>
+  <rect id="background-canvas" width="1040" height="560" rx="8" fill="#fbfbf8" />
+  <text id="label-title" x="44" y="52" class="title">Agent Loop · Recovering From Tool Failure</text>
+  <text id="label-subtitle" x="44" y="78" class="subtitle">A failed observation revises the plan before another tool call</text>
+  <path id="arrow-plan-tool" class="arrow" d="M 220 218 H 292" />
+      <path id="arrow-tool-observe" class="arrow-active" d="M 432 218 H 504" />
+      <path id="arrow-observe-revise" class="arrow-active" d="M 574 260 V 338 H 474" />
+      <path id="arrow-revise-tool" class="arrow-active" d="M 404 338 H 362 V 260" />
+      <path id="arrow-observe-final" class="arrow" d="M 644 218 H 748" />
+      <g id="node-plan"><rect class="node" x="80" y="176" width="140" height="84" rx="8" /><text class="label" x="150" y="212" text-anchor="middle">Plan</text><text class="small" x="150" y="236" text-anchor="middle">set steps</text></g>
+      <g id="node-tool"><rect class="active" x="292" y="176" width="140" height="84" rx="8" /><text class="label" x="362" y="212" text-anchor="middle">Tool Call</text><text class="small" x="362" y="236" text-anchor="middle">retry</text></g>
+      <g id="node-observe"><rect class="risk" x="504" y="176" width="140" height="84" rx="8" /><text class="label" x="574" y="212" text-anchor="middle">Observation</text><text class="small" x="574" y="236" text-anchor="middle">failed</text></g>
+      <g id="node-revise"><rect class="active" x="334" y="338" width="140" height="84" rx="8" /><text class="label" x="404" y="374" text-anchor="middle">Revise</text><text class="small" x="404" y="398" text-anchor="middle">change query</text></g>
+      <g id="node-final"><rect class="node" x="748" y="176" width="164" height="84" rx="8" /><text class="label" x="830" y="212" text-anchor="middle">Final Answer</text><text class="small" x="830" y="236" text-anchor="middle">after evidence</text></g>
+  <rect x="44" y="478" width="952" height="48" rx="8" fill="#f7faf8" stroke="#d7ddd7" />
+  <text x="62" y="499" class="tiny">STATE · retry-after-tool-failure</text>
+  <text x="62" y="517" class="tiny">Tool results and retry paths are scripted; no external action runs.</text>
+  <text x="996" y="544" text-anchor="end" class="tiny">v1.1.0 · 2026-07-25 · MIT</text>
+</svg>

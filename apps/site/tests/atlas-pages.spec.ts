@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { getDiagramAssets } from "@ai-history/data";
 import { canonicalChapterLabels, chapterRoutes } from "./fixtures/chapters";
 
 test("Home page links to the LLM system chapter in the MVP spine", async ({
@@ -295,15 +296,15 @@ test("Lineage routes Agent to Safety around LLM System", async ({ page }) => {
   expect(agentSafetyPath).toBe("M 1156 352 L 1156 466 L 882 466");
 });
 
-test("Lineage keeps Safety / Eval as a non-link concept node", async ({
+test("Lineage links the Safety / Eval node to its chapter", async ({
   page,
 }) => {
   await page.goto("/lineage/");
 
   await expect(page.locator('.lineage-panel a[href="#"]')).toHaveCount(0);
   await expect(
-    page.getByRole("img", { name: /Safety \/ Eval：/ }),
-  ).toBeVisible();
+    page.getByRole("link", { name: /Safety \/ Eval：/ }),
+  ).toHaveAttribute("href", "/chapters/safety/");
 });
 
 test("Lineage view controls are visible and focusable on desktop", async ({
@@ -380,24 +381,47 @@ test("Diagrams page explains export and SVG naming conventions", async ({
   ).toBeVisible();
   await expect(page.getByText("node-*", { exact: true })).toBeVisible();
   await expect(page.getByText("截图友好", { exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "下载 RAG Pipeline SVG" }),
-  ).toHaveAttribute("href", "/diagrams/rag-pipeline.svg");
+  const assets = getDiagramAssets("zh-CN");
+  await expect(page.locator("[data-diagram-asset]")).toHaveCount(assets.length);
 
-  const response = await request.get("/diagrams/rag-pipeline.svg");
-  expect(response.ok()).toBeTruthy();
-  expect(await response.text()).toContain('id="node-query"');
+  for (const asset of assets) {
+    const card = page
+      .locator("[data-diagram-asset]")
+      .filter({ hasText: asset.title });
+    await expect(card).toBeVisible();
+    await expect(
+      card.getByRole("link", { name: `下载 SVG: ${asset.title}` }),
+    ).toHaveAttribute("href", asset.svgPath);
+    await expect(
+      card.getByRole("link", { name: `下载 PNG: ${asset.title}` }),
+    ).toHaveAttribute("href", asset.pngPath);
+
+    const svgResponse = await request.get(asset.svgPath);
+    const pngResponse = await request.get(asset.pngPath);
+    expect(svgResponse.ok(), asset.id).toBeTruthy();
+    expect(pngResponse.ok(), asset.id).toBeTruthy();
+    expect(await svgResponse.text(), asset.id).toContain(
+      `id="diagram-${asset.id}"`,
+    );
+  }
 });
 
-test("Diagrams page catalogs the 12 MVP core diagrams", async ({ page }) => {
+test("Diagrams page catalogs the complete core diagram set", async ({
+  page,
+}) => {
   await page.goto("/diagrams/");
 
-  await expect(page.locator("[data-core-diagram]")).toHaveCount(12);
+  await expect(page.locator("[data-core-diagram]")).toHaveCount(
+    chapterRoutes.length + 2,
+  );
   await expect(
     page.getByText("AI 技术演化主线图", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("Agent Loop 行动循环图", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Safety / Eval 发布反馈图", { exact: true }),
   ).toBeVisible();
 });
 

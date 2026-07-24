@@ -86,6 +86,12 @@ test.describe("Demo control accessibility", () => {
       nextButton: "工具先失败",
     },
     {
+      route: "/chapters/safety/",
+      groupName: "请求类型",
+      initialButton: "正常请求",
+      nextButton: "风险请求",
+    },
+    {
       route: "/chapters/decision-boundary/",
       groupName: "边界模式",
       initialButton: "线性边界",

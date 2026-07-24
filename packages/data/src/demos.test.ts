@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { legacyZhBaseline } from "./fixtures/legacy-zh-baseline";
 import {
@@ -11,6 +12,7 @@ import {
   chapterRegistry,
   cnnKernelDemo,
   decisionBoundaryDemo,
+  diagramAssets,
   expertSystemDemo,
   getAgentLoopDemo,
   getAiLineageEdges,
@@ -21,15 +23,18 @@ import {
   getCnnKernelDemo,
   getChapterDefinition,
   getDecisionBoundaryDemo,
+  getDiagramAssets,
   getExpertSystemDemo,
   getLlmSystemConnections,
   getLlmSystemLayers,
   getRagPipelineDemo,
+  getSafetyEvalDemo,
   getSearchTreeDemo,
   llmSystemConnections,
   llmSystemLayers,
   isChapterId,
   ragPipelineDemo,
+  safetyEvalDemo,
   searchTreeDemo,
 } from "./index";
 
@@ -42,6 +47,7 @@ const demos = [
   bayesUpdateDemo,
   decisionBoundaryDemo,
   cnnKernelDemo,
+  safetyEvalDemo,
 ];
 
 function canonicalize(value: unknown): unknown {
@@ -123,6 +129,75 @@ describe("demo acceptance metadata", () => {
         demo.title,
       ).toBe(true);
     }
+  });
+});
+
+describe("diagram asset registry", () => {
+  it("covers every demo chapter exactly once with stable metadata", () => {
+    const demoChapterIds = chapterRegistry
+      .filter(({ kind }) => kind === "demo")
+      .map(({ id }) => id);
+
+    expect(diagramAssets).toHaveLength(9);
+    expect(diagramAssets.map(({ chapterId }) => chapterId)).toEqual(
+      demoChapterIds,
+    );
+    expect(new Set(diagramAssets.map(({ id }) => id)).size).toBe(
+      diagramAssets.length,
+    );
+
+    for (const asset of diagramAssets) {
+      expect(asset.version).toBe("1.1.0");
+      expect(asset.updatedAt).toBe("2026-07-25");
+      expect(asset.license).toBe("MIT");
+      expect(asset.stateId.trim()).not.toBe("");
+      expect(asset.stableIds.nodes.length).toBeGreaterThan(0);
+      expect(asset.stableIds.arrows.length).toBeGreaterThan(0);
+      expect(asset.simplificationNote.trim()).not.toBe("");
+    }
+  });
+
+  it("points to readable SVG and PNG files containing every declared ID", async () => {
+    const publicRoot = new URL("../../../apps/site/public/", import.meta.url);
+
+    for (const asset of diagramAssets) {
+      const svg = await readFile(
+        new URL(`.${asset.svgPath}`, publicRoot),
+        "utf8",
+      );
+      const png = await readFile(new URL(`.${asset.pngPath}`, publicRoot));
+
+      expect(svg, asset.id).toContain(`id="diagram-${asset.id}"`);
+      expect(svg, asset.id).toContain(`data-state="${asset.stateId}"`);
+      for (const stableId of [
+        ...asset.stableIds.nodes,
+        ...asset.stableIds.arrows,
+      ]) {
+        expect(svg, `${asset.id}:${stableId}`).toContain(`id="${stableId}"`);
+      }
+      expect([...png.subarray(0, 8)], asset.id).toEqual([
+        137, 80, 78, 71, 13, 10, 26, 10,
+      ]);
+    }
+  });
+
+  it("localizes labels without changing asset paths, IDs, or states", () => {
+    const project = (locale: "zh-CN" | "en") =>
+      getDiagramAssets(locale).map(
+        ({ id, chapterId, stateId, svgPath, pngPath, stableIds }) => ({
+          id,
+          chapterId,
+          stateId,
+          svgPath,
+          pngPath,
+          stableIds,
+        }),
+      );
+
+    expect(project("en")).toEqual(project("zh-CN"));
+    expect(getDiagramAssets("en")[0]?.title).toBe(
+      "Search Tree: A* Reaches The Goal",
+    );
   });
 });
 
@@ -267,6 +342,42 @@ describe("localized data accessors", () => {
     expect(getAgentLoopDemo("en").title).toBe(
       "Agents: How do large language models execute multi-step tasks?",
     );
+    expect(getSafetyEvalDemo("en").title).toBe(
+      "Safety Evaluation: How do systems find, block, and fix risk?",
+    );
+  });
+
+  it("defines normal and repaired Safety / Eval release traces", () => {
+    const demo = getSafetyEvalDemo("zh-CN");
+    const stepsById = new Map(demo.steps.map((step) => [step.id, step]));
+
+    expect(demo.nodes.map(({ id }) => id)).toEqual([
+      "red-team",
+      "guardrail",
+      "permission",
+      "review",
+      "regression",
+      "release",
+    ]);
+    expect(demo.scenarios.map(({ id }) => id)).toEqual([
+      "normal",
+      "prompt-injection",
+    ]);
+    expect(demo.defaultScenarioId).toBe("normal");
+
+    const riskTrace = demo.scenarios
+      .find(({ id }) => id === "prompt-injection")!
+      .stepIds.map((stepId) => stepsById.get(stepId)!);
+    expect(riskTrace.map(({ findingTone }) => findingTone)).toEqual([
+      "risk",
+      "blocked",
+      "blocked",
+      "review",
+      "fixed",
+      "pass",
+    ]);
+    expect(riskTrace.at(-2)?.statusLabel).toBe("已修复并入库");
+    expect(riskTrace.at(-1)?.description).toContain("RT-017");
   });
 
   it("defines valid Agent success and retry scenario traces", () => {
@@ -441,6 +552,8 @@ describe("localized data accessors", () => {
       getBayesUpdateDemo("en"),
       getDecisionBoundaryDemo("en"),
       getCnnKernelDemo("en"),
+      getSafetyEvalDemo("en"),
+      getDiagramAssets("en"),
       getAiTimelineEntries("en"),
       getAiLineageNodes("en"),
       getAiLineageEdges("en"),
@@ -498,6 +611,25 @@ describe("localized topology parity", () => {
     });
     expect(projectAgent(getAgentLoopDemo("en"))).toEqual(
       projectAgent(getAgentLoopDemo("zh-CN")),
+    );
+
+    const projectSafety = (demo: ReturnType<typeof getSafetyEvalDemo>) => ({
+      nodes: demo.nodes.map(({ id, x, y }) => ({ id, x, y })),
+      edges: demo.edges,
+      steps: demo.steps.map(
+        ({ id, nodeId, activeNodeIds, activeEdgeIds, findingTone }) => ({
+          id,
+          nodeId,
+          activeNodeIds,
+          activeEdgeIds,
+          findingTone,
+        }),
+      ),
+      scenarios: demo.scenarios.map(({ id, stepIds }) => ({ id, stepIds })),
+      defaultScenarioId: demo.defaultScenarioId,
+    });
+    expect(projectSafety(getSafetyEvalDemo("en"))).toEqual(
+      projectSafety(getSafetyEvalDemo("zh-CN")),
     );
 
     const projectSearch = (demo: ReturnType<typeof getSearchTreeDemo>) => ({

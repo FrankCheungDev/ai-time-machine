@@ -1,0 +1,36 @@
+<svg id="diagram-safety-eval" data-state="risk-fixed-regression" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title-safety-eval desc-safety-eval">
+  <title id="title-safety-eval">Safety / Eval · Regression Release Gate</title>
+  <desc id="desc-safety-eval">A prompt-injection failure becomes RT-017 and blocks the old version. Representative state: risk-fixed-regression. One scripted case illustrates feedback; passing it does not eliminate all risk.</desc>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba9a1" /></marker>
+    <marker id="arrowhead-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" /></marker>
+    <style>
+  .title { fill: #17201d; font: 800 28px system-ui, sans-serif; }
+  .subtitle { fill: #5f6864; font: 14px system-ui, sans-serif; }
+  .label { fill: #17201d; font: 750 16px system-ui, sans-serif; }
+  .small { fill: #5f6864; font: 12px system-ui, sans-serif; }
+  .tiny { fill: #5f6864; font: 11px system-ui, sans-serif; }
+  .node { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
+  .active { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
+  .risk { fill: #fff1ed; stroke: #c6543f; stroke-width: 3; }
+  .fixed { fill: #f6eff9; stroke: #8a5a9d; stroke-width: 3; }
+  .arrow { fill: none; stroke: #9ba9a1; stroke-width: 3; marker-end: url(#arrowhead); }
+  .arrow-active { fill: none; stroke: #2f7d5b; stroke-width: 4; marker-end: url(#arrowhead-active); }
+  .pill { fill: #eef4fb; stroke: #3469a6; stroke-width: 1.5; }
+</style>
+  </defs>
+  <rect id="background-canvas" width="1040" height="560" rx="8" fill="#fbfbf8" />
+  <text id="label-title" x="44" y="52" class="title">Safety / Eval · Regression Release Gate</text>
+  <text id="label-subtitle" x="44" y="78" class="subtitle">A prompt-injection failure becomes RT-017 and blocks the old version</text>
+  <path id="arrow-red-team-guardrail" class="arrow-active" d="M 180 254 H 198" />
+      <path id="arrow-guardrail-permission" class="arrow-active" d="M 342 254 H 360" />
+      <path id="arrow-permission-review" class="arrow-active" d="M 504 254 H 522" />
+      <path id="arrow-review-regression" class="arrow-active" d="M 666 254 H 684" />
+      <path id="arrow-regression-release" class="arrow-active" d="M 828 254 H 846" />
+      <g id="node-red-team"><rect class="risk" x="36" y="208" width="144" height="92" rx="8" /><text class="label" x="108" y="246" text-anchor="middle">Red Team</text><text class="small" x="108" y="273" text-anchor="middle">failure found</text></g><g id="node-guardrail"><rect class="active" x="198" y="208" width="144" height="92" rx="8" /><text class="label" x="270" y="246" text-anchor="middle">Guardrail</text><text class="small" x="270" y="273" text-anchor="middle">risk flagged</text></g><g id="node-permission"><rect class="active" x="360" y="208" width="144" height="92" rx="8" /><text class="label" x="432" y="246" text-anchor="middle">Permission</text><text class="small" x="432" y="273" text-anchor="middle">send blocked</text></g><g id="node-review"><rect class="node" x="522" y="208" width="144" height="92" rx="8" /><text class="label" x="594" y="246" text-anchor="middle">Review</text><text class="small" x="594" y="273" text-anchor="middle">confirmed</text></g><g id="node-regression"><rect class="fixed" x="684" y="208" width="144" height="92" rx="8" /><text class="label" x="756" y="246" text-anchor="middle">Regression</text><text class="small" x="756" y="273" text-anchor="middle">RT-017 fixed</text></g><g id="node-release"><rect class="active" x="846" y="208" width="144" height="92" rx="8" /><text class="label" x="918" y="246" text-anchor="middle">Release Gate</text><text class="small" x="918" y="273" text-anchor="middle">fix passed</text></g>
+      <rect class="pill" x="684" y="336" width="306" height="54" rx="8" /><text class="label" x="837" y="359" text-anchor="middle">Old build ✕  ·  Fixed build ✓</text><text class="tiny" x="837" y="378" text-anchor="middle">quality + safety + robustness + cost</text>
+  <rect x="44" y="478" width="952" height="48" rx="8" fill="#f7faf8" stroke="#d7ddd7" />
+  <text x="62" y="499" class="tiny">STATE · risk-fixed-regression</text>
+  <text x="62" y="517" class="tiny">One scripted case illustrates feedback; passing it does not eliminate all risk.</text>
+  <text x="996" y="544" text-anchor="end" class="tiny">v1.1.0 · 2026-07-25 · MIT</text>
+</svg>

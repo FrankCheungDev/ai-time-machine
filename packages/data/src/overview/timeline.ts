@@ -83,6 +83,13 @@ const localizedTimelineEntryCopy = {
       summary:
         "LLM 被放进计划、工具调用、观察和修正循环，开始执行多步任务而不只是一次性回答。",
     },
+    safety: {
+      era: "可靠 AI 系统",
+      year: "2020s",
+      title: "Safety / Eval 反馈回路",
+      summary:
+        "红队样本、护栏、最小权限、人工复核和回归评估把一次失败转成可重复测试，并持续约束后续发布。",
+    },
   },
   en: {
     search: {
@@ -147,6 +154,13 @@ const localizedTimelineEntryCopy = {
       title: "Agent",
       summary:
         "An LLM enters a loop of planning, tool calls, observation, and revision, allowing it to execute multi-step tasks instead of only answering once.",
+    },
+    safety: {
+      era: "Reliable AI Systems",
+      year: "2020s",
+      title: "Safety / Eval Feedback Loops",
+      summary:
+        "Red-team cases, guardrails, least privilege, human review, and regression evaluation turn a failure into a repeatable test that constrains later releases.",
     },
   },
 } satisfies Record<Locale, Record<TimelineChapterId, TimelineEntryCopy>>;

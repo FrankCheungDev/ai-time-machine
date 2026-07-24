@@ -1,68 +1,37 @@
-<svg id="diagram-rag-pipeline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 360" role="img" aria-labelledby="title desc">
-  <title id="title">RAG Pipeline Source Diagram</title>
-  <desc id="desc">A reusable SVG source diagram for Query to Embedding to Vector DB to Reranker to Prompt to LLM to Answer.</desc>
+<svg id="diagram-rag-pipeline" data-state="grounded-answer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title-rag-pipeline desc-rag-pipeline">
+  <title id="title-rag-pipeline">RAG Pipeline · Grounded Answer</title>
+  <desc id="desc-rag-pipeline">Retrieved evidence is reranked, composed into context, and preserved with the answer. Representative state: grounded-answer. All nodes and outputs are scripted; no vector database or model is called.</desc>
   <defs>
-    <marker id="arrow-main" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" />
-    </marker>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba9a1" /></marker>
+    <marker id="arrowhead-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" /></marker>
     <style>
-      .node-rect { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
-      .node-label { fill: #17201d; font: 700 18px system-ui, sans-serif; }
-      .node-note { fill: #5f6864; font: 12px system-ui, sans-serif; }
-      .arrow { stroke: #2f7d5b; stroke-width: 4; fill: none; marker-end: url(#arrow-main); }
-      .highlight { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
-    </style>
+  .title { fill: #17201d; font: 800 28px system-ui, sans-serif; }
+  .subtitle { fill: #5f6864; font: 14px system-ui, sans-serif; }
+  .label { fill: #17201d; font: 750 16px system-ui, sans-serif; }
+  .small { fill: #5f6864; font: 12px system-ui, sans-serif; }
+  .tiny { fill: #5f6864; font: 11px system-ui, sans-serif; }
+  .node { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
+  .active { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
+  .risk { fill: #fff1ed; stroke: #c6543f; stroke-width: 3; }
+  .fixed { fill: #f6eff9; stroke: #8a5a9d; stroke-width: 3; }
+  .arrow { fill: none; stroke: #9ba9a1; stroke-width: 3; marker-end: url(#arrowhead); }
+  .arrow-active { fill: none; stroke: #2f7d5b; stroke-width: 4; marker-end: url(#arrowhead-active); }
+  .pill { fill: #eef4fb; stroke: #3469a6; stroke-width: 1.5; }
+</style>
   </defs>
-
-  <rect id="background-canvas" width="1040" height="360" rx="8" fill="#fbfbf8" />
-  <text id="label-title" x="40" y="48" class="node-label">RAG Pipeline</text>
-  <text id="label-subtitle" x="40" y="72" class="node-note">Scripted teaching diagram with stable node-* and arrow-* ids.</text>
-
-  <g id="node-query" data-role="node" data-step="1">
-    <rect class="highlight" x="40" y="150" width="118" height="76" rx="8" />
-    <text class="node-label" x="99" y="184" text-anchor="middle">Query</text>
-    <text class="node-note" x="99" y="206" text-anchor="middle">user question</text>
-  </g>
-  <path id="arrow-query-embedding" data-role="arrow" data-step="2" class="arrow" d="M158 188 H228" />
-
-  <g id="node-embedding" data-role="node" data-step="2">
-    <rect class="node-rect" x="230" y="150" width="130" height="76" rx="8" />
-    <text class="node-label" x="295" y="184" text-anchor="middle">Embedding</text>
-    <text class="node-note" x="295" y="206" text-anchor="middle">semantic vector</text>
-  </g>
-  <path id="arrow-embedding-vector-db" data-role="arrow" data-step="3" class="arrow" d="M360 188 H430" />
-
-  <g id="node-vector-db" data-role="node" data-step="3">
-    <rect class="node-rect" x="432" y="150" width="128" height="76" rx="8" />
-    <text class="node-label" x="496" y="184" text-anchor="middle">Vector DB</text>
-    <text class="node-note" x="496" y="206" text-anchor="middle">candidate chunks</text>
-  </g>
-  <path id="arrow-vector-db-reranker" data-role="arrow" data-step="4" class="arrow" d="M560 188 H630" />
-
-  <g id="node-reranker" data-role="node" data-step="4">
-    <rect class="node-rect" x="632" y="150" width="120" height="76" rx="8" />
-    <text class="node-label" x="692" y="184" text-anchor="middle">Reranker</text>
-    <text class="node-note" x="692" y="206" text-anchor="middle">sort evidence</text>
-  </g>
-  <path id="arrow-reranker-prompt" data-role="arrow" data-step="5" class="arrow" d="M752 188 H822" />
-
-  <g id="node-prompt" data-role="node" data-step="5">
-    <rect class="node-rect" x="824" y="110" width="120" height="76" rx="8" />
-    <text class="node-label" x="884" y="144" text-anchor="middle">Prompt</text>
-    <text class="node-note" x="884" y="166" text-anchor="middle">question + docs</text>
-  </g>
-  <path id="arrow-prompt-llm" data-role="arrow" data-step="6" class="arrow" d="M884 186 V238" />
-
-  <g id="node-llm" data-role="node" data-step="6">
-    <rect class="node-rect" x="824" y="240" width="120" height="76" rx="8" />
-    <text class="node-label" x="884" y="274" text-anchor="middle">LLM</text>
-    <text class="node-note" x="884" y="296" text-anchor="middle">grounded answer</text>
-  </g>
-  <path id="arrow-llm-answer" data-role="arrow" data-step="7" class="arrow" d="M944 278 H994" />
-
-  <g id="node-answer" data-role="node" data-step="7">
-    <rect class="node-rect" x="996" y="240" width="2" height="76" rx="1" />
-    <text class="node-label" x="1000" y="274" text-anchor="start">Answer</text>
-    <text class="node-note" x="1000" y="296" text-anchor="start">with citations</text>
-  </g>
+  <rect id="background-canvas" width="1040" height="560" rx="8" fill="#fbfbf8" />
+  <text id="label-title" x="44" y="52" class="title">RAG Pipeline · Grounded Answer</text>
+  <text id="label-subtitle" x="44" y="78" class="subtitle">Retrieved evidence is reranked, composed into context, and preserved with the answer</text>
+  <path id="arrow-query-embedding" class="arrow-active" d="M 172 220 H 208" />
+      <path id="arrow-embedding-vector-db" class="arrow-active" d="M 336 220 H 372" />
+      <path id="arrow-vector-db-reranker" class="arrow-active" d="M 500 220 H 536" />
+      <path id="arrow-reranker-prompt" class="arrow-active" d="M 664 220 H 700" />
+      <path id="arrow-prompt-llm" class="arrow-active" d="M 828 220 H 864" />
+      <path id="arrow-llm-answer" class="arrow-active" d="M 928 260 C 928 350 760 370 664 370" />
+      <g id="node-query"><rect class="node" x="44" y="178" width="128" height="84" rx="8" /><text class="label" x="108" y="214" text-anchor="middle">Query</text><text class="small" x="108" y="238" text-anchor="middle">question</text></g><g id="node-embedding"><rect class="node" x="208" y="178" width="128" height="84" rx="8" /><text class="label" x="272" y="214" text-anchor="middle">Embedding</text><text class="small" x="272" y="238" text-anchor="middle">vector</text></g><g id="node-vector-db"><rect class="active" x="372" y="178" width="128" height="84" rx="8" /><text class="label" x="436" y="214" text-anchor="middle">Vector DB</text><text class="small" x="436" y="238" text-anchor="middle">chunks</text></g><g id="node-reranker"><rect class="active" x="536" y="178" width="128" height="84" rx="8" /><text class="label" x="600" y="214" text-anchor="middle">Reranker</text><text class="small" x="600" y="238" text-anchor="middle">evidence</text></g><g id="node-prompt"><rect class="node" x="700" y="178" width="128" height="84" rx="8" /><text class="label" x="764" y="214" text-anchor="middle">Prompt</text><text class="small" x="764" y="238" text-anchor="middle">context</text></g><g id="node-llm"><rect class="node" x="864" y="178" width="128" height="84" rx="8" /><text class="label" x="928" y="214" text-anchor="middle">LLM</text><text class="small" x="928" y="238" text-anchor="middle">generate</text></g>
+      <g id="node-answer"><rect class="active" x="430" y="328" width="234" height="90" rx="8" /><text class="label" x="547" y="364" text-anchor="middle">Answer</text><text class="small" x="547" y="390" text-anchor="middle">claim + citation [1]</text></g>
+  <rect x="44" y="478" width="952" height="48" rx="8" fill="#f7faf8" stroke="#d7ddd7" />
+  <text x="62" y="499" class="tiny">STATE · grounded-answer</text>
+  <text x="62" y="517" class="tiny">All nodes and outputs are scripted; no vector database or model is called.</text>
+  <text x="996" y="544" text-anchor="end" class="tiny">v1.1.0 · 2026-07-25 · MIT</text>
 </svg>

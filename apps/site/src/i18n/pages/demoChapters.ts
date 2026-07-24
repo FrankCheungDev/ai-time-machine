@@ -402,6 +402,68 @@ export const demoChapterCopy = {
       ],
     },
   },
+  safety: {
+    "zh-CN": {
+      eyebrow: "Demo 10",
+      title: "Safety / Eval：系统如何发现、阻断并修复风险？",
+      description: "一个静态、教学型 Safety / Eval 反馈回路图解。",
+      lede: "当 RAG 和 Agent 能读取外部知识、调用工具并产生外部影响时，系统必须把风险变成可复现测试。这个章节展示红队样本、输入护栏、最小权限、人工复核、回归评估和发布门如何形成持续反馈回路。",
+      notesId: "safety-notes",
+      notesEyebrow: "教学与事实边界",
+      notesTitle: "通过评估不是“绝对安全”，而是让已知风险可测、可拦截、可回归",
+      notesBody:
+        "NIST 把生成式 AI 风险管理放在完整生命周期中，并强调部署前测试、持续评估、事件记录和定期复核。OWASP 说明提示注入无法只靠模型提示彻底消除，并建议最小权限与高风险动作人工批准。HELM 则展示为什么评估不能只看准确率，还要同时观察鲁棒性、安全、公平性和效率。本 demo 把这些原则压缩成一个间接提示注入案例，不构成完整安全基准或合规方案。",
+      references: [
+        {
+          href: "https://doi.org/10.6028/NIST.AI.600-1",
+          label: "NIST AI 600-1: Generative Artificial Intelligence Profile",
+        },
+        {
+          href: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+          label: "OWASP LLM01:2025 Prompt Injection",
+        },
+        {
+          href: "https://genai.owasp.org/llmrisk2023-24/llm08-excessive-agency/",
+          label: "OWASP LLM08: Excessive Agency",
+        },
+        {
+          href: "https://arxiv.org/abs/2211.09110",
+          label: "Holistic Evaluation of Language Models (HELM)",
+        },
+      ],
+    },
+    en: {
+      eyebrow: "Demo 10",
+      title: "Safety / Eval: How do systems find, block, and fix risk?",
+      description:
+        "A static teaching diagram for the Safety / Eval feedback loop.",
+      lede: "Once RAG and agents can read external knowledge, call tools, and affect external systems, failures need to become reproducible tests. This chapter shows how red-team cases, input guardrails, least privilege, human review, regression evaluation, and a release gate form a continuous feedback loop.",
+      notesId: "safety-notes",
+      notesEyebrow: "Teaching And Evidence Boundary",
+      notesTitle:
+        "Passing an evaluation is not absolute safety; it makes known risk measurable, interceptable, and repeatable",
+      notesBody:
+        "NIST places generative-AI risk management across the lifecycle and emphasizes pre-deployment testing, ongoing evaluation, incident records, and periodic review. OWASP explains that prompt injection cannot be eliminated by model instructions alone and recommends least privilege plus human approval for high-risk actions. HELM shows why evaluation needs metrics beyond accuracy, including robustness, safety-related harms, fairness, and efficiency. This demo compresses those principles into one indirect prompt-injection case; it is not a complete security benchmark or compliance program.",
+      references: [
+        {
+          href: "https://doi.org/10.6028/NIST.AI.600-1",
+          label: "NIST AI 600-1: Generative Artificial Intelligence Profile",
+        },
+        {
+          href: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+          label: "OWASP LLM01:2025 Prompt Injection",
+        },
+        {
+          href: "https://genai.owasp.org/llmrisk2023-24/llm08-excessive-agency/",
+          label: "OWASP LLM08: Excessive Agency",
+        },
+        {
+          href: "https://arxiv.org/abs/2211.09110",
+          label: "Holistic Evaluation of Language Models (HELM)",
+        },
+      ],
+    },
+  },
 } satisfies Record<CanonicalDemoChapterId, Record<Locale, DemoChapterCopy>>;
 
 export type DemoChapterId = CanonicalDemoChapterId;

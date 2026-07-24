@@ -16,6 +16,7 @@ const activityTitles = {
     attention: "注意力热图探索",
     rag: "RAG 流程演示",
     agent: "Agent 循环演示",
+    safety: "Safety / Eval 发布门实验",
   },
   en: {
     search: "Search Tree Walkthrough",
@@ -26,6 +27,7 @@ const activityTitles = {
     attention: "Attention Map Explorer",
     rag: "RAG Pipeline Walkthrough",
     agent: "Agent Loop Walkthrough",
+    safety: "Safety / Eval Release Gate Lab",
   },
 } satisfies Record<Locale, Record<DemoChapterId, string>>;
 
