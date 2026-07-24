@@ -8,7 +8,12 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
 - Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, LLM systems, RAG, and Agent.
 - Eight teaching demos with simplification notes, references, and Playwright smoke coverage.
+- Complete Chinese and English routes with resumable local learning progress,
+  chapter completion, and previous/next navigation.
 - Timeline, lineage map, diagram source page, reusable RAG SVG, and contributor guides.
+- Cloudflare Pages production and pull-request previews backed by formatting,
+  type, data, build, unit, browser, visual, accessibility, and teaching
+  correctness checks.
 
 ## Post-MVP Iterations
 
