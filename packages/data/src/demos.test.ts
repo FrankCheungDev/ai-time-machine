@@ -127,79 +127,30 @@ describe("demo acceptance metadata", () => {
 });
 
 describe("chapter registry", () => {
-  it("keeps ten unique chapters in the 00-09 learning order", () => {
-    expect(
-      chapterRegistry.map(({ id, route, kind, number }) => ({
-        id,
-        route,
-        kind,
-        number,
-      })),
-    ).toEqual([
-      {
-        id: "overview",
-        route: "/chapters/overview/",
-        kind: "chapter",
-        number: "00",
-      },
-      {
-        id: "search",
-        route: "/chapters/search/",
-        kind: "demo",
-        number: "01",
-      },
-      {
-        id: "expert-system",
-        route: "/chapters/expert-system/",
-        kind: "demo",
-        number: "02",
-      },
-      {
-        id: "bayes",
-        route: "/chapters/bayes/",
-        kind: "demo",
-        number: "03",
-      },
-      {
-        id: "decision-boundary",
-        route: "/chapters/decision-boundary/",
-        kind: "demo",
-        number: "04",
-      },
-      {
-        id: "cnn",
-        route: "/chapters/cnn/",
-        kind: "demo",
-        number: "05",
-      },
-      {
-        id: "attention",
-        route: "/chapters/attention/",
-        kind: "demo",
-        number: "06",
-      },
-      {
-        id: "llm-system",
-        route: "/chapters/llm-system/",
-        kind: "chapter",
-        number: "07",
-      },
-      {
-        id: "rag",
-        route: "/chapters/rag/",
-        kind: "demo",
-        number: "08",
-      },
-      {
-        id: "agent",
-        route: "/chapters/agent/",
-        kind: "demo",
-        number: "09",
-      },
-    ]);
-    expect(new Set(chapterRegistry.map(({ id }) => id)).size).toBe(10);
-    expect(new Set(chapterRegistry.map(({ route }) => route)).size).toBe(10);
-    expect(new Set(chapterRegistry.map(({ number }) => number)).size).toBe(10);
+  it("keeps unique, contiguous chapters in canonical learning order", () => {
+    expect(chapterRegistry[0]).toMatchObject({
+      id: "overview",
+      route: "/chapters/overview/",
+      kind: "chapter",
+      number: "00",
+    });
+
+    for (const [index, chapter] of chapterRegistry.entries()) {
+      expect(chapter.number).toBe(String(index).padStart(2, "0"));
+      expect(chapter.route).toBe(`/chapters/${chapter.id}/`);
+      expect(chapter.shortTitle["zh-CN"].trim()).not.toBe("");
+      expect(chapter.shortTitle.en.trim()).not.toBe("");
+    }
+
+    expect(new Set(chapterRegistry.map(({ id }) => id)).size).toBe(
+      chapterRegistry.length,
+    );
+    expect(new Set(chapterRegistry.map(({ route }) => route)).size).toBe(
+      chapterRegistry.length,
+    );
+    expect(new Set(chapterRegistry.map(({ number }) => number)).size).toBe(
+      chapterRegistry.length,
+    );
   });
 
   it("links every non-overview chapter to timeline and lineage IDs", () => {
@@ -207,7 +158,7 @@ describe("chapter registry", () => {
       (chapter) => "timelineId" in chapter || "lineageNodeId" in chapter,
     );
 
-    expect(linkedChapters).toHaveLength(9);
+    expect(linkedChapters).toHaveLength(chapterRegistry.length - 1);
     expect(
       linkedChapters.every(
         (chapter) => "timelineId" in chapter && Boolean(chapter.timelineId),
@@ -225,14 +176,14 @@ describe("chapter registry", () => {
           "timelineId" in chapter ? chapter.timelineId : undefined,
         ),
       ).size,
-    ).toBe(9);
+    ).toBe(linkedChapters.length);
     expect(
       new Set(
         linkedChapters.map((chapter) =>
           "lineageNodeId" in chapter ? chapter.lineageNodeId : undefined,
         ),
       ).size,
-    ).toBe(9);
+    ).toBe(linkedChapters.length);
   });
 
   it("looks up and validates stable chapter IDs", () => {
@@ -240,7 +191,7 @@ describe("chapter registry", () => {
       "注意力机制",
     );
     expect(isChapterId("decision-boundary")).toBe(true);
-    expect(isChapterId("safety")).toBe(false);
+    expect(isChapterId("not-a-chapter")).toBe(false);
   });
 });
 

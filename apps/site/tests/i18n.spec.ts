@@ -1,50 +1,56 @@
 import { expect, test } from "@playwright/test";
+import {
+  demoChapterIds,
+  englishChapterRoutes,
+  englishNonOverviewChapterRoutes,
+  localizedChapterRoute,
+} from "./fixtures/chapters";
 
 const englishPrimaryRoutes = [
   "/en/",
   "/en/timeline/",
   "/en/lineage/",
   "/en/diagrams/",
-  "/en/chapters/overview/",
+  localizedChapterRoute("overview", "en"),
 ] as const;
 
 const englishDemoChapterCases = [
   {
-    route: "/en/chapters/search/",
+    route: localizedChapterRoute("search", "en"),
     title: "Symbolic AI And Search: Can machines act intelligent by searching?",
     activityTitle: "Search Tree Walkthrough",
     evidence:
       "Why did early AI rely on search, and why did it encounter combinatorial explosion?",
   },
   {
-    route: "/en/chapters/expert-system/",
+    route: localizedChapterRoute("expert-system", "en"),
     title: "Expert Systems: Can expert knowledge be written as if-then rules?",
     activityTitle: "Expert System Inference",
     evidence:
       "Can expert knowledge be written as rules, and why do rule systems become brittle?",
   },
   {
-    route: "/en/chapters/bayes/",
+    route: localizedChapterRoute("bayes", "en"),
     title: "Probabilistic Reasoning: How do machines handle uncertainty?",
     activityTitle: "Bayesian Update Lab",
     evidence: "How does evidence change a belief?",
   },
   {
-    route: "/en/chapters/decision-boundary/",
+    route: localizedChapterRoute("decision-boundary", "en"),
     title:
       "Classic Machine Learning: How do machines learn decision boundaries from data?",
     activityTitle: "Decision Boundary Explorer",
     evidence: "How do machines learn classification boundaries from data?",
   },
   {
-    route: "/en/chapters/cnn/",
+    route: localizedChapterRoute("cnn", "en"),
     title:
       "Deep Learning And CNNs: How do machines learn local visual features?",
     activityTitle: "CNN Kernel Explorer",
     evidence: "How do machines identify local features in an image?",
   },
   {
-    route: "/en/chapters/attention/",
+    route: localizedChapterRoute("attention", "en"),
     title:
       "Attention And Transformers: Why can tokens directly attend to each other?",
     activityTitle: "Attention Map Explorer",
@@ -52,14 +58,14 @@ const englishDemoChapterCases = [
       "Why is Attention better suited than an RNN for modeling long-range dependencies?",
   },
   {
-    route: "/en/chapters/rag/",
+    route: localizedChapterRoute("rag", "en"),
     title: "RAG: How do large language models connect to external knowledge?",
     activityTitle: "RAG Pipeline Walkthrough",
     evidence:
       "Why are model parameters alone not enough for answering questions?",
   },
   {
-    route: "/en/chapters/agent/",
+    route: localizedChapterRoute("agent", "en"),
     title: "Agents: How do large language models execute multi-step tasks?",
     activityTitle: "Agent Loop Walkthrough",
     evidence:
@@ -69,42 +75,42 @@ const englishDemoChapterCases = [
 
 const chineseDemoChapterCases = [
   {
-    route: "/chapters/search/",
+    route: localizedChapterRoute("search"),
     title: "符号主义与搜索：机器能否通过搜索表现出智能？",
     activityTitle: "搜索树逐步探索",
   },
   {
-    route: "/chapters/expert-system/",
+    route: localizedChapterRoute("expert-system"),
     title: "专家系统：专家知识能否写成 if-then 规则？",
     activityTitle: "专家系统推理演示",
   },
   {
-    route: "/chapters/bayes/",
+    route: localizedChapterRoute("bayes"),
     title: "概率推理：机器如何处理不确定性？",
     activityTitle: "贝叶斯更新实验",
   },
   {
-    route: "/chapters/decision-boundary/",
+    route: localizedChapterRoute("decision-boundary"),
     title: "经典机器学习：机器如何从数据中学习决策边界？",
     activityTitle: "决策边界探索",
   },
   {
-    route: "/chapters/cnn/",
+    route: localizedChapterRoute("cnn"),
     title: "深度学习与 CNN：机器如何从图像中学习局部特征？",
     activityTitle: "CNN 卷积核实验",
   },
   {
-    route: "/chapters/attention/",
+    route: localizedChapterRoute("attention"),
     title: "Attention 与 Transformer：token 为什么可以直接互相关注？",
     activityTitle: "注意力热图探索",
   },
   {
-    route: "/chapters/rag/",
+    route: localizedChapterRoute("rag"),
     title: "RAG：大模型如何连接外部知识？",
     activityTitle: "RAG 流程演示",
   },
   {
-    route: "/chapters/agent/",
+    route: localizedChapterRoute("agent"),
     title: "Agent：大模型如何执行多步任务？",
     activityTitle: "Agent 循环演示",
   },
@@ -116,7 +122,7 @@ const demoActivityTitleCases = [
 ] as const;
 
 const englishLlmSystemChapter = {
-  route: "/en/chapters/llm-system/",
+  route: localizedChapterRoute("llm-system", "en"),
   title:
     "LLMs And Modern AI Systems: Why do large models still need external systems?",
   evidence: "Context Window",
@@ -124,56 +130,56 @@ const englishLlmSystemChapter = {
 
 const englishChapterReferenceCases = [
   {
-    route: "/en/chapters/search/",
+    route: localizedChapterRoute("search", "en"),
     expectedHrefs: [
       "https://aima.cs.berkeley.edu/",
       "https://doi.org/10.1109/TSSC.1968.300136",
     ],
   },
   {
-    route: "/en/chapters/expert-system/",
+    route: localizedChapterRoute("expert-system", "en"),
     expectedHrefs: [
       "https://www.shortliffe.net/",
       "https://doi.org/10.1016/0004-3702(93)90068-M",
     ],
   },
   {
-    route: "/en/chapters/bayes/",
+    route: localizedChapterRoute("bayes", "en"),
     expectedHrefs: [
       "https://allendowney.github.io/ThinkBayes2/",
       "https://www.deeplearningbook.org/contents/prob.html",
     ],
   },
   {
-    route: "/en/chapters/decision-boundary/",
+    route: localizedChapterRoute("decision-boundary", "en"),
     expectedHrefs: [
       "https://hastie.su.domains/ElemStatLearn/",
       "https://www.cs.cornell.edu/courses/cs4780/2018fa/lectures/",
     ],
   },
   {
-    route: "/en/chapters/cnn/",
+    route: localizedChapterRoute("cnn", "en"),
     expectedHrefs: [
       "https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html",
       "https://www.deeplearningbook.org/contents/convnets.html",
     ],
   },
   {
-    route: "/en/chapters/attention/",
+    route: localizedChapterRoute("attention", "en"),
     expectedHrefs: [
       "https://arxiv.org/abs/1706.03762",
       "https://jalammar.github.io/illustrated-transformer/",
     ],
   },
   {
-    route: "/en/chapters/rag/",
+    route: localizedChapterRoute("rag", "en"),
     expectedHrefs: [
       "https://arxiv.org/abs/2005.11401",
       "https://arxiv.org/abs/2312.10997",
     ],
   },
   {
-    route: "/en/chapters/agent/",
+    route: localizedChapterRoute("agent", "en"),
     expectedHrefs: [
       "https://arxiv.org/abs/2210.03629",
       "https://arxiv.org/abs/2302.04761",
@@ -186,18 +192,7 @@ const englishRouteLinkCases = [
     label: "home learning links",
     route: "/en/",
     selector: "#mvp a.demo-card",
-    expectedHrefs: [
-      "/en/chapters/overview/",
-      "/en/chapters/search/",
-      "/en/chapters/expert-system/",
-      "/en/chapters/bayes/",
-      "/en/chapters/decision-boundary/",
-      "/en/chapters/cnn/",
-      "/en/chapters/attention/",
-      "/en/chapters/llm-system/",
-      "/en/chapters/rag/",
-      "/en/chapters/agent/",
-    ],
+    expectedHrefs: englishChapterRoutes,
   },
   {
     label: "home overview links",
@@ -209,33 +204,13 @@ const englishRouteLinkCases = [
     label: "timeline demo links",
     route: "/en/timeline/",
     selector: ".timeline-list a.button",
-    expectedHrefs: [
-      "/en/chapters/search/",
-      "/en/chapters/expert-system/",
-      "/en/chapters/bayes/",
-      "/en/chapters/decision-boundary/",
-      "/en/chapters/cnn/",
-      "/en/chapters/attention/",
-      "/en/chapters/llm-system/",
-      "/en/chapters/rag/",
-      "/en/chapters/agent/",
-    ],
+    expectedHrefs: englishNonOverviewChapterRoutes,
   },
   {
     label: "lineage node links",
     route: "/en/lineage/",
     selector: '.lineage-panel a[href^="/en/"]',
-    expectedHrefs: [
-      "/en/chapters/search/",
-      "/en/chapters/expert-system/",
-      "/en/chapters/bayes/",
-      "/en/chapters/decision-boundary/",
-      "/en/chapters/cnn/",
-      "/en/chapters/attention/",
-      "/en/chapters/llm-system/",
-      "/en/chapters/rag/",
-      "/en/chapters/agent/",
-    ],
+    expectedHrefs: englishNonOverviewChapterRoutes,
   },
   {
     label: "diagram core links",
@@ -264,7 +239,7 @@ const englishRouteLinkCases = [
   },
   {
     label: "overview external references",
-    route: "/en/chapters/overview/",
+    route: localizedChapterRoute("overview", "en"),
     selector: 'main a[href^="https://"]',
     expectedHrefs: [
       "https://aima.cs.berkeley.edu/",
@@ -284,6 +259,25 @@ async function openReadyEnglishDemo(
     route,
   ).toHaveCount(1);
 }
+
+test("localized demo expectations cover every registry demo", () => {
+  const expectedEnglishRoutes = demoChapterIds.map((id) =>
+    localizedChapterRoute(id, "en"),
+  );
+  const expectedChineseRoutes = demoChapterIds.map((id) =>
+    localizedChapterRoute(id),
+  );
+
+  expect(englishDemoChapterCases.map(({ route }) => route)).toEqual(
+    expectedEnglishRoutes,
+  );
+  expect(chineseDemoChapterCases.map(({ route }) => route)).toEqual(
+    expectedChineseRoutes,
+  );
+  expect(englishChapterReferenceCases.map(({ route }) => route)).toEqual(
+    expectedEnglishRoutes,
+  );
+});
 
 test("Chinese routes expose zh-CN document language and an English switch", async ({
   page,
