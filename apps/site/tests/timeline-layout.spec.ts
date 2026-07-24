@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { nonOverviewChapterRoutes } from "./fixtures/chapters";
 
 test("timeline entries keep metadata, content, and action in stable desktop columns", async ({
   page,
@@ -7,7 +8,7 @@ test("timeline entries keep metadata, content, and action in stable desktop colu
   await page.goto("/timeline/");
 
   const entries = page.locator(".timeline-entry");
-  await expect(entries).toHaveCount(9);
+  await expect(entries).toHaveCount(nonOverviewChapterRoutes.length);
 
   const layout = await entries.evaluateAll((items) =>
     items.map((item) => {

@@ -18,6 +18,7 @@ const expected = [
   ["llm-system", "/chapters/llm-system/", "chapter"],
   ["rag", "/chapters/rag/", "demo"],
   ["agent", "/chapters/agent/", "demo"],
+  ["safety", "/chapters/safety/", "demo"],
 ] as const;
 
 describe("learningPath", () => {
@@ -25,8 +26,8 @@ describe("learningPath", () => {
     expect(
       learningPath.map(({ id, route, kind }) => [id, route, kind]),
     ).toEqual(expected);
-    expect(new Set(learningPath.map(({ id }) => id)).size).toBe(10);
-    expect(new Set(learningPath.map(({ route }) => route)).size).toBe(10);
+    expect(new Set(learningPath.map(({ id }) => id)).size).toBe(11);
+    expect(new Set(learningPath.map(({ route }) => route)).size).toBe(11);
     expect(learningPath).toEqual(
       chapterRegistry.map(({ id, route, kind }) => ({ id, route, kind })),
     );
@@ -37,7 +38,9 @@ describe("learningPath", () => {
     expect(getLearningPathContext("overview").next?.id).toBe("search");
     expect(getLearningPathContext("rag").previous?.id).toBe("llm-system");
     expect(getLearningPathContext("rag").next?.id).toBe("agent");
-    expect(getLearningPathContext("agent").next).toBeUndefined();
+    expect(getLearningPathContext("agent").next?.id).toBe("safety");
+    expect(getLearningPathContext("safety").previous?.id).toBe("agent");
+    expect(getLearningPathContext("safety").next).toBeUndefined();
   });
 
   it("finds the earliest gap regardless of completion order", () => {

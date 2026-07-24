@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { getDiagramAssets } from "@ai-history/data";
 import {
   demoChapterIds,
   englishChapterRoutes,
@@ -71,6 +72,13 @@ const englishDemoChapterCases = [
     evidence:
       "Why is an agent a looped control system rather than a one-shot answer?",
   },
+  {
+    route: localizedChapterRoute("safety", "en"),
+    title: "Safety / Eval: How do systems find, block, and fix risk?",
+    activityTitle: "Safety / Eval Release Gate Lab",
+    evidence:
+      "Once RAG and agents can read external knowledge and take actions, how can one failure be kept out of future releases?",
+  },
 ] as const;
 
 const chineseDemoChapterCases = [
@@ -113,6 +121,11 @@ const chineseDemoChapterCases = [
     route: localizedChapterRoute("agent"),
     title: "Agent：大模型如何执行多步任务？",
     activityTitle: "Agent 循环演示",
+  },
+  {
+    route: localizedChapterRoute("safety"),
+    title: "Safety / Eval：系统如何发现、阻断并修复风险？",
+    activityTitle: "Safety / Eval 发布门实验",
   },
 ] as const;
 
@@ -185,6 +198,15 @@ const englishChapterReferenceCases = [
       "https://arxiv.org/abs/2302.04761",
     ],
   },
+  {
+    route: localizedChapterRoute("safety", "en"),
+    expectedHrefs: [
+      "https://doi.org/10.6028/NIST.AI.600-1",
+      "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+      "https://genai.owasp.org/llmrisk2023-24/llm08-excessive-agency/",
+      "https://arxiv.org/abs/2211.09110",
+    ],
+  },
 ] as const;
 
 const englishRouteLinkCases = [
@@ -229,13 +251,17 @@ const englishRouteLinkCases = [
       "/en/chapters/attention/",
       "/en/chapters/rag/",
       "/en/chapters/agent/",
+      "/en/chapters/safety/",
     ],
   },
   {
-    label: "diagram asset download",
+    label: "diagram asset downloads",
     route: "/en/diagrams/",
-    selector: "a.demo-card[download]",
-    expectedHrefs: ["/diagrams/rag-pipeline.svg"],
+    selector: "[data-diagram-asset] a[download]",
+    expectedHrefs: getDiagramAssets("en").flatMap(({ svgPath, pngPath }) => [
+      svgPath,
+      pngPath,
+    ]),
   },
   {
     label: "overview external references",

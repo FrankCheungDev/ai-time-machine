@@ -1,0 +1,35 @@
+<svg id="diagram-expert-system" data-state="rule-conflict" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title-expert-system desc-expert-system">
+  <title id="title-expert-system">Expert System · Rule Conflict</title>
+  <desc id="desc-expert-system">One fact set activates incompatible if-then conclusions. Representative state: rule-conflict. Rules and facts are scripted teaching examples, not real decisions.</desc>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba9a1" /></marker>
+    <marker id="arrowhead-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" /></marker>
+    <style>
+  .title { fill: #17201d; font: 800 28px system-ui, sans-serif; }
+  .subtitle { fill: #5f6864; font: 14px system-ui, sans-serif; }
+  .label { fill: #17201d; font: 750 16px system-ui, sans-serif; }
+  .small { fill: #5f6864; font: 12px system-ui, sans-serif; }
+  .tiny { fill: #5f6864; font: 11px system-ui, sans-serif; }
+  .node { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
+  .active { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
+  .risk { fill: #fff1ed; stroke: #c6543f; stroke-width: 3; }
+  .fixed { fill: #f6eff9; stroke: #8a5a9d; stroke-width: 3; }
+  .arrow { fill: none; stroke: #9ba9a1; stroke-width: 3; marker-end: url(#arrowhead); }
+  .arrow-active { fill: none; stroke: #2f7d5b; stroke-width: 4; marker-end: url(#arrowhead-active); }
+  .pill { fill: #eef4fb; stroke: #3469a6; stroke-width: 1.5; }
+</style>
+  </defs>
+  <rect id="background-canvas" width="1040" height="560" rx="8" fill="#fbfbf8" />
+  <text id="label-title" x="44" y="52" class="title">Expert System · Rule Conflict</text>
+  <text id="label-subtitle" x="44" y="78" class="subtitle">One fact set activates incompatible if-then conclusions</text>
+  <g id="node-facts"><rect class="active" x="70" y="190" width="200" height="150" rx="8" /><text class="label" x="170" y="225" text-anchor="middle">Facts</text><text class="small" x="92" y="260">temperature = high</text><text class="small" x="92" y="286">pressure = unstable</text><text class="small" x="92" y="312">override = true</text></g>
+      <path id="arrow-facts-rules" class="arrow-active" d="M 270 265 H 350" />
+      <g id="node-rule-a"><rect class="node" x="350" y="142" width="250" height="96" rx="8" /><text class="label" x="475" y="178" text-anchor="middle">Rule A</text><text class="small" x="475" y="204" text-anchor="middle">high temp → stop</text></g>
+      <g id="node-rule-b"><rect class="node" x="350" y="292" width="250" height="96" rx="8" /><text class="label" x="475" y="328" text-anchor="middle">Rule B</text><text class="small" x="475" y="354" text-anchor="middle">override → continue</text></g>
+      <path id="arrow-rules-conflict" class="arrow-active" d="M 600 190 C 680 190 680 264 742 264 M 600 340 C 680 340 680 264 742 264" />
+      <g id="node-conflict"><rect class="risk" x="742" y="211" width="222" height="108" rx="8" /><text class="label" x="853" y="250" text-anchor="middle">Conflict</text><text class="small" x="853" y="276" text-anchor="middle">STOP ≠ CONTINUE</text><text class="small" x="853" y="298" text-anchor="middle">needs resolution</text></g>
+  <rect x="44" y="478" width="952" height="48" rx="8" fill="#f7faf8" stroke="#d7ddd7" />
+  <text x="62" y="499" class="tiny">STATE · rule-conflict</text>
+  <text x="62" y="517" class="tiny">Rules and facts are scripted teaching examples, not real decisions.</text>
+  <text x="996" y="544" text-anchor="end" class="tiny">v1.1.0 · 2026-07-25 · MIT</text>
+</svg>

@@ -104,6 +104,15 @@ const definitions = [
     timelineId: "agent-loop",
     lineageNodeId: "agent",
   },
+  {
+    id: "safety",
+    route: "/chapters/safety/",
+    kind: "demo",
+    number: "10",
+    shortTitle: { "zh-CN": "Safety / Eval", en: "Safety / Eval" },
+    timelineId: "safety-eval",
+    lineageNodeId: "safety",
+  },
 ] as const satisfies readonly ChapterDefinitionSource[];
 
 export type ChapterId = (typeof definitions)[number]["id"];

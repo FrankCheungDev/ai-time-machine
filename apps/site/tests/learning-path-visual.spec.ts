@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { chapterCases } from "./fixtures/chapters";
 
 const learningProgressStorageKey = "ai-history-learning-progress";
 
@@ -25,7 +26,7 @@ test("shows partial learning progress in the mobile home hero", async ({
 
   await page.goto("/");
   await expect(page.getByTestId("home-learning-progress")).toContainText(
-    "已完成 2 / 10",
+    `已完成 2 / ${chapterCases.length}`,
   );
 
   await expect(page).toHaveScreenshot("home-partial-progress.png", {

@@ -452,10 +452,10 @@ test("shows no-save chapter navigation immediately when storage reads fail and r
   await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
 });
 
-test("completing Agent alone returns to the first incomplete chapter", async ({
+test("completing Safety alone returns to the first incomplete chapter", async ({
   page,
 }) => {
-  await page.goto("/chapters/agent/");
+  await page.goto("/chapters/safety/");
   await page.getByTestId("complete-and-continue").click();
 
   const journey = page.getByTestId("chapter-journey");

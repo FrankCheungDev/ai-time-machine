@@ -5,14 +5,14 @@
 线上站点：[atlas.z-ai.cc](https://atlas.z-ai.cc)。中文为默认语言，`/en/`
 下提供完整英文学习路径。
 
-## 当前 MVP
+## 当前版本
 
 - 基于 Astro、MDX 与 Svelte islands 的纯静态站点。
-- 从总览到 Agent 的 10 个章节。
-- 搜索树、专家系统、Bayes、决策边界、CNN、Attention、RAG、Agent 共 8 个教学 demo。
+- 从总览到 Safety / Eval 的 11 个章节。
+- 搜索树、专家系统、Bayes、决策边界、CNN、Attention、RAG、Agent、Safety / Eval 共 9 个教学 demo。
 - 完整的中英文路由、文案、交互状态与参考资料。
 - 可续学的本地进度、章节完成状态与前后章导航。
-- 时间线、技术谱系和可复用图源页面。
+- 时间线、技术谱系，以及由资产清单生成的 9 组可下载 SVG/PNG 图源页面。
 - 覆盖格式、类型、数据契约、静态构建、单元测试、浏览器行为、视觉回归、可访问性控件和教学正确性的 CI。
 - 设计、动效、图源、demo 与模板贡献指南。
 
@@ -40,6 +40,7 @@ pnpm format:check
 - `/chapters/llm-system/`
 - `/chapters/rag/`
 - `/chapters/agent/`
+- `/chapters/safety/`
 - `/timeline/`
 - `/lineage/`
 - `/diagrams/`
@@ -51,6 +52,8 @@ pnpm format:check
 
 Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md)。
+发布收口、章节扩展架构、Safety / Eval 和图源资产库已经完成；下一阶段是
+事件级历史、自测与隐私评审后的学习指标。
 
 ## 部署
 

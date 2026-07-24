@@ -98,6 +98,9 @@ const homeLearningPathCardCopy = {
       description:
         "执行 plan、tool call、observation、revise、final answer 的循环。",
     },
+    safety: {
+      description: "对比正常与风险请求，把失败固化为回归测试并经过发布门。",
+    },
   },
   en: {
     overview: {
@@ -141,6 +144,10 @@ const homeLearningPathCardCopy = {
     agent: {
       description:
         "Run the loop of planning, tool calls, observation, revision, and a final answer.",
+    },
+    safety: {
+      description:
+        "Compare normal and risky requests, save a failure as a regression test, and run the release gate.",
     },
   },
 } satisfies Record<Locale, Record<ChapterId, HomeLearningCardCopy>>;
