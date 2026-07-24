@@ -1,61 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
+import type { ChapterId } from "@ai-history/data/chapters";
+import { chapterCases } from "./fixtures/chapters";
 
 const learningProgressStorageKey = "ai-history-learning-progress";
 
-const chapterCases = [
-  {
-    id: "overview",
-    route: "/chapters/overview/",
-    title: "总览",
-  },
-  {
-    id: "search",
-    route: "/chapters/search/",
-    title: "搜索树 / A*",
-  },
-  {
-    id: "expert-system",
-    route: "/chapters/expert-system/",
-    title: "专家系统规则推理",
-  },
-  {
-    id: "bayes",
-    route: "/chapters/bayes/",
-    title: "贝叶斯更新",
-  },
-  {
-    id: "decision-boundary",
-    route: "/chapters/decision-boundary/",
-    title: "决策边界",
-  },
-  {
-    id: "cnn",
-    route: "/chapters/cnn/",
-    title: "CNN 卷积核",
-  },
-  {
-    id: "attention",
-    route: "/chapters/attention/",
-    title: "注意力机制",
-  },
-  {
-    id: "llm-system",
-    route: "/chapters/llm-system/",
-    title: "LLM 系统地图",
-  },
-  {
-    id: "rag",
-    route: "/chapters/rag/",
-    title: "RAG Pipeline",
-  },
-  {
-    id: "agent",
-    route: "/chapters/agent/",
-    title: "Agent Loop",
-  },
-] as const;
-
-type ChapterId = (typeof chapterCases)[number]["id"];
+const totalChapters = chapterCases.length;
 
 async function seedLearningProgress(
   page: Page,
@@ -103,7 +52,7 @@ test("home continues from the first gap in partial out-of-order progress", async
   await page.goto("/");
 
   const progress = page.getByTestId("home-learning-progress");
-  await expect(progress).toContainText("已完成 2 / 10");
+  await expect(progress).toContainText(`已完成 2 / ${totalChapters}`);
   await expect(
     progress.getByRole("link", { name: "继续学习：搜索树 / A*" }),
   ).toHaveAttribute("href", "/chapters/search/");
@@ -229,7 +178,7 @@ test("home reset confirmation can cancel or clear progress", async ({
   await progress.getByRole("button", { name: "重置学习进度" }).click();
   await expect(progress.getByText("确定重置？")).toBeVisible();
   await progress.getByRole("button", { name: "取消" }).click();
-  await expect(progress).toContainText("已完成 2 / 10");
+  await expect(progress).toContainText(`已完成 2 / ${totalChapters}`);
   await expect(progress.getByText("确定重置？")).toHaveCount(0);
 
   await progress.getByRole("button", { name: "重置学习进度" }).click();
@@ -258,7 +207,7 @@ test("overview completion persists across reload and resumes from Search on home
   await page.goto("/");
   await page.reload();
   const progress = page.getByTestId("home-learning-progress");
-  await expect(progress).toContainText("已完成 1 / 10");
+  await expect(progress).toContainText(`已完成 1 / ${totalChapters}`);
   await expect(
     progress.getByRole("link", { name: "继续学习：搜索树 / A*" }),
   ).toHaveAttribute("href", "/chapters/search/");
@@ -273,7 +222,7 @@ test("locale shares Chinese progress with the English home continuation", async 
 
   await page.goto("/en/");
   const progress = page.getByTestId("home-learning-progress");
-  await expect(progress).toContainText("Completed 1 / 10");
+  await expect(progress).toContainText(`Completed 1 / ${totalChapters}`);
   await expect(
     progress.getByRole("link", { name: "Continue: Search Trees / A*" }),
   ).toHaveAttribute("href", "/en/chapters/search/");
@@ -284,7 +233,7 @@ test("home with only Agent complete resumes at Overview", async ({ page }) => {
   await page.goto("/");
 
   const progress = page.getByTestId("home-learning-progress");
-  await expect(progress).toContainText("已完成 1 / 10");
+  await expect(progress).toContainText(`已完成 1 / ${totalChapters}`);
   await expect(progress.getByText("学习主线已完成")).toHaveCount(0);
   await expect(
     progress.getByRole("link", { name: "继续学习：总览" }),
@@ -335,12 +284,14 @@ for (const [index, chapter] of chapterCases.entries()) {
 
     const position = index + 1;
     const progress = page.getByTestId("chapter-progress");
-    await expect(progress).toContainText(`第 ${position} / 10 章`);
+    await expect(progress).toContainText(
+      `第 ${position} / ${totalChapters} 章`,
+    );
     const progressbar = progress.getByRole("progressbar", {
-      name: `当前位于第 ${position} 章，共 10 章`,
+      name: `当前位于第 ${position} 章，共 ${totalChapters} 章`,
     });
     await expect(progressbar).toHaveAttribute("value", String(position));
-    await expect(progressbar).toHaveAttribute("max", "10");
+    await expect(progressbar).toHaveAttribute("max", String(totalChapters));
 
     const journey = page.getByTestId("chapter-journey");
     const previousChapter = chapterCases[index - 1];
