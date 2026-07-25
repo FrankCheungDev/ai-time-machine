@@ -1,6 +1,6 @@
 # P2 历史深度、学习自测与隐私评审
 
-- 状态：P2-01 至 P2-03 已发布；P2-04 生产隐私加固候选；P2-05 等待真实指标
+- 状态：P2-01 至 P2-04 已发布；P2-05 等待获批 provider、真实聚合数据访问与观察窗口
 - 对应任务：P2-01 / P2-02 / P2-03 / P2-04 / P2-05
 - 评审日期：2026-07-25
 
@@ -81,12 +81,14 @@ P1 已经把学习主线延伸到 Safety / Eval，但时间线仍主要是一章
 
 PR #20 合并后的生产浏览器 smoke 发现，Cloudflare Pages 虽然没有对应仓库代码，仍通过 automatic setup 注入 `beacon.min.js` 并向 `/cdn-cgi/rum` 发送请求。这与最初“生产无网络分析”的假设冲突，也说明本地 Playwright 不能替代部署层网络检查。
 
-本修复批次增加两层强制边界：
+[PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 增加两层强制边界：
 
 1. `apps/site/public/_headers` 对全部 HTML 路由设置 `Cache-Control: ... no-transform`，阻止 Cloudflare 改写静态响应并自动插入 Web Analytics。
 2. 同一文件设置只允许本站脚本且 `connect-src 'none'` 的 Content Security Policy；即使托管设置再次尝试注入，浏览器也不能下载 beacon 或发送 RUM。
 
 Cloudflare 作为托管代理仍会处理 HTTP 请求，并可能提供无法由客户端关闭的聚合 edge analytics。这类平台运行指标不属于本站学习信号，项目当前也无法读取，不能用于完成 P2-05。参见 [automatic setup 与 Disable 控制](https://developers.cloudflare.com/web-analytics/get-started/)、[beacon 与 edge analytics 边界](https://developers.cloudflare.com/web-analytics/faq/) 以及 [Pages `_headers` 配置](https://developers.cloudflare.com/pages/configuration/headers/)。
+
+[PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 以 merge commit [`c8693c8`](https://github.com/FrankCheungDev/ai-time-machine/commit/c8693c8581a18b17722304cba89aacaea38e6650) 进入 `main` 后，[GitHub CI run 30142645267](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30142645267) 与 Cloudflare Pages 生产部署均成功。部署后的 `pnpm smoke:production:privacy` 检查 29 个请求、22 个双语章节路由和 28 个 HTML 响应策略，三类响应头缺失计数均为 0；真实浏览器完成自测、解释和续学时，`forbiddenRequests` 与 `failures` 均为空。由此关闭 P2-04，但该 smoke 明确不作为 P2-05 的真实学习数据。
 
 ### 5.2 已评审事件与字段白名单
 

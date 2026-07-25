@@ -1,6 +1,6 @@
 # Post-MVP 迭代过程文档
 
-- 状态：执行中（P0、P1、P2-01 至 P2-03 已发布；P2-04 生产隐私加固中；P2-05 等待真实指标）
+- 状态：执行中（P0、P1、P2-01 至 P2-04 已发布；P2-05 等待获批 provider、真实聚合数据访问与观察窗口）
 - 基线日期：2026-07-25
 - 基线提交：1a574a4
 - 目标版本：v1.0.1 → v1.1 → v1.2
@@ -378,21 +378,25 @@
 
 本节记录方案实际落地状态。任务只有合并、远程门禁通过并完成生产 smoke 后才从“候选”改为“完成”。
 
-| 范围          | 状态         | 交付证据                                                                            |
-| ------------- | ------------ | ----------------------------------------------------------------------------------- |
-| 过程基线      | 完成         | PR #15：建立本文档与 P0 → P1 → P2 顺序                                              |
-| P0-01 / P0-04 | 完成并发布   | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                     |
-| P0-02 / P0-03 | 完成并发布   | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                            |
-| P0-05 / P0-06 | 完成并发布   | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                  |
-| P1-01 → P1-05 | 完成并发布   | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                    |
-| P2-01 / P2-02 | 完成并发布   | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check           |
-| P2-03         | 完成并发布   | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                     |
-| P2-04         | 生产加固候选 | PR #20 后 smoke 发现 Cloudflare 自动 RUM；增加 `no-transform`、CSP 与生产网络复验   |
-| P2-05         | 等待真实指标 | 无获批 provider 或可读取的真实聚合数据；明确排除 CI、Playwright、smoke 与开发者流量 |
+| 范围          | 状态         | 交付证据                                                                                                                                        |
+| ------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 过程基线      | 完成         | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                                          |
+| P0-01 / P0-04 | 完成并发布   | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                                 |
+| P0-02 / P0-03 | 完成并发布   | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                                        |
+| P0-05 / P0-06 | 完成并发布   | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                              |
+| P1-01 → P1-05 | 完成并发布   | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                                |
+| P2-01 / P2-02 | 完成并发布   | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                                       |
+| P2-03         | 完成并发布   | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                                 |
+| P2-04         | 完成并发布   | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21)：阻止 Cloudflare 自动 RUM；`main` CI、Pages 部署与生产浏览器 smoke 全部通过 |
+| P2-05         | 等待真实指标 | 无获批 provider 或可读取的真实聚合数据；明确排除 CI、Playwright、smoke 与开发者流量                                                             |
 
 P2 的历史声明、教学契约、隐私结论与真实数据门详见
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)。
 
 P2-05 不得为了把表格改成“完成”而填入模拟转化率。进入独立调整 PR 前，必须先满足隐私评审中的 provider、访问、观察窗口和测试流量排除条件。
 
-PR #20 的 SSR 路由 smoke 通过后，真实浏览器交互进一步发现 Cloudflare Pages 在生产响应中自动注入 Web Analytics。这一差异没有被本地或 CI 捕获，因此 P2-04 保持“加固候选”，直到修复 PR 合并且生产网络确认不再出现 `beacon.min.js` 与 `/cdn-cgi/rum`。
+PR #20 的 SSR 路由 smoke 通过后，真实浏览器交互进一步发现 Cloudflare Pages 在生产响应中自动注入 Web Analytics。这一差异没有被本地或 CI 捕获。
+
+[PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 随后增加 `Cache-Control: no-transform`、限制外部脚本与连接的 Content Security Policy，以及独立生产隐私 smoke，并以 merge commit [`c8693c8`](https://github.com/FrankCheungDev/ai-time-machine/commit/c8693c8581a18b17722304cba89aacaea38e6650) 进入 `main`。[GitHub CI run 30142645267](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30142645267) 的 Quality 与 Chromium job 均成功，Cloudflare Pages 对该提交的生产部署也成功。部署后的 `pnpm smoke:production:privacy` 完成 29 个请求，覆盖 22 个双语章节路由与 28 个 HTML 响应策略检查；`missingNoTransform`、`missingNoConnectPolicy`、`invalidScriptPolicy` 均为 0，真实浏览器自测、解释和续学成功，`forbiddenRequests` 与 `failures` 均为空。因此 P2-04 于 2026-07-25 完成并发布。
+
+P2-05 不随 P2-04 自动完成：在 provider 获批、项目能够读取真实聚合数据并积累明确观察窗口前，继续禁止使用 edge analytics、CI、Playwright、smoke 或开发者流量代替学习者证据。
