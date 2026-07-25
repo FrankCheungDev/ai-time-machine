@@ -24,6 +24,7 @@ export interface SiteCopy {
     lineage: string;
     chapters: string;
     diagrams: string;
+    privacy: string;
   };
   language: {
     switchLabel: string;
@@ -46,6 +47,7 @@ export const siteCopy = {
       lineage: "谱系图",
       chapters: "章节主线",
       diagrams: "图源",
+      privacy: "隐私",
     },
     language: {
       switchLabel: "English",
@@ -75,6 +77,7 @@ export const siteCopy = {
       lineage: "Lineage",
       chapters: "Chapters",
       diagrams: "Diagram sources",
+      privacy: "Privacy",
     },
     language: {
       switchLabel: "中文",

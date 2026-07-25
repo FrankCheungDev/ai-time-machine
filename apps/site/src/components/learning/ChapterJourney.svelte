@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
+  import { emitLearningSignal } from "../../analytics/learningSignals";
   import {
     learningUiCopy,
     getLocalizedLearningChapter,
@@ -47,6 +48,7 @@
   ];
 
   let progress = createEmptyLearningProgress();
+  let hydrated = false;
   let showStorageWarning = false;
   let continueWithoutSaving = false;
   let finalCompletionHeading: HTMLHeadingElement | undefined;
@@ -68,7 +70,13 @@
   }
 
   onMount(() => {
+    hydrated = true;
     syncProgress();
+    emitLearningSignal({
+      name: "chapter_started",
+      chapterId,
+      locale,
+    });
 
     const handleProgressChanged = (): void => syncProgress();
     const handleStorage = (event: StorageEvent): void => {
@@ -92,6 +100,29 @@
     };
   });
 
+  function emitCoreCompletion(): void {
+    emitLearningSignal({
+      name: "core_interaction_completed",
+      chapterId,
+      locale,
+      completionSource: "chapter-journey",
+    });
+  }
+
+  function emitNextChapter(nextChapterId: LearningChapterId): void {
+    emitLearningSignal({
+      name: "next_chapter_continued",
+      chapterId,
+      locale,
+      nextChapterId,
+    });
+  }
+
+  function emitCompletionAndNext(nextChapterId: LearningChapterId): void {
+    emitCoreCompletion();
+    emitNextChapter(nextChapterId);
+  }
+
   function completeBeforeNavigation(event: MouseEvent): void {
     const result = completeLearningChapter(chapterId);
 
@@ -105,6 +136,7 @@
     progress = result.progress;
     showStorageWarning = false;
     dispatchLearningProgressChanged(progress);
+    if (nextChapter) emitCompletionAndNext(nextChapter.id);
   }
 
   async function completeFinalChapter(): Promise<void> {
@@ -118,6 +150,7 @@
     progress = result.progress;
     showStorageWarning = false;
     dispatchLearningProgressChanged(progress);
+    emitCoreCompletion();
     await tick();
     finalCompletionHeading?.focus();
   }
@@ -160,6 +193,7 @@
           class="button primary"
           data-testid="complete-and-continue"
           href={nextChapter.href}
+          onclick={() => emitNextChapter(nextChapter.id)}
         >
           <span>{copy.nextChapter(nextChapter.title)}</span>
         </a>
@@ -168,6 +202,7 @@
           class="button primary"
           data-testid="complete-and-continue"
           href={nextChapter.href}
+          onclick={() => emitCompletionAndNext(nextChapter.id)}
         >
           <span>{copy.continueWithoutSaving}</span>
           <small>{copy.nextChapter(nextChapter.title)}</small>
@@ -188,6 +223,7 @@
         class="button primary"
         data-testid="complete-and-continue"
         type="button"
+        disabled={!hydrated}
         onclick={completeFinalChapter}
       >
         {copy.completeAndContinue}

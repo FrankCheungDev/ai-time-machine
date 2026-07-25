@@ -1,8 +1,17 @@
 ---
-import { getAiTimelineEntries } from "@ai-history/data";
+import {
+  getAiLineageNodes,
+  getAiTimelineEntries,
+  getAiTimelineEvents,
+} from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
-import { timelineActionLabel, timelinePageCopy } from "../../i18n/pages";
-import type { Locale } from "../../i18n/locales";
+import {
+  timelineActionLabel,
+  timelineEventTypeLabels,
+  timelinePageCopy,
+  timelineSourceKindLabels,
+} from "../../i18n/pages";
+import { toLocalizedPath, type Locale } from "../../i18n/locales";
 import { getLocalizedLearningChapter } from "../../i18n/learning";
 
 interface Props {
@@ -12,7 +21,13 @@ interface Props {
 const { locale } = Astro.props;
 const copy = timelinePageCopy[locale];
 const timelineEntries = getAiTimelineEntries(locale);
+const timelineEvents = getAiTimelineEvents(locale);
+const lineageNodes = getAiLineageNodes(locale);
+const lineageById = new Map(lineageNodes.map((node) => [node.id, node]));
+const lineageRoute = toLocalizedPath("/lineage/", locale);
 const actionLabel = timelineActionLabel[locale];
+const eventTypeLabels = timelineEventTypeLabels[locale];
+const sourceKindLabels = timelineSourceKindLabels[locale];
 ---
 
 <BaseLayout title={copy.title} description={copy.description} locale={locale}>
@@ -21,31 +36,127 @@ const actionLabel = timelineActionLabel[locale];
     <h1 class="page-title">{copy.heading}</h1>
     <p class="lede">{copy.lede}</p>
 
-    <section class="timeline-list" aria-label={copy.listAriaLabel}>
-      {
-        timelineEntries.map((entry) => {
-          const chapter = getLocalizedLearningChapter(entry.chapterId, locale);
+    <section aria-labelledby="timeline-chapter-spine">
+      <p class="eyebrow timeline-section-eyebrow">
+        {copy.chapterSpineEyebrow}
+      </p>
+      <h2 id="timeline-chapter-spine">
+        {copy.chapterSpineHeading(timelineEntries.length)}
+      </h2>
+      <div class="timeline-list" aria-label={copy.listAriaLabel}>
+        {
+          timelineEntries.map((entry) => {
+            const chapter = getLocalizedLearningChapter(
+              entry.chapterId,
+              locale,
+            );
 
-          return (
-            <article
-              id={`timeline-${entry.id}`}
-              class="timeline-item timeline-entry"
-            >
-              <div class="timeline-entry-meta">
-                <span class="timeline-entry-year">{entry.year}</span>
-                <p class="eyebrow timeline-entry-era">{entry.era}</p>
-              </div>
-              <div class="timeline-entry-content">
-                <h2>{entry.title}</h2>
-                <p>{entry.summary}</p>
-              </div>
-              <a class="button timeline-entry-action" href={chapter.href}>
-                {actionLabel(chapter.label, chapter.title)}
-              </a>
-            </article>
-          );
-        })
-      }
+            return (
+              <article
+                id={`timeline-${entry.id}`}
+                class="timeline-item timeline-entry"
+              >
+                <div class="timeline-entry-meta">
+                  <span class="timeline-entry-year">{entry.year}</span>
+                  <p class="eyebrow timeline-entry-era">{entry.era}</p>
+                </div>
+                <div class="timeline-entry-content">
+                  <h3>{entry.title}</h3>
+                  <p>{entry.summary}</p>
+                </div>
+                <a class="button timeline-entry-action" href={chapter.href}>
+                  {actionLabel(chapter.label, chapter.title)}
+                </a>
+              </article>
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <section class="timeline-milestones" aria-labelledby="timeline-milestones">
+      <p class="eyebrow">{copy.eventsEyebrow}</p>
+      <h2 id="timeline-milestones">
+        {copy.eventsHeading(timelineEvents.length)}
+      </h2>
+      <p>{copy.eventsLede}</p>
+
+      <div class="milestone-grid" aria-label={copy.eventsAriaLabel}>
+        {
+          timelineEvents.map((event) => {
+            const chapters = event.chapterIds.map((chapterId) =>
+              getLocalizedLearningChapter(chapterId, locale),
+            );
+            const eventLineageNodes = event.lineageNodeIds.map(
+              (lineageNodeId) => {
+                const node = lineageById.get(lineageNodeId);
+                if (!node) {
+                  throw new Error(
+                    `Unknown lineage node for timeline event ${event.id}: ${lineageNodeId}`,
+                  );
+                }
+                return node;
+              },
+            );
+
+            return (
+              <article
+                id={`milestone-${event.id}`}
+                class="milestone-event"
+                data-timeline-event={event.id}
+                data-lineage-node-ids={event.lineageNodeIds.join(" ")}
+              >
+                <div class="milestone-event-meta">
+                  <time class="milestone-year">{event.year}</time>
+                  <span class="milestone-type">
+                    {eventTypeLabels[event.type]}
+                  </span>
+                </div>
+                <h3>{event.title}</h3>
+                <p>{event.summary}</p>
+
+                <div class="milestone-impact">
+                  <strong>{copy.impact}</strong>
+                  <p>{event.impact}</p>
+                </div>
+
+                <div class="milestone-relations">
+                  <div>
+                    <strong>{copy.relatedChapters}</strong>
+                    <div class="milestone-chip-list">
+                      {chapters.map((chapter) => (
+                        <a href={chapter.href}>{chapter.title}</a>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <strong>{copy.relatedLineage}</strong>
+                    <div class="milestone-chip-list">
+                      {eventLineageNodes.map((node) => (
+                        <a href={`${lineageRoute}#node-${node.id}`}>
+                          {node.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="milestone-sources">
+                  <strong>{copy.sources}</strong>
+                  <ul>
+                    {event.sources.map((source) => (
+                      <li>
+                        <span>{sourceKindLabels[source.kind]}</span>
+                        <a href={source.href}>{source.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
     </section>
   </main>
 </BaseLayout>

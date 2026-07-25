@@ -1,24 +1,103 @@
 import type { Locale } from "../locales";
+import type { TimelineEventType, TimelineSourceKind } from "@ai-history/data";
+
+export interface TimelinePageCopy {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  lede: string;
+  chapterSpineEyebrow: string;
+  chapterSpineHeading: (count: number) => string;
+  listAriaLabel: string;
+  eventsEyebrow: string;
+  eventsHeading: (count: number) => string;
+  eventsLede: string;
+  eventsAriaLabel: string;
+  impact: string;
+  relatedChapters: string;
+  relatedLineage: string;
+  sources: string;
+}
 
 export const timelinePageCopy = {
   "zh-CN": {
     title: "AI 技术演化总览时间线",
-    description: "按时间理解 AI 技术从符号主义到 Agent 的演化脉络。",
+    description:
+      "沿章节主线与来源支持的关键事件，理解 AI 从符号主义到可靠生成系统的演化脉络。",
     eyebrow: "Overview",
     heading: "AI 技术演化总览时间线",
-    lede: "这条时间线不是论文清单，而是把每个阶段的核心问题、技术转向和对应 demo 放在一条主线上。",
-    listAriaLabel: "AI 技术演化事件",
+    lede: "先用章节主线建立时代框架，再用论文、系统、数据、算力与标准事件解释为什么技术会转向。事件经过选择，不追求收录完整。",
+    chapterSpineEyebrow: "Chapter Spine",
+    chapterSpineHeading: (count) => `${count} 个阶段构成学习主线`,
+    listAriaLabel: "AI 技术演化章节主线",
+    eventsEyebrow: "Source-backed Milestones",
+    eventsHeading: (count) => `${count} 个事件解释关键转折`,
+    eventsLede:
+      "每个事件都关联章节、谱系节点和至少一份原始论文、专著、官方档案或标准。影响说明聚焦后续机制，不把单一事件写成唯一原因。",
+    eventsAriaLabel: "有来源支持的 AI 历史事件",
+    impact: "为什么重要",
+    relatedChapters: "关联章节",
+    relatedLineage: "关联谱系",
+    sources: "原始来源",
   },
   en: {
     title: "AI Evolution Timeline",
     description:
-      "Understand how AI evolved from symbolic systems to agents over time.",
+      "Follow the chapter spine and source-backed milestones from symbolic AI to reliable generative systems.",
     eyebrow: "Overview",
     heading: "AI Evolution Timeline",
-    lede: "This timeline is not a paper list. It places each era's core problem, technical shift, and matching demo on one learning path.",
-    listAriaLabel: "AI technical evolution events",
+    lede: "Start with the chapter spine for an era-level frame, then use papers, systems, data, compute, and standards to explain why the field changed direction. The selection is representative, not exhaustive.",
+    chapterSpineEyebrow: "Chapter Spine",
+    chapterSpineHeading: (count) => `${count} Stages Form The Learning Path`,
+    listAriaLabel: "AI evolution chapter spine",
+    eventsEyebrow: "Source-backed Milestones",
+    eventsHeading: (count) => `${count} Events Explain The Turning Points`,
+    eventsLede:
+      "Every event links to chapters, lineage nodes, and at least one primary paper, book, official record, or standard. Impact notes focus on downstream mechanisms without treating one event as the sole cause.",
+    eventsAriaLabel: "Source-backed AI history events",
+    impact: "Why It Matters",
+    relatedChapters: "Related Chapters",
+    relatedLineage: "Related Lineage",
+    sources: "Primary Sources",
   },
-} satisfies Record<Locale, Record<string, string>>;
+} satisfies Record<Locale, TimelinePageCopy>;
+
+export const timelineEventTypeLabels = {
+  "zh-CN": {
+    paper: "论文",
+    book: "专著",
+    system: "系统",
+    dataset: "数据",
+    compute: "算力转折",
+    "turning-point": "范式转折",
+    standard: "标准",
+  },
+  en: {
+    paper: "Paper",
+    book: "Book",
+    system: "System",
+    dataset: "Dataset",
+    compute: "Compute Shift",
+    "turning-point": "Turning Point",
+    standard: "Standard",
+  },
+} satisfies Record<Locale, Record<TimelineEventType, string>>;
+
+export const timelineSourceKindLabels = {
+  "zh-CN": {
+    "primary-paper": "原始论文",
+    book: "专著",
+    "official-record": "官方档案",
+    standard: "正式标准",
+  },
+  en: {
+    "primary-paper": "Primary Paper",
+    book: "Book",
+    "official-record": "Official Record",
+    standard: "Published Standard",
+  },
+} satisfies Record<Locale, Record<TimelineSourceKind, string>>;
 
 export const timelineActionLabel = {
   "zh-CN": (chapterLabel: string, chapterTitle: string) =>

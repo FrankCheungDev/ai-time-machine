@@ -11,6 +11,7 @@ import type { Locale } from "../../i18n/locales";
 import { getLocalizedLearningChapter } from "../../i18n/learning";
 import ChapterJourney from "../learning/ChapterJourney.svelte";
 import ChapterProgress from "../learning/ChapterProgress.astro";
+import ConceptCheck from "../learning/ConceptCheck.svelte";
 
 interface Props {
   locale: Locale;
@@ -81,6 +82,7 @@ const chapter = getLocalizedLearningChapter("overview", locale);
         }
       </ul>
     </section>
+    <ConceptCheck client:load {locale} chapterId="overview" />
     <ChapterJourney client:load {locale} chapterId="overview" />
   </main>
 </BaseLayout>

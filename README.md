@@ -13,8 +13,9 @@ default language, with a complete English learning path under `/en/`.
 - Eleven chapter routes from overview through Safety / Evaluation.
 - Nine teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, RAG pipeline, Agent loop, and the Safety / Eval release feedback loop.
 - Complete Chinese and English routes, copy, demo state, and references.
-- Resumable local learning progress with chapter completion and previous/next navigation.
-- Overview pages for timeline, technical lineage, and a manifest-driven library of nine downloadable SVG/PNG diagram pairs.
+- Resumable local learning progress, one bilingual concept check per chapter, and previous/next navigation.
+- A 22-event, source-backed history layer linked to chapters and lineage, plus a manifest-driven library of nine downloadable SVG/PNG diagram pairs.
+- Public privacy pages and a reviewed learning-signal allowlist; production analytics remain disabled until real aggregate data access is approved.
 - CI coverage for formatting, types, data contracts, static builds, unit tests, browser behavior, visual regressions, accessibility controls, and teaching correctness.
 - Contributor docs for design, motion, diagrams, demos, and templates.
 
@@ -42,6 +43,7 @@ pnpm format:check
 - `/timeline/`
 - `/lineage/`
 - `/diagrams/`
+- `/privacy/`
 
 Prefix any route with `/en` for its English version, for example
 `/en/chapters/rag/`.
@@ -50,9 +52,10 @@ Prefix any route with `/en` for its English version, for example
 
 Post-MVP work is sequenced in
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md).
-Release hardening, extension architecture, Safety / Evaluation, and the diagram
-asset library are complete. The next milestone adds source-backed historical
-depth, chapter self-checks, and privacy-reviewed learning signals.
+Release hardening, extension architecture, Safety / Evaluation, diagram assets,
+source-backed historical depth, and chapter self-checks are implemented. The
+remaining evidence gate is an explicitly separate real-usage observation cycle;
+automated traffic is not treated as learner data.
 
 ## Deployment
 

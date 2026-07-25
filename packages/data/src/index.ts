@@ -8,6 +8,15 @@ export type {
   ChapterKind,
   DemoChapterId,
 } from "./chapters";
+export {
+  conceptChecks,
+  getConceptCheck,
+  getConceptChecks,
+} from "./learning/concept-checks";
+export type {
+  ConceptCheck,
+  ConceptCheckOption,
+} from "./learning/concept-checks";
 export { attentionMapDemo, getAttentionMapDemo } from "./demos/attention-map";
 export { bayesUpdateDemo, getBayesUpdateDemo } from "./demos/bayes-update";
 export { cnnKernelDemo, getCnnKernelDemo } from "./demos/cnn-kernel";
@@ -34,9 +43,20 @@ export {
   getAiLineageNodes,
 } from "./overview/lineage";
 export { aiTimelineEntries, getAiTimelineEntries } from "./overview/timeline";
+export {
+  aiTimelineEvents,
+  getAiTimelineEvents,
+} from "./overview/timeline-events";
 export type {
   LlmSystemConnection,
   LlmSystemLayer,
 } from "./overview/llm-system";
 export type { LineageEdge, LineageNode } from "./overview/lineage";
 export type { TimelineEntry } from "./overview/timeline";
+export type {
+  TimelineEventId,
+  TimelineEventSource,
+  TimelineEventType,
+  TimelineMilestoneEvent,
+  TimelineSourceKind,
+} from "./overview/timeline-events";

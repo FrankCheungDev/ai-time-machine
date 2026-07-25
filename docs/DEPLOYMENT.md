@@ -57,9 +57,13 @@ Do not merge while any required check is pending or failing.
    - [English home](https://atlas.z-ai.cc/en/)
    - [RAG chapter](https://atlas.z-ai.cc/chapters/rag/)
    - [English RAG chapter](https://atlas.z-ai.cc/en/chapters/rag/)
+   - [Safety / Eval chapter](https://atlas.z-ai.cc/chapters/safety/)
+   - [English Safety / Eval chapter](https://atlas.z-ai.cc/en/chapters/safety/)
    - [Timeline](https://atlas.z-ai.cc/timeline/)
    - [Lineage](https://atlas.z-ai.cc/lineage/)
    - [Diagram sources](https://atlas.z-ai.cc/diagrams/)
+   - [Privacy](https://atlas.z-ai.cc/privacy/)
+   - [English privacy](https://atlas.z-ai.cc/en/privacy/)
    - [Sitemap](https://atlas.z-ai.cc/sitemap-index.xml)
    - [Robots policy](https://atlas.z-ai.cc/robots.txt)
 5. Verify the production HTML contains the expected canonical, language
@@ -82,17 +86,26 @@ deployment.
 
 ## Analytics Decision
 
-Analytics remain disabled for v1.0.1. P2 may introduce a privacy-reviewed,
-anonymous event set limited to chapter start, core interaction completion,
-self-check completion, and continuation to the next chapter.
+Production analytics remain disabled for v1.2. The site exposes a typed,
+sanitized in-page event contract for chapter start, journey completion, concept
+check completion, explanation opening, and continuation, but no listener sends
+those signals over the network.
 
-Before enabling analytics:
+The privacy review, exact field allowlist, excluded data, provider gate, and
+real-usage evidence boundary are recorded in
+[`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md).
+The same decision is visible to learners at `/privacy/` and `/en/privacy/`.
 
-- document the provider and data residency;
-- prove no user-entered text, identity, or cross-site identifier is collected;
-- add a visible privacy explanation;
-- add tests for the event allowlist;
-- make removal possible without changing chapter behavior.
+Before enabling collection in a separate pull request:
+
+- document the provider, data residency, retention, deletion, and access;
+- prove no user-entered text, identity, precise timestamp, full URL, device
+  fingerprint, or cross-site identifier is collected;
+- exclude local, CI, preview, smoke, and developer traffic;
+- add network request contract tests and a provider removal path;
+- update both public privacy routes;
+- prove the project can read genuine aggregate data before claiming a
+  data-driven adjustment.
 
 ## Incident Checklist
 

@@ -1,0 +1,84 @@
+---
+import BaseLayout from "../layout/BaseLayout.astro";
+import { privacyPageCopy } from "../../i18n/pages";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = privacyPageCopy[locale];
+const sections = [
+  {
+    id: "local-records",
+    heading: copy.localHeading,
+    body: copy.localBody,
+    items: copy.localItems,
+  },
+  {
+    id: "signal-contract",
+    heading: copy.signalHeading,
+    body: copy.signalBody,
+    items: copy.signalItems,
+  },
+  {
+    id: "excluded-data",
+    heading: copy.excludedHeading,
+    items: copy.excludedItems,
+  },
+];
+---
+
+<BaseLayout title={copy.title} description={copy.description} locale={locale}>
+  <main class="chapter-main">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="page-title">{copy.heading}</h1>
+    <p class="lede">{copy.lede}</p>
+
+    <section class="section-band" aria-labelledby="analytics-status">
+      <h2 id="analytics-status">{copy.analyticsHeading}</h2>
+      <p>{copy.analyticsBody}</p>
+    </section>
+
+    {
+      sections.map((section) => (
+        <section class="section-band" aria-labelledby={section.id}>
+          <h2 id={section.id}>{section.heading}</h2>
+          {section.body && <p>{section.body}</p>}
+          <ul>
+            {section.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    <section class="section-band" aria-labelledby="clearing-records">
+      <h2 id="clearing-records">{copy.clearingHeading}</h2>
+      <p>{copy.clearingBody}</p>
+    </section>
+
+    <section class="section-band" aria-labelledby="future-metrics">
+      <h2 id="future-metrics">{copy.futureHeading}</h2>
+      <p>{copy.futureBody}</p>
+    </section>
+
+    <section class="section-band" aria-labelledby="privacy-sources">
+      <h2 id="privacy-sources">{copy.sourcesHeading}</h2>
+      <ul>
+        <li>
+          <a href="https://developers.cloudflare.com/web-analytics/about/">
+            Cloudflare Web Analytics: privacy-first analytics overview
+          </a>
+        </li>
+        <li>
+          <a href="https://doi.org/10.6028/NIST.AI.100-1">
+            NIST AI Risk Management Framework 1.0
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
