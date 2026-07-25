@@ -125,7 +125,10 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 - 冻结事件名、字段、漏斗和排除规则；
 - 运行至少 14 个完整自然日；
 - 使用 Stats API 导出聚合结果，保存查询定义、窗口和样本量，不保存 API key 或个人级数据；
+- 把 provider 结果转换成 `packages/data/src/learning/metrics.ts` 定义的 aggregate-only 契约，并运行 `pnpm analyze:learning-metrics -- <aggregate-export.json>`；分析器会拒绝不完整窗口、未确认真实流量、未排除自动化、原始事件/个人数据、未知字段、非规范章节/分段和不可能的漏斗计数；
 - 将不达门槛的结果明确标记为 insufficient evidence。
+
+分析器要求每章恰好包含一个总体行、两个 locale 行和四个 device 行，并从章节注册表派生合法 id。它只计算本协议固定的四个比例和样本门槛，不访问 provider、不写文件、不验证外部 attestation 的真实性，也不会自行选择产品改动或把 P2-05 标记完成。
 
 ### P2-05C：单点数据驱动调整
 
