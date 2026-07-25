@@ -392,6 +392,8 @@
 
 P2 的历史声明、教学契约、隐私结论与真实数据门详见
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)。
+P2-05 的候选 provider 比较、条件式推荐、观察协议与所有者批准项详见
+[`P2_METRICS_PROVIDER_DECISION.md`](P2_METRICS_PROVIDER_DECISION.md)。
 
 P2-05 不得为了把表格改成“完成”而填入模拟转化率。进入独立调整 PR 前，必须先满足隐私评审中的 provider、访问、观察窗口和测试流量排除条件。
 
@@ -400,3 +402,5 @@ PR #20 的 SSR 路由 smoke 通过后，真实浏览器交互进一步发现 Clo
 [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 随后增加 `Cache-Control: no-transform`、限制外部脚本与连接的 Content Security Policy，以及独立生产隐私 smoke，并以 merge commit [`c8693c8`](https://github.com/FrankCheungDev/ai-time-machine/commit/c8693c8581a18b17722304cba89aacaea38e6650) 进入 `main`。[GitHub CI run 30142645267](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30142645267) 的 Quality 与 Chromium job 均成功，Cloudflare Pages 对该提交的生产部署也成功。部署后的 `pnpm smoke:production:privacy` 完成 29 个请求，覆盖 22 个双语章节路由与 28 个 HTML 响应策略检查；`missingNoTransform`、`missingNoConnectPolicy`、`invalidScriptPolicy` 均为 0，真实浏览器自测、解释和续学成功，`forbiddenRequests` 与 `failures` 均为空。因此 P2-04 于 2026-07-25 完成并发布。
 
 P2-05 不随 P2-04 自动完成：在 provider 获批、项目能够读取真实聚合数据并积累明确观察窗口前，继续禁止使用 edge analytics、CI、Playwright、smoke 或开发者流量代替学习者证据。
+
+截至 2026-07-25 的 provider-neutral 审计结论是：Cloudflare Web Analytics 不支持本站五类自定义学习事件；自托管 Umami 需要数据库；Plausible Hosted Business 在功能上满足自定义事件、属性、漏斗、设备分段和 Stats API，但其费用、欧盟数据处理、每日匿名标识以及 IP/User-Agent 的临时处理必须由项目所有者明确批准。批准前客户端采集继续保持禁用。
