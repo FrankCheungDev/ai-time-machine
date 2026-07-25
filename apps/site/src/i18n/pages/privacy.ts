@@ -38,9 +38,9 @@ export const privacyPageCopy = {
       "已标记完成的章节 id。",
       "自测是否首次答对、尝试次数，以及是否打开过解释。",
     ],
-    analyticsHeading: "生产分析当前保持禁用",
+    analyticsHeading: "客户端学习分析当前保持禁用",
     analyticsBody:
-      "代码不加载分析 provider、像素或网络 beacon。自动化测试和发布 smoke 也不会被冒充为真实学习者数据。",
+      "本站不主动加载分析 provider、像素或网络 beacon；部署响应还通过 no-transform 与内容安全策略阻止平台自动注入客户端 Web Analytics / RUM。Cloudflare 作为托管与代理服务仍会处理 HTTP 请求，并可能提供聚合边缘流量统计；项目当前不能读取这些统计，也不会把它们当作学习效果指标。自动化测试和发布 smoke 同样不会被冒充为真实学习者数据。",
     signalHeading: "已评审但不联网的信号契约",
     signalBody:
       "页面内部可以发出以下类型化事件，供测试验证交互边界；当前没有监听器把它们发送出浏览器：",
@@ -53,7 +53,7 @@ export const privacyPageCopy = {
     excludedHeading: "明确排除的数据",
     excludedItems: [
       "任何用户输入正文、姓名、邮箱或账号。",
-      "访客 id、设备指纹、精确时间戳或跨站标识符。",
+      "项目学习信号中的访客 id、设备指纹、精确时间戳或跨站标识符。",
       "将自动化测试流量解释成真实使用数据。",
     ],
     clearingHeading: "如何清除",
@@ -79,9 +79,9 @@ export const privacyPageCopy = {
       "IDs of chapters marked complete.",
       "Whether a self-check was correct first time, attempt count, and whether its explanation was opened.",
     ],
-    analyticsHeading: "Production Analytics Remain Disabled",
+    analyticsHeading: "Client-side Learning Analytics Remain Disabled",
     analyticsBody:
-      "The code loads no analytics provider, pixel, or network beacon. Automated tests and release smoke traffic are never presented as real learner data.",
+      "The site does not intentionally load an analytics provider, pixel, or network beacon. Deployment responses also use no-transform and a Content Security Policy to prevent automatic client-side Web Analytics or RUM injection. Cloudflare still processes HTTP requests as the hosting proxy and may expose aggregate edge traffic; the project cannot currently read those statistics and never treats them as learning evidence. Automated tests and release smoke traffic are excluded as well.",
     signalHeading: "Reviewed, In-Page Signal Contract",
     signalBody:
       "Pages can emit these typed events so tests can verify interaction boundaries. No listener currently sends them outside the browser:",
@@ -94,7 +94,7 @@ export const privacyPageCopy = {
     excludedHeading: "Explicitly Excluded Data",
     excludedItems: [
       "User-entered text, names, email addresses, or accounts.",
-      "Visitor IDs, device fingerprints, precise timestamps, or cross-site identifiers.",
+      "Visitor IDs, device fingerprints, precise timestamps, or cross-site identifiers in project learning signals.",
       "Treating automated test traffic as real usage evidence.",
     ],
     clearingHeading: "How To Clear Records",

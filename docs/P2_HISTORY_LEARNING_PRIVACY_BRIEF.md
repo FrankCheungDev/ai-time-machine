@@ -1,6 +1,6 @@
 # P2 历史深度、学习自测与隐私评审
 
-- 状态：本地门禁通过，等待远程门禁与生产发布
+- 状态：P2-01 至 P2-03 已发布；P2-04 生产隐私加固候选；P2-05 等待真实指标
 - 对应任务：P2-01 / P2-02 / P2-03 / P2-04 / P2-05
 - 评审日期：2026-07-25
 
@@ -77,9 +77,16 @@ P1 已经把学习主线延伸到 Safety / Eval，但时间线仍主要是一章
 
 ### 5.1 决策
 
-**生产收集保持禁用。** 当前仓库没有分析 provider、API key、后端或数据库；现有 Chrome 与应用内浏览器会话也都无法读取 Cloudflare 项目分析。因此本批次不声称拥有章节完成率、首次正确率或继续率的真实数据。
+**客户端学习收集保持禁用。** 当前仓库没有分析 provider、API key、后端或数据库；现有 Chrome 与应用内浏览器会话也都无法读取 Cloudflare 项目分析。因此本批次不声称拥有章节完成率、首次正确率或继续率的真实数据。
 
-Cloudflare Web Analytics 官方说明其为 privacy-first 且不收集或使用访客个人数据，但它当前只作为候选 provider 资料，不代表本站已经启用。参见 [Cloudflare Web Analytics overview](https://developers.cloudflare.com/web-analytics/about/)。
+PR #20 合并后的生产浏览器 smoke 发现，Cloudflare Pages 虽然没有对应仓库代码，仍通过 automatic setup 注入 `beacon.min.js` 并向 `/cdn-cgi/rum` 发送请求。这与最初“生产无网络分析”的假设冲突，也说明本地 Playwright 不能替代部署层网络检查。
+
+本修复批次增加两层强制边界：
+
+1. `apps/site/public/_headers` 对全部 HTML 路由设置 `Cache-Control: ... no-transform`，阻止 Cloudflare 改写静态响应并自动插入 Web Analytics。
+2. 同一文件设置只允许本站脚本且 `connect-src 'none'` 的 Content Security Policy；即使托管设置再次尝试注入，浏览器也不能下载 beacon 或发送 RUM。
+
+Cloudflare 作为托管代理仍会处理 HTTP 请求，并可能提供无法由客户端关闭的聚合 edge analytics。这类平台运行指标不属于本站学习信号，项目当前也无法读取，不能用于完成 P2-05。参见 [automatic setup 与 Disable 控制](https://developers.cloudflare.com/web-analytics/get-started/)、[beacon 与 edge analytics 边界](https://developers.cloudflare.com/web-analytics/faq/) 以及 [Pages `_headers` 配置](https://developers.cloudflare.com/pages/configuration/headers/)。
 
 ### 5.2 已评审事件与字段白名单
 
@@ -108,7 +115,8 @@ Cloudflare Web Analytics 官方说明其为 privacy-first 且不收集或使用�
 2. 证明 provider 端也只接收白名单字段，并排除测试/预览环境。
 3. 更新 `/privacy/` 与 `/en/privacy/` 的公开说明。
 4. 增加网络请求契约测试和一键移除路径。
-5. 能读取真实聚合数据，并记录样本量与观察窗口。
+5. 在同一 PR 中显式调整 `no-transform` 与 Content Security Policy，并完成生产网络复验。
+6. 能读取真实聚合数据，并记录样本量与观察窗口。
 
 ## 6. P2-05 真实指标闭环状态
 
@@ -129,4 +137,6 @@ Cloudflare Web Analytics 官方说明其为 privacy-first 且不收集或使用�
 - 答错、解释、重试、本地持久化、跨语言读取、清除和存储失败均有测试。
 - 390px 无横向溢出，radio 与按钮可键盘操作且触控高度不低于 44px。
 - 生产代码不发送学习信号网络请求。
+- 生产 HTML 响应包含 `no-transform` 与限制外部脚本/连接的 Content Security Policy。
+- 真实浏览器完成自测和续学时，不请求 `static.cloudflareinsights.com` 或 `/cdn-cgi/rum`。
 - `/privacy/` 与 `/en/privacy/` 可索引并进入 sitemap。

@@ -68,7 +68,15 @@ Do not merge while any required check is pending or failing.
    - [Robots policy](https://atlas.z-ai.cc/robots.txt)
 5. Verify the production HTML contains the expected canonical, language
    alternates, Open Graph image, and description.
-6. Record any teaching simplification or source change in the merged PR.
+6. Verify HTML responses include `no-transform` in `Cache-Control` and a
+   `Content-Security-Policy` with `connect-src 'none'`.
+7. In a real browser, complete one concept check and continue to the next
+   chapter. Confirm the interaction hydrates and that no request targets
+   `static.cloudflareinsights.com` or `/cdn-cgi/rum`.
+   Run `pnpm smoke:production:privacy` to cover this check together with all 22
+   chapter routes, both timelines, both privacy routes, and the sitemap.
+8. Record any teaching simplification, source change, or deployment-layer
+   privacy correction in the merged PR.
 
 ## Rollback
 
@@ -86,10 +94,22 @@ deployment.
 
 ## Analytics Decision
 
-Production analytics remain disabled for v1.2. The site exposes a typed,
-sanitized in-page event contract for chapter start, journey completion, concept
-check completion, explanation opening, and continuation, but no listener sends
-those signals over the network.
+Client-side learning analytics remain disabled for v1.2. The site exposes a
+typed, sanitized in-page event contract for chapter start, journey completion,
+concept check completion, explanation opening, and continuation, but no
+application listener sends those signals over the network.
+
+Production smoke after PR #20 found that Cloudflare Pages automatically
+injected its Web Analytics / RUM beacon even though the repository contained no
+analytics script. `apps/site/public/_headers` now applies `no-transform` to all
+generated HTML routes and a Content Security Policy that rejects external
+scripts and browser-initiated connections. Both controls must remain covered by
+tests and a post-deployment browser network check.
+
+Cloudflare still processes HTTP requests as the hosting proxy and may expose
+aggregate edge traffic. Those provider-level operational metrics are separate
+from the project's learning-signal contract, are not currently readable by the
+project, and must not be presented as learner evidence.
 
 The privacy review, exact field allowlist, excluded data, provider gate, and
 real-usage evidence boundary are recorded in
@@ -103,6 +123,8 @@ Before enabling collection in a separate pull request:
   fingerprint, or cross-site identifier is collected;
 - exclude local, CI, preview, smoke, and developer traffic;
 - add network request contract tests and a provider removal path;
+- change the `no-transform` and Content Security Policy controls in the same
+  reviewed pull request;
 - update both public privacy routes;
 - prove the project can read genuine aggregate data before claiming a
   data-driven adjustment.
