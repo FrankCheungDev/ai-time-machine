@@ -17,3 +17,16 @@ Recreate them after `pnpm build` and while the site preview is available at
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:safety-evidence
 ```
+
+## Historical Depth And Learning Checks v1.2
+
+- `p2-timeline-event-desktop.png`: source, impact, chapter, and lineage links on a representative Lighthill event card.
+- `p2-concept-check-mobile.png`: incorrect Search answer with the explanation open at 390px.
+- `p2-concept-check-english.png`: correct English Safety / Eval answer with its explanation open.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:p2-evidence
+```

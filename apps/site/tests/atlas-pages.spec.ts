@@ -201,7 +201,13 @@ test("Timeline page shows the AI evolution overview", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: "AI 技术演化总览时间线" }),
   ).toBeVisible();
-  await expect(page.getByText("Transformer", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Transformer",
+      exact: true,
+    }),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "查看 Demo 06：注意力机制" }),
   ).toBeVisible();

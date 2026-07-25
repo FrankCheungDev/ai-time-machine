@@ -1,6 +1,19 @@
 import { chapterRegistry, type ChapterId } from "@ai-history/data/chapters";
 import type { Locale } from "../locales";
 
+interface HomePageCopy {
+  title: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroDescription: string;
+  mapAriaLabel: string;
+  mapTitle: string;
+  pathEyebrow: string;
+  pathTitle: (count: number) => string;
+  overviewEyebrow: string;
+  overviewTitle: string;
+}
+
 export const homePageCopy = {
   "zh-CN": {
     title: "总览",
@@ -11,7 +24,7 @@ export const homePageCopy = {
     mapAriaLabel: "AI 技术演化主线图",
     mapTitle: "AI 技术演化主线",
     pathEyebrow: "推荐学习顺序",
-    pathTitle: "沿着 10 个章节理解 AI 如何一步步演化",
+    pathTitle: (count) => `沿着 ${count} 个章节理解 AI 如何一步步演化`,
     overviewEyebrow: "延伸探索",
     overviewTitle: "从不同视角回看 AI 的演化脉络",
   },
@@ -24,11 +37,12 @@ export const homePageCopy = {
     mapAriaLabel: "AI technical evolution map",
     mapTitle: "AI technical evolution",
     pathEyebrow: "Recommended learning path",
-    pathTitle: "Follow ten chapters to see how AI evolved step by step",
+    pathTitle: (count) =>
+      `Follow ${count} chapters to see how AI evolved step by step`,
     overviewEyebrow: "Explore Further",
     overviewTitle: "Revisit AI's evolution from different perspectives",
   },
-} satisfies Record<Locale, Record<string, string>>;
+} satisfies Record<Locale, HomePageCopy>;
 
 interface HomeMapNode {
   title: string;

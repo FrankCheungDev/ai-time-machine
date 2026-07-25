@@ -5,6 +5,7 @@ import {
   homeLearningPathCards,
   homeMapNodes,
   homeOverviewCards,
+  homePageCopy,
 } from "./pages";
 
 const localizedCardCollections = [
@@ -61,4 +62,12 @@ describe("home learning path cards", () => {
       );
     },
   );
+
+  it("derives the visible chapter count from the cards", () => {
+    for (const locale of ["zh-CN", "en"] as const) {
+      expect(
+        homePageCopy[locale].pathTitle(homeLearningPathCards[locale].length),
+      ).toContain(String(chapterRegistry.length));
+    }
+  });
 });

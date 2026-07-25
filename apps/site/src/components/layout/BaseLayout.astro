@@ -127,6 +127,12 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
         >
           {copy.nav.diagrams}
         </a>
+        <a
+          href={localizeHref("/privacy/")}
+          aria-current={isCurrentPage("/privacy/") ? "page" : undefined}
+        >
+          {copy.nav.privacy}
+        </a>
       </nav>
       <a
         class="language-switch"

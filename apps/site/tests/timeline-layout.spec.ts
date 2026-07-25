@@ -17,7 +17,7 @@ test("timeline entries keep metadata, content, and action in stable desktop colu
       const action = item.querySelector(".timeline-entry-action");
       const year = meta?.querySelector(".timeline-entry-year");
       const era = meta?.querySelector(".timeline-entry-era");
-      const title = content?.querySelector("h2");
+      const title = content?.querySelector("h3");
       const summary = content?.querySelector("p");
 
       if (!(meta && content && action && year && era && title && summary)) {

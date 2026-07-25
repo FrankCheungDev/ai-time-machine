@@ -1,0 +1,108 @@
+import type { Locale } from "../locales";
+
+export interface PrivacyPageCopy {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  lede: string;
+  localHeading: string;
+  localBody: string;
+  localItems: string[];
+  analyticsHeading: string;
+  analyticsBody: string;
+  signalHeading: string;
+  signalBody: string;
+  signalItems: string[];
+  excludedHeading: string;
+  excludedItems: string[];
+  clearingHeading: string;
+  clearingBody: string;
+  futureHeading: string;
+  futureBody: string;
+  sourcesHeading: string;
+}
+
+export const privacyPageCopy = {
+  "zh-CN": {
+    title: "隐私与本地学习记录",
+    description:
+      "说明交互式人工智能图解史在本地保存什么、当前不收集什么，以及匿名指标的启用门槛。",
+    eyebrow: "Privacy",
+    heading: "隐私与本地学习记录",
+    lede: "本站保持纯静态边界。学习进度和自测记录默认只留在你的浏览器，不需要账号，也不会被发送到项目服务器。",
+    localHeading: "这台设备会保存什么",
+    localBody: "为了支持续学和自测，本地存储只记录稳定章节 id 与少量学习状态：",
+    localItems: [
+      "界面语言偏好。",
+      "已标记完成的章节 id。",
+      "自测是否首次答对、尝试次数，以及是否打开过解释。",
+    ],
+    analyticsHeading: "生产分析当前保持禁用",
+    analyticsBody:
+      "代码不加载分析 provider、像素或网络 beacon。自动化测试和发布 smoke 也不会被冒充为真实学习者数据。",
+    signalHeading: "已评审但不联网的信号契约",
+    signalBody:
+      "页面内部可以发出以下类型化事件，供测试验证交互边界；当前没有监听器把它们发送出浏览器：",
+    signalItems: [
+      "开始章节。",
+      "通过章节旅程标记核心交互完成。",
+      "完成概念自测与打开解释。",
+      "继续到下一章。",
+    ],
+    excludedHeading: "明确排除的数据",
+    excludedItems: [
+      "任何用户输入正文、姓名、邮箱或账号。",
+      "访客 id、设备指纹、精确时间戳或跨站标识符。",
+      "将自动化测试流量解释成真实使用数据。",
+    ],
+    clearingHeading: "如何清除",
+    clearingBody:
+      "首页的“重置学习进度”会清除章节完成状态；任意章节自测中的“清除全部自测记录”会删除所有自测结果。浏览器清站点数据也会清除这些本地记录。",
+    futureHeading: "未来启用匿名指标前必须满足什么",
+    futureBody:
+      "必须先确定 provider、数据驻留与保留期，证明字段白名单不含身份或正文，公开更新本页，并取得可读取的真实聚合数据。启用与移除都不得改变章节本身。",
+    sourcesHeading: "评审依据",
+  },
+  en: {
+    title: "Privacy And Local Learning Records",
+    description:
+      "Learn what Interactive Illustrated AI History stores locally, what it does not collect, and the gate for anonymous metrics.",
+    eyebrow: "Privacy",
+    heading: "Privacy And Local Learning Records",
+    lede: "The site keeps a static boundary. Learning progress and self-check records remain in your browser by default, require no account, and are not sent to a project server.",
+    localHeading: "What This Device Stores",
+    localBody:
+      "To support resuming and reflection, local storage contains only stable chapter IDs and a small amount of learning state:",
+    localItems: [
+      "Interface language preference.",
+      "IDs of chapters marked complete.",
+      "Whether a self-check was correct first time, attempt count, and whether its explanation was opened.",
+    ],
+    analyticsHeading: "Production Analytics Remain Disabled",
+    analyticsBody:
+      "The code loads no analytics provider, pixel, or network beacon. Automated tests and release smoke traffic are never presented as real learner data.",
+    signalHeading: "Reviewed, In-Page Signal Contract",
+    signalBody:
+      "Pages can emit these typed events so tests can verify interaction boundaries. No listener currently sends them outside the browser:",
+    signalItems: [
+      "Chapter started.",
+      "Core interaction marked complete through the chapter journey.",
+      "Concept check completed and explanation opened.",
+      "Continued to the next chapter.",
+    ],
+    excludedHeading: "Explicitly Excluded Data",
+    excludedItems: [
+      "User-entered text, names, email addresses, or accounts.",
+      "Visitor IDs, device fingerprints, precise timestamps, or cross-site identifiers.",
+      "Treating automated test traffic as real usage evidence.",
+    ],
+    clearingHeading: "How To Clear Records",
+    clearingBody:
+      "Reset learning progress on the home page to remove chapter completion. Use Clear all self-check records in any chapter check to remove every self-check result. Clearing this site's browser data removes both stores as well.",
+    futureHeading: "The Gate Before Anonymous Metrics Can Be Enabled",
+    futureBody:
+      "A provider, data residency, and retention period must be documented; the field allowlist must be proven free of identity and input text; this page must be updated; and real aggregate data must be readable. Enabling or removing collection cannot change chapter behavior.",
+    sourcesHeading: "Review Sources",
+  },
+} satisfies Record<Locale, PrivacyPageCopy>;

@@ -61,4 +61,5 @@ export const primaryRoutes = [
   "/timeline/",
   "/lineage/",
   "/diagrams/",
+  "/privacy/",
 ] as const;

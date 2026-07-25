@@ -81,7 +81,7 @@ const href = (path: string) => toLocalizedPath(path, locale);
 
     <section id="mvp" class="section-band" aria-labelledby="mvp-title">
       <p class="eyebrow">{copy.pathEyebrow}</p>
-      <h2 id="mvp-title">{copy.pathTitle}</h2>
+      <h2 id="mvp-title">{copy.pathTitle(learningPathCards.length)}</h2>
       <div class="demo-grid">
         {
           learningPathCards.map((card) => (
