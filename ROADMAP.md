@@ -13,7 +13,9 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 - Timeline, lineage map, and a manifest-driven diagram library with SVG and PNG assets for all nine demos.
 - Twenty-two source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
-- Public privacy documentation and a typed in-page signal allowlist with production collection disabled.
+- Public privacy documentation and a typed in-page signal allowlist with client
+  collection disabled, automatic RUM blocked, and hosting-layer edge metrics
+  excluded from learning evidence.
 - Cloudflare Pages production and pull-request previews backed by formatting,
   type, data, build, unit, browser, visual, accessibility, and teaching
   correctness checks.
@@ -33,9 +35,9 @@ follows the staged process in
   demos.
 - **v1.2 — Implementation complete, observation pending — Historical depth and
   learning validation:** source-backed milestone events, lightweight concept
-  checks, and privacy-reviewed in-page product signals are implemented. Network
-  collection remains disabled until a provider and real aggregate-data access
-  pass the privacy gate.
+  checks, and privacy-reviewed in-page product signals are implemented. Client
+  collection remains disabled and deployment policy blocks automatic RUM until
+  a provider and real aggregate-data access pass the privacy gate.
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching

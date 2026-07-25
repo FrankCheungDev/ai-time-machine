@@ -1,4 +1,17 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+const deploymentHeaders = readFileSync(
+  new URL("../public/_headers", import.meta.url),
+  "utf8",
+);
+const contentSecurityPolicy = deploymentHeaders.match(
+  /^\s*Content-Security-Policy:\s*(.+)$/m,
+)?.[1];
+
+if (!contentSecurityPolicy) {
+  throw new Error("Missing Content-Security-Policy in public/_headers");
+}
 
 test("privacy pages explain local records and disabled analytics in both languages", async ({
   page,
@@ -7,14 +20,14 @@ test("privacy pages explain local records and disabled analytics in both languag
     {
       route: "/privacy/",
       heading: "隐私与本地学习记录",
-      analytics: "生产分析当前保持禁用",
+      analytics: "客户端学习分析当前保持禁用",
       excluded: "明确排除的数据",
       nav: "隐私",
     },
     {
       route: "/en/privacy/",
       heading: "Privacy And Local Learning Records",
-      analytics: "Production Analytics Remain Disabled",
+      analytics: "Client-side Learning Analytics Remain Disabled",
       excluded: "Explicitly Excluded Data",
       nav: "Privacy",
     },
@@ -35,6 +48,7 @@ test("privacy pages explain local records and disabled analytics in both languag
       page.getByRole("link", { name: entry.nav, exact: true }),
     ).toHaveAttribute("aria-current", "page");
     await expect(page.getByText(/visitor id|访客 id/i)).toBeVisible();
+    await expect(page.getByText(/edge traffic|边缘流量/i)).toBeVisible();
     await expect(
       page.getByRole("link", {
         name: "Cloudflare Web Analytics: privacy-first analytics overview",
@@ -42,6 +56,14 @@ test("privacy pages explain local records and disabled analytics in both languag
     ).toHaveAttribute(
       "href",
       "https://developers.cloudflare.com/web-analytics/about/",
+    );
+    await expect(
+      page.getByRole("link", {
+        name: "Cloudflare Web Analytics: automatic setup and disable controls",
+      }),
+    ).toHaveAttribute(
+      "href",
+      "https://developers.cloudflare.com/web-analytics/get-started/",
     );
   }
 });
@@ -63,4 +85,46 @@ test("privacy routes expose bilingual SEO alternates and enter the sitemap", asy
   const text = await sitemap.text();
   expect(text).toContain("<loc>https://atlas.z-ai.cc/privacy/</loc>");
   expect(text).toContain("<loc>https://atlas.z-ai.cc/en/privacy/</loc>");
+});
+
+test("the deployment CSP preserves self-check hydration and continuation", async ({
+  page,
+}) => {
+  await page.route("**/*", async (route) => {
+    if (route.request().resourceType() !== "document") {
+      await route.continue();
+      return;
+    }
+
+    const response = await route.fetch();
+    await route.fulfill({
+      response,
+      headers: {
+        ...response.headers(),
+        "content-security-policy": contentSecurityPolicy,
+      },
+    });
+  });
+
+  const forbiddenRequests: string[] = [];
+  page.on("request", (request) => {
+    if (/cloudflareinsights|\/cdn-cgi\/rum/i.test(request.url())) {
+      forbiddenRequests.push(request.url());
+    }
+  });
+
+  await page.goto("/chapters/search/");
+  const check = page.getByTestId("concept-check");
+  await check
+    .getByRole("radio", {
+      name: "比较已走成本 g 与剩余估计 h 的和 f = g + h",
+    })
+    .check();
+  await check.getByRole("button", { name: "提交答案" }).click();
+  await expect(
+    check.getByRole("heading", { level: 3, name: "回答正确" }),
+  ).toBeVisible();
+  await page.getByTestId("complete-and-continue").click();
+  await expect(page).toHaveURL(/\/chapters\/expert-system\/$/);
+  expect(forbiddenRequests).toEqual([]);
 });

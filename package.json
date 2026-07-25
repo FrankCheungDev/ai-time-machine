@@ -9,6 +9,7 @@
     "preview": "pnpm --filter site preview",
     "capture:safety-evidence": "node scripts/capture-safety-evidence.mjs",
     "capture:p2-evidence": "node scripts/capture-p2-evidence.mjs",
+    "smoke:production:privacy": "node scripts/smoke-production-privacy.mjs",
     "render:diagrams": "node scripts/render-diagram-assets.mjs",
     "test": "pnpm -r --if-present test",
     "lint": "pnpm -r --if-present lint",

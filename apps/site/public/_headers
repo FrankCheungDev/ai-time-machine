@@ -1,0 +1,49 @@
+# Keep the static application self-contained even when a hosting setting tries
+# to inject a client-side analytics script.
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'
+  Permissions-Policy: browsing-topics=(), camera=(), geolocation=(), microphone=()
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+
+# Cloudflare documents that no-transform prevents automatic Web Analytics
+# injection. Apply it to every generated HTML route without changing the cache
+# policy for hashed JavaScript, CSS, diagram, or image assets.
+/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/404.html
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/chapters/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/diagrams/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/en/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/en/chapters/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/en/diagrams/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/en/lineage/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/en/privacy/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/en/timeline/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/lineage/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/privacy/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/timeline/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
