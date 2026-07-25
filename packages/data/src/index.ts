@@ -17,6 +17,28 @@ export type {
   ConceptCheck,
   ConceptCheckOption,
 } from "./learning/concept-checks";
+export {
+  analyzeLearningMetricsExport,
+  learningMetricDeviceClasses,
+  learningMetricsSchemaVersion,
+  LearningMetricsValidationError,
+  minimumChapterVisitors,
+  minimumObservationDays,
+  minimumSegmentVisitors,
+  parseLearningMetricsExport,
+  renderLearningMetricsMarkdown,
+} from "./learning/metrics";
+export type {
+  LearningMetricChapterAnalysis,
+  LearningMetricCounts,
+  LearningMetricDevice,
+  LearningMetricDeviceClass,
+  LearningMetricLocale,
+  LearningMetricRate,
+  LearningMetricRow,
+  LearningMetricsAnalysis,
+  LearningMetricsExport,
+} from "./learning/metrics";
 export { attentionMapDemo, getAttentionMapDemo } from "./demos/attention-map";
 export { bayesUpdateDemo, getBayesUpdateDemo } from "./demos/bayes-update";
 export { cnnKernelDemo, getCnnKernelDemo } from "./demos/cnn-kernel";

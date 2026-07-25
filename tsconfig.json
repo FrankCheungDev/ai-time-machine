@@ -6,6 +6,7 @@
       "@ai-history/data": ["packages/data/src/index.ts"]
     },
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "checkJs": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
