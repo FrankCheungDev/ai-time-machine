@@ -13,9 +13,10 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 - Timeline, lineage map, and a manifest-driven diagram library with SVG and PNG assets for all nine demos.
 - Twenty-two source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
-- Public privacy documentation and a typed in-page signal allowlist with client
-  collection disabled, automatic RUM blocked, and hosting-layer edge metrics
-  excluded from learning evidence.
+- Public privacy documentation and a typed in-page signal allowlist with a
+  production-only Plausible Events API adapter; local, preview, automation,
+  smoke, and excluded developer traffic remain offline, automatic Cloudflare
+  RUM is blocked, and hosting-layer edge metrics stay outside learning evidence.
 - Cloudflare Pages production and pull-request previews backed by formatting,
   type, data, build, unit, browser, visual, accessibility, and teaching
   correctness checks.
@@ -33,11 +34,12 @@ follows the staged process in
 - **v1.1 — Complete — Safety / Evaluation and diagram assets:** add the next teaching
   chapter and turn the diagram page into a reusable asset library covering all
   demos.
-- **v1.2 — Implementation complete, observation pending — Historical depth and
-  learning validation:** source-backed milestone events, lightweight concept
-  checks, and privacy-reviewed in-page product signals are implemented. Client
-  collection remains disabled and deployment policy blocks automatic RUM until
-  a provider and real aggregate-data access pass the privacy gate.
+- **v1.2 — Provider enablement in progress, observation pending — Historical
+  depth and learning validation:** source-backed milestone events, lightweight
+  concept checks, and privacy-reviewed product signals are implemented.
+  Plausible Hosted Business was approved on 2026-07-26; its strict
+  production-only adapter, account/dashboard setup, and release verification
+  precede the separate 14-day real-usage observation.
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching

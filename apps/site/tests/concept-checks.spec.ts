@@ -188,7 +188,7 @@ test("storage failure keeps feedback and continuation available", async ({
   await expect(page.getByTestId("complete-and-continue")).toBeVisible();
 });
 
-test("reviewed signals stay in-page and send no analytics request", async ({
+test("reviewed signals stay offline on local and preview origins", async ({
   page,
 }) => {
   await resetSelfChecks(page);
@@ -204,7 +204,7 @@ test("reviewed signals stay in-page and send no analytics request", async ({
   });
   const outboundAnalytics: string[] = [];
   page.on("request", (request) => {
-    if (/analytics|collect|beacon|telemetry/i.test(request.url())) {
+    if (/analytics|collect|beacon|telemetry|plausible/i.test(request.url())) {
       outboundAnalytics.push(request.url());
     }
   });

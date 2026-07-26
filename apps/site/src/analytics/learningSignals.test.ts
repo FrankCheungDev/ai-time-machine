@@ -3,12 +3,15 @@ import {
   learningSignalAllowedFields,
   learningSignalCollectionMode,
   learningSignalNames,
+  plausibleProductionOrigin,
   sanitizeLearningSignal,
+  shouldCollectPlausibleLearningSignals,
 } from "./learningSignals";
 
 describe("learning signal privacy boundary", () => {
-  it("keeps production collection disabled until a provider is approved", () => {
-    expect(learningSignalCollectionMode).toBe("disabled");
+  it("enables only the approved production Plausible mode", () => {
+    expect(learningSignalCollectionMode).toBe("plausible-production");
+    expect(plausibleProductionOrigin).toBe("https://atlas.z-ai.cc");
   });
 
   it("uses the reviewed event allowlist", () => {
@@ -82,5 +85,45 @@ describe("learning signal privacy boundary", () => {
     },
   ])("rejects malformed signals %#", (value) => {
     expect(sanitizeLearningSignal(value)).toBeNull();
+  });
+
+  it("collects only on the exact production origin outside automation", () => {
+    expect(
+      shouldCollectPlausibleLearningSignals({
+        origin: "https://atlas.z-ai.cc",
+        webdriver: false,
+        ignoreFlag: null,
+      }),
+    ).toBe(true);
+
+    for (const environment of [
+      {
+        origin: "http://atlas.z-ai.cc",
+        webdriver: false,
+        ignoreFlag: null,
+      },
+      {
+        origin: "https://preview.atlas.z-ai.cc",
+        webdriver: false,
+        ignoreFlag: null,
+      },
+      {
+        origin: "https://atlas.z-ai.cc:8443",
+        webdriver: false,
+        ignoreFlag: null,
+      },
+      {
+        origin: "https://atlas.z-ai.cc",
+        webdriver: true,
+        ignoreFlag: null,
+      },
+      {
+        origin: "https://atlas.z-ai.cc",
+        webdriver: false,
+        ignoreFlag: "true" as const,
+      },
+    ]) {
+      expect(shouldCollectPlausibleLearningSignals(environment)).toBe(false);
+    }
   });
 });

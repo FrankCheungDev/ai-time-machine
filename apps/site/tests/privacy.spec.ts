@@ -13,21 +13,23 @@ if (!contentSecurityPolicy) {
   throw new Error("Missing Content-Security-Policy in public/_headers");
 }
 
-test("privacy pages explain local records and disabled analytics in both languages", async ({
+test("privacy pages disclose production-only Plausible processing in both languages", async ({
   page,
 }) => {
   const cases = [
     {
       route: "/privacy/",
       heading: "隐私与本地学习记录",
-      analytics: "客户端学习分析当前保持禁用",
+      analytics: "匿名学习指标仅在正式域名启用",
+      provider: "Plausible 如何处理请求",
       excluded: "明确排除的数据",
       nav: "隐私",
     },
     {
       route: "/en/privacy/",
       heading: "Privacy And Local Learning Records",
-      analytics: "Client-side Learning Analytics Remain Disabled",
+      analytics: "Anonymous Learning Metrics Run Only On Production",
+      provider: "How Plausible Processes A Request",
       excluded: "Explicitly Excluded Data",
       nav: "Privacy",
     },
@@ -42,13 +44,29 @@ test("privacy pages explain local records and disabled analytics in both languag
       page.getByRole("heading", { level: 2, name: entry.analytics }),
     ).toBeVisible();
     await expect(
+      page.getByRole("heading", { level: 2, name: entry.provider }),
+    ).toBeVisible();
+    await expect(
       page.getByRole("heading", { level: 2, name: entry.excluded }),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: entry.nav, exact: true }),
     ).toHaveAttribute("aria-current", "page");
-    await expect(page.getByText(/visitor id|访客 id/i)).toBeVisible();
-    await expect(page.getByText(/edge traffic|边缘流量/i)).toBeVisible();
+    await expect(page.getByText(/visitor id|访客 id/i).first()).toBeVisible();
+    await expect(
+      page.getByText(/daily identifier|每日.*匿名标识/i).first(),
+    ).toBeVisible();
+    await expect(page.getByText(/plausible_ignore/i)).toBeVisible();
+    await expect(
+      page.getByRole("link", {
+        name: "Plausible Events API reference",
+      }),
+    ).toHaveAttribute("href", "https://plausible.io/docs/events-api");
+    await expect(
+      page.getByRole("link", {
+        name: "Plausible data policy and daily anonymous identifier",
+      }),
+    ).toHaveAttribute("href", "https://plausible.io/data-policy");
     await expect(
       page.getByRole("link", {
         name: "Cloudflare Web Analytics: privacy-first analytics overview",
@@ -87,9 +105,14 @@ test("privacy routes expose bilingual SEO alternates and enter the sitemap", asy
   expect(text).toContain("<loc>https://atlas.z-ai.cc/en/privacy/</loc>");
 });
 
-test("the deployment CSP preserves self-check hydration and continuation", async ({
+test("the narrow Plausible CSP preserves self-check hydration and continuation", async ({
   page,
 }) => {
+  expect(contentSecurityPolicy).toContain(
+    "connect-src https://plausible.io/api/event;",
+  );
+  expect(contentSecurityPolicy).not.toContain("cloudflareinsights");
+
   await page.route("**/*", async (route) => {
     if (route.request().resourceType() !== "document") {
       await route.continue();
@@ -108,7 +131,9 @@ test("the deployment CSP preserves self-check hydration and continuation", async
 
   const forbiddenRequests: string[] = [];
   page.on("request", (request) => {
-    if (/cloudflareinsights|\/cdn-cgi\/rum/i.test(request.url())) {
+    if (
+      /cloudflareinsights|\/cdn-cgi\/rum|plausible\.io/i.test(request.url())
+    ) {
       forbiddenRequests.push(request.url());
     }
   });

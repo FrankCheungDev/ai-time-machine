@@ -1,7 +1,7 @@
 # Keep the static application self-contained even when a hosting setting tries
 # to inject a client-side analytics script.
 /*
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src https://plausible.io/api/event; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'
   Permissions-Policy: browsing-topics=(), camera=(), geolocation=(), microphone=()
   Referrer-Policy: strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff

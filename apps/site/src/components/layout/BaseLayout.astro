@@ -7,6 +7,7 @@ import {
   type Locale,
 } from "../../i18n/locales";
 import { getSiteCopy } from "../../i18n/siteCopy";
+import { learningSignalCollectionMode } from "../../analytics/learningSignals";
 
 interface Props {
   title: string;
@@ -56,7 +57,10 @@ const chapterNavigationHref = `${localizeHref("/")}#mvp`;
 ---
 
 <!doctype html>
-<html lang={locale}>
+<html
+  lang={locale}
+  data-learning-signal-collection={learningSignalCollectionMode}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

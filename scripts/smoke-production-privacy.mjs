@@ -25,7 +25,7 @@ const failures = [];
 const checkedResponses = [];
 const headerFailures = {
   noTransform: [],
-  noConnectPolicy: [],
+  invalidConnectPolicy: [],
   scriptPolicy: [],
 };
 
@@ -37,8 +37,14 @@ function checkDocumentHeaders(route, response) {
   if (!cacheControl.includes("no-transform")) {
     headerFailures.noTransform.push(route);
   }
-  if (!contentSecurityPolicy.includes("connect-src 'none'")) {
-    headerFailures.noConnectPolicy.push(route);
+  if (
+    !contentSecurityPolicy.includes(
+      "connect-src https://plausible.io/api/event;",
+    ) ||
+    contentSecurityPolicy.includes("connect-src *") ||
+    contentSecurityPolicy.includes("cloudflareinsights")
+  ) {
+    headerFailures.invalidConnectPolicy.push(route);
   }
   if (
     !contentSecurityPolicy.includes("script-src 'self' 'unsafe-inline'") ||
@@ -104,7 +110,10 @@ const [
 
 for (const [label, routes] of [
   ["missing Cache-Control no-transform", headerFailures.noTransform],
-  ["missing connect-src 'none'", headerFailures.noConnectPolicy],
+  [
+    "missing the exact Plausible-only connect policy",
+    headerFailures.invalidConnectPolicy,
+  ],
   ["not restricted to static-site scripts", headerFailures.scriptPolicy],
 ]) {
   if (routes.length > 0) {
@@ -134,11 +143,11 @@ if (
     "one or both timelines are missing the audited Lighthill source",
   );
 }
-if (!chinesePrivacy.includes("客户端学习分析当前保持禁用")) {
+if (!chinesePrivacy.includes("匿名学习指标仅在正式域名启用")) {
   failures.push("the Chinese privacy decision is missing");
 }
 if (
-  !englishPrivacy.includes("Client-side Learning Analytics Remain Disabled")
+  !englishPrivacy.includes("Anonymous Learning Metrics Run Only On Production")
 ) {
   failures.push("the English privacy decision is missing");
 }
@@ -164,6 +173,7 @@ const context = await browser.newContext({
 });
 await context.addInitScript(() => {
   const storageKey = "release-smoke-signals";
+  localStorage.setItem("plausible_ignore", "true");
   window.addEventListener("ai-history:learning-signal", (event) => {
     const prior = JSON.parse(sessionStorage.getItem(storageKey) ?? "[]");
     prior.push(event.detail);
@@ -180,6 +190,9 @@ page.on("request", (request) => {
   }
   if (url.includes("/cdn-cgi/rum")) {
     forbiddenRequests.push("cloudflare-rum");
+  }
+  if (url.startsWith("https://plausible.io/")) {
+    forbiddenRequests.push("plausible-event-during-excluded-smoke");
   }
 });
 
@@ -253,10 +266,11 @@ try {
         responsePolicy: {
           documentsChecked: checkedResponses.length - 1,
           missingNoTransform: headerFailures.noTransform.length,
-          missingNoConnectPolicy: headerFailures.noConnectPolicy.length,
+          invalidConnectPolicy: headerFailures.invalidConnectPolicy.length,
           invalidScriptPolicy: headerFailures.scriptPolicy.length,
         },
         browserInteraction: "concept check, explanation, continuation",
+        plausibleExclusion: "localStorage.plausible_ignore=true",
         observedSignalNames: signalNames,
         forbiddenRequests: [...new Set(forbiddenRequests)],
         failures,

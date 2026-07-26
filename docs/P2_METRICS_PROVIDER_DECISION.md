@@ -1,13 +1,13 @@
 # P2-05 匿名学习指标 Provider 决策与观察协议
 
-- 状态：等待项目所有者批准；客户端采集保持禁用
+- 状态：项目所有者已于 2026-07-26 批准 Plausible 方案；P2-05A 实现中，真实观察窗口尚未开始
 - 对应任务：P2-04 / P2-05
 - 评审日期：2026-07-25
-- 条件式推荐：Plausible Hosted Business
+- 已选方案：Plausible Hosted Business
 
 ## 1. 决策问题
 
-P2-05 要根据真实学习者数据调整章节与交互。现有代码已经在浏览器内派发五类经过清洗的学习信号，但 `learningSignalCollectionMode` 仍为 `disabled`，没有 listener、provider、API key、后端或数据库接收这些信号。
+P2-05 要根据真实学习者数据调整章节与交互。代码已经在浏览器内派发五类经过清洗的学习信号；获批实现把 `learningSignalCollectionMode` 改为 `plausible-production`，并通过正式域名专用的严格适配器调用 Plausible Events API。站点仍无自有后端、数据库或运行时 API key。
 
 本决策必须同时回答：
 
@@ -17,7 +17,7 @@ P2-05 要根据真实学习者数据调整章节与交互。现有代码已经�
 4. 项目能否读取聚合结果，并保留样本量、观察窗口和查询定义；
 5. 引入 provider 所增加的数据处理、费用、脚本与 CSP 权限是否被明确批准。
 
-在批准前，本文件不授权加载任何分析脚本、发送任何网络事件或放宽 `apps/site/public/_headers`。
+所有者批准只授权按本文边界实施 P2-05A，不代表 P2-05 已完成，也不授权在站点配置、Dashboard、真实流量入口和发布验证完成前启动观察窗口。
 
 ## 2. 不可降低的边界
 
@@ -32,15 +32,15 @@ P2-05 要根据真实学习者数据调整章节与交互。现有代码已经�
 
 ## 3. 候选方案核查
 
-| 方案                      | 功能证据                                                                                                                                                 | 隐私与运维影响                                                                                                                                                                                                                                                | 结论                                                                                            |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Plausible Hosted Business | 支持 JavaScript 自定义事件、custom properties、按访客计算的漏斗、设备过滤和 Stats API；API 可查询 visitors、events、conversion rate、device 与自定义属性 | 无 cookie 或持久标识；但每个 HTTP 请求仍会携带 IP 与 User-Agent，Plausible 用它们和每日 salt 生成 24 小时标识，并从中派生设备与地区；原始 IP/User-Agent 不存储，数据在欧盟处理。Custom properties 与 funnels 属于 Business 功能，需要付费账户和 Stats API key | **条件式推荐**。功能满足，但每日匿名标识、设备/地区派生、费用和欧盟数据处理必须由所有者显式批准 |
-| Cloudflare Web Analytics  | 提供页面、路径、设备、浏览器和性能维度                                                                                                                   | 官方 FAQ 明确不支持直接向 RUM endpoint 做 custom integration；beacon 面向页面浏览与性能，不能表达本站五类学习事件。自动注入还曾与本站隐私声明冲突                                                                                                             | **不用于 P2-05**。保留托管层 edge analytics 与学习证据的隔离                                    |
-| Umami Cloud               | 支持自定义事件、事件数据和 API；API 有 event、device、language 等维度                                                                                    | tracker 默认包含 hostname、language、referrer、screen、title 和 URL，超过当前白名单；Cloud 的驻留、保留、删除与访问控制仍需单独审核                                                                                                                           | **暂不采用**。功能可行，但最小化配置和托管条款证据弱于推荐项                                    |
-| 自托管 Umami              | 与 Umami Cloud 相同，并可自行控制数据                                                                                                                    | 官方文档要求 PostgreSQL；会给纯静态项目增加数据库、部署、备份、安全与删除责任                                                                                                                                                                                 | **拒绝**。违反本项目静态、无数据库边界                                                          |
-| 人工同意的本地记录导出    | 不自动联网，可由参与者主动交付匿名本地记录                                                                                                               | 需要另行实现本地事件记录、导出、知情同意和人工招募；目前没有真实参与者或观察窗口                                                                                                                                                                              | **无 provider 时的回退方案**，但不能用作者、CI 或 smoke 生成的文件替代真实参与者                |
+| 方案                      | 功能证据                                                                                                                                                 | 隐私与运维影响                                                                                                                                                                                                                                                | 结论                                                                                                              |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Plausible Hosted Business | 支持 JavaScript 自定义事件、custom properties、按访客计算的漏斗、设备过滤和 Stats API；API 可查询 visitors、events、conversion rate、device 与自定义属性 | 无 cookie 或持久标识；但每个 HTTP 请求仍会携带 IP 与 User-Agent，Plausible 用它们和每日 salt 生成 24 小时标识，并从中派生设备与地区；原始 IP/User-Agent 不存储，数据在欧盟处理。Custom properties 与 funnels 属于 Business 功能，需要付费账户和 Stats API key | **已批准采用**。所有者于 2026-07-26 批准每日匿名标识、设备/地区派生、费用和欧盟数据处理；账户与观察前置项仍须完成 |
+| Cloudflare Web Analytics  | 提供页面、路径、设备、浏览器和性能维度                                                                                                                   | 官方 FAQ 明确不支持直接向 RUM endpoint 做 custom integration；beacon 面向页面浏览与性能，不能表达本站五类学习事件。自动注入还曾与本站隐私声明冲突                                                                                                             | **不用于 P2-05**。保留托管层 edge analytics 与学习证据的隔离                                                      |
+| Umami Cloud               | 支持自定义事件、事件数据和 API；API 有 event、device、language 等维度                                                                                    | tracker 默认包含 hostname、language、referrer、screen、title 和 URL，超过当前白名单；Cloud 的驻留、保留、删除与访问控制仍需单独审核                                                                                                                           | **暂不采用**。功能可行，但最小化配置和托管条款证据弱于推荐项                                                      |
+| 自托管 Umami              | 与 Umami Cloud 相同，并可自行控制数据                                                                                                                    | 官方文档要求 PostgreSQL；会给纯静态项目增加数据库、部署、备份、安全与删除责任                                                                                                                                                                                 | **拒绝**。违反本项目静态、无数据库边界                                                                            |
+| 人工同意的本地记录导出    | 不自动联网，可由参与者主动交付匿名本地记录                                                                                                               | 需要另行实现本地事件记录、导出、知情同意和人工招募；目前没有真实参与者或观察窗口                                                                                                                                                                              | **无 provider 时的回退方案**，但不能用作者、CI 或 smoke 生成的文件替代真实参与者                                  |
 
-### 3.1 条件式推荐的隐私差异
+### 3.1 获批方案的隐私差异
 
 Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久标识，但它会在请求处理阶段使用这些网络元数据，并自动派生粗粒度设备与地区。这个行为超出当前“provider 端只接收事件白名单字段”的最严格解释。
 
@@ -52,7 +52,7 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 - 项目不发送自己的 visitor id、session id、cookie、localStorage 标识或时间戳；
 - provider 为聚合所记录的接收时间、每日匿名标识与数据保留条款必须写入双语隐私页。
 
-如果所有者不接受这项差异，则应选择“人工同意的本地记录导出”，而不是暗中放宽边界。
+所有者已于 2026-07-26 接受这项差异；若未来撤回批准，则应停用 Plausible 并选择“人工同意的本地记录导出”，而不是暗中放宽边界。
 
 ## 4. 事件映射
 
@@ -70,14 +70,14 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 
 - adapter 只接收 `sanitizeLearningSignal` 的返回值，并逐事件重建 props，不能透传任意对象；
 - `autoCapturePageviews` 关闭，不自动发送页面浏览、referrer、query 或 hash；
-- provider 要求的 event location 固定归一为站点级常量，不使用当前完整 URL；
+- provider 要求的 event location 从章节注册表重建为正式域名下的规范章节路径，不使用当前完整 URL、query 或 hash；
 - 不把设备类型添加到事件 payload，由获批 provider 在聚合层派生；
 - `correct` 等非字符串字段采用固定枚举序列化，并以网络契约测试锁定；
 - 任何未知事件、未知字段或非正式 hostname 都必须在发送前丢弃。
 
 ## 5. 流量排除协议
 
-1. loader 在运行时精确匹配 `window.location.hostname === "atlas.z-ai.cc"`；本地、CI 和 preview 不下载 provider 脚本。
+1. 发送模块在运行时精确匹配 `window.location.origin === "https://atlas.z-ai.cc"`；本地、CI 和 preview 不动态加载适配器。项目不加载 Plausible 外部脚本，而是使用官方 Events API 的最小请求契约。
 2. 生产 smoke 在首次导航前设置官方排除标记 `localStorage.plausible_ignore = "true"`，并断言没有分析请求。
 3. 开发者和发布人员在自己的每个生产浏览器设置相同标记；启用 PR 记录核验截图或 provider dashboard 的排除确认。
 4. Plausible site settings 只允许 `atlas.z-ai.cc` hostname；不把通配预览域名加入 allowlist。
@@ -139,24 +139,28 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 
 ## 8. 所有者批准清单
 
-在以下各项有明确答案前，不得进入 P2-05A：
+在以下各项有明确答案前，不得把 P2-05A 合并到生产或启动观察窗口：
 
-- [ ] 批准 Plausible Hosted Business 及其费用；或明确选择人工同意的本地导出方案。
-- [ ] 批准欧盟数据处理、保留与删除条款。
-- [ ] 批准临时处理 IP/User-Agent、每日匿名标识与粗粒度设备派生。
+- [x] 批准 Plausible Hosted Business 及其费用；2026-07-26 所有者明确回复“批准 Plausible 方案”。
+- [x] 批准欧盟数据处理、账户持有期间的聚合数据保留，以及删除站点/账户后的永久删除条款。
+- [x] 批准临时处理 IP/User-Agent、每日匿名标识与粗粒度设备派生。
 - [ ] 指定拥有 provider dashboard 和 Stats API 读取权限的人。
 - [ ] 确认 Stats API key 的安全存放方式，不进入公开构建。
-- [ ] 批准至少 14 个完整自然日的观察窗口。
-- [ ] 批准 50 个章节总体访客和 30 个分段访客的最低决策门槛。
+- [x] 批准至少 14 个完整自然日的观察窗口。
+- [x] 批准 50 个章节总体访客和 30 个分段访客的最低决策门槛。
 - [ ] 确认正式观察期开始前有真实学习者流量来源。
+
+本次批准是对上一轮明确列出的费用、欧盟数据处理、临时 IP/User-Agent、每日匿名标识、设备派生、14 天窗口和 50/30 门槛的整体确认。账户、Dashboard 责任人、Stats API key 实际存放和真实流量仍需要外部配置，不能由代码或测试结果代替。具体站点设置、排除、发布、观察和 removal 步骤见 [`P2_PLAUSIBLE_RUNBOOK.md`](P2_PLAUSIBLE_RUNBOOK.md)。
 
 ## 9. 官方资料
 
 - [Plausible custom events](https://plausible.io/docs/custom-event-goals)
+- [Plausible Events API](https://plausible.io/docs/events-api)
 - [Plausible custom properties](https://plausible.io/docs/custom-props/introduction)
 - [Plausible funnel analysis](https://plausible.io/docs/funnel-analysis)
 - [Plausible Stats API](https://plausible.io/docs/stats-api)
 - [Plausible data policy](https://plausible.io/data-policy)
+- [Plausible Data Processing Agreement](https://plausible.io/dpa)
 - [Plausible internal-traffic exclusion](https://plausible.io/docs/excluding)
 - [Plausible localStorage exclusion](https://plausible.io/docs/excluding-localstorage)
 - [Cloudflare Web Analytics FAQ](https://developers.cloudflare.com/web-analytics/faq/)

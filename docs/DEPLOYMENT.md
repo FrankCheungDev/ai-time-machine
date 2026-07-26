@@ -23,6 +23,11 @@ The repository does not require runtime secrets, API keys, databases, or
 backend services. Never add Cloudflare credentials, private preview URLs, or
 environment files to Git.
 
+The Plausible Stats API key is an operator-only read credential for aggregate
+exports after an observation window. It is not a site runtime or build secret
+and must remain in an OS keychain or equivalent controlled store; see
+[`P2_PLAUSIBLE_RUNBOOK.md`](P2_PLAUSIBLE_RUNBOOK.md).
+
 ## Pull-Request Preview
 
 1. Update `main`, create a `codex/*` branch, and work in a dedicated
@@ -69,10 +74,14 @@ Do not merge while any required check is pending or failing.
 5. Verify the production HTML contains the expected canonical, language
    alternates, Open Graph image, and description.
 6. Verify HTML responses include `no-transform` in `Cache-Control` and a
-   `Content-Security-Policy` with `connect-src 'none'`.
-7. In a real browser, complete one concept check and continue to the next
-   chapter. Confirm the interaction hydrates and that no request targets
-   `static.cloudflareinsights.com` or `/cdn-cgi/rum`.
+   `Content-Security-Policy` whose only external connection is
+   `connect-src https://plausible.io/api/event`; external scripts remain
+   blocked.
+7. Before using a release browser on production, set
+   `localStorage.plausible_ignore=true`. Complete one concept check and continue
+   to the next chapter. Confirm the interaction hydrates and that no request
+   targets Plausible, `static.cloudflareinsights.com`, or `/cdn-cgi/rum` from
+   this excluded smoke session.
    Run `pnpm smoke:production:privacy` to cover this check together with all 22
    chapter routes, both timelines, both privacy routes, and the sitemap.
 8. Record any teaching simplification, source change, or deployment-layer
@@ -94,40 +103,54 @@ deployment.
 
 ## Analytics Decision
 
-Client-side learning analytics remain disabled for v1.2. The site exposes a
-typed, sanitized in-page event contract for chapter start, journey completion,
-concept check completion, explanation opening, and continuation, but no
-application listener sends those signals over the network.
+Plausible Hosted Business was approved by the project owner on 2026-07-26 for
+the five typed learning events. Only a non-automated browser on the exact
+`https://atlas.z-ai.cc` origin can dynamically load the strict Events API
+adapter. Local development, pull-request previews, WebDriver, production smoke,
+and browsers with `localStorage.plausible_ignore=true` stop before sending.
+
+The adapter does not load an external Plausible script or automatically track
+pageviews, links, forms, downloads, or 404s. It reconstructs canonical chapter
+URLs, sends only the reviewed event properties, omits credentials and
+referrers, and never sends user text, identity, project visitor/session IDs,
+precise timestamps, query strings, or hashes. The browser connection still
+carries IP and User-Agent; the approved provider temporarily uses them for bot
+filtering, daily anonymous visitor calculation, and coarse device/location
+derivation as disclosed on both privacy routes.
 
 Production smoke after PR #20 found that Cloudflare Pages automatically
 injected its Web Analytics / RUM beacon even though the repository contained no
-analytics script. `apps/site/public/_headers` now applies `no-transform` to all
-generated HTML routes and a Content Security Policy that rejects external
-scripts and browser-initiated connections. Both controls must remain covered by
-tests and a post-deployment browser network check.
+analytics script. `apps/site/public/_headers` applies `no-transform` to all
+generated HTML routes, continues to reject external scripts, and allows only
+the approved Plausible event endpoint. These controls remain covered by tests
+and a post-deployment browser network check.
 
 Cloudflare still processes HTTP requests as the hosting proxy and may expose
 aggregate edge traffic. Those provider-level operational metrics are separate
 from the project's learning-signal contract, are not currently readable by the
 project, and must not be presented as learner evidence.
 
-The privacy review, exact field allowlist, excluded data, provider gate, and
-real-usage evidence boundary are recorded in
+The privacy review, exact field allowlist, excluded data, provider decision,
+and real-usage evidence boundary are recorded in
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md).
 The same decision is visible to learners at `/privacy/` and `/en/privacy/`.
 
-Before enabling collection in a separate pull request:
+Before merging the enablement pull request and starting observation:
 
-- document the provider, data residency, retention, deletion, and access;
-- prove no user-entered text, identity, precise timestamp, full URL, device
-  fingerprint, or cross-site identifier is collected;
-- exclude local, CI, preview, smoke, and developer traffic;
-- add network request contract tests and a provider removal path;
-- change the `no-transform` and Content Security Policy controls in the same
-  reviewed pull request;
-- update both public privacy routes;
-- prove the project can read genuine aggregate data before claiming a
-  data-driven adjustment.
+- configure the Hosted Business site, exact hostname allowlist, five goals and
+  two sequential funnels;
+- designate the dashboard / Stats API operator and safe key storage;
+- pass the payload, origin, WebDriver, ignore-flag, preview, CSP, and production
+  smoke contracts;
+- verify both public privacy routes and the provider removal path;
+- confirm a genuine learner-traffic source, then record the observation start
+  without using developer or automated events as dashboard evidence.
+
+Follow the exact provider setup, exclusion, observation, export, and removal
+steps in [`P2_PLAUSIBLE_RUNBOOK.md`](P2_PLAUSIBLE_RUNBOOK.md). Collection
+enablement is not a data-driven product adjustment: P2-05 still requires at
+least 14 complete days, sufficient aggregate samples, and a separate one-point
+chapter change.
 
 ## Incident Checklist
 

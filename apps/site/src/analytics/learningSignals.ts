@@ -2,7 +2,9 @@ import { isChapterId, type ChapterId } from "@ai-history/data/chapters";
 import { supportedLocales, type Locale } from "@ai-history/data/locales";
 
 export const learningSignalEventName = "ai-history:learning-signal";
-export const learningSignalCollectionMode = "disabled" as const;
+export const learningSignalCollectionMode = "plausible-production" as const;
+export const plausibleProductionOrigin = "https://atlas.z-ai.cc";
+export const plausibleIgnoreStorageKey = "plausible_ignore";
 
 export const learningSignalNames = [
   "chapter_started",
@@ -13,6 +15,12 @@ export const learningSignalNames = [
 ] as const;
 
 export type LearningSignalName = (typeof learningSignalNames)[number];
+
+export interface PlausibleCollectionEnvironment {
+  origin: string;
+  webdriver: boolean;
+  ignoreFlag: "true" | "false" | null;
+}
 
 interface LearningSignalBase {
   name: LearningSignalName;
@@ -123,6 +131,63 @@ export function sanitizeLearningSignal(value: unknown): LearningSignal | null {
   return null;
 }
 
+export function shouldCollectPlausibleLearningSignals(
+  environment: PlausibleCollectionEnvironment,
+): boolean {
+  return (
+    environment.origin === plausibleProductionOrigin &&
+    !environment.webdriver &&
+    environment.ignoreFlag !== "true"
+  );
+}
+
+function getBrowserCollectionEnvironment(): PlausibleCollectionEnvironment | null {
+  if (typeof window === "undefined") return null;
+
+  let ignoreFlag: "true" | "false" | null;
+  try {
+    const storedFlag = window.localStorage.getItem(plausibleIgnoreStorageKey);
+    ignoreFlag =
+      storedFlag === "true" || storedFlag === "false" ? storedFlag : null;
+  } catch {
+    // If the browser will not let us inspect the exclusion flag, prefer not to
+    // collect instead of silently overriding a learner or developer choice.
+    return null;
+  }
+
+  return {
+    origin: window.location.origin,
+    webdriver: window.navigator.webdriver === true,
+    ignoreFlag,
+  };
+}
+
+type PlausibleSignalSender = (signal: LearningSignal) => Promise<boolean>;
+
+let plausibleSignalSender: PlausibleSignalSender | undefined;
+let plausibleAdapterPromise:
+  Promise<typeof import("./plausibleLearningAdapter")> | undefined;
+
+function queuePlausibleLearningSignal(signal: LearningSignal): void {
+  if (plausibleSignalSender) {
+    void plausibleSignalSender(signal);
+    return;
+  }
+
+  plausibleAdapterPromise ??= import("./plausibleLearningAdapter");
+  void plausibleAdapterPromise
+    .then(({ sendPlausibleLearningSignal }) => {
+      plausibleSignalSender = sendPlausibleLearningSignal;
+      // Calling the sender starts the keepalive request synchronously. Do not
+      // wait for a prior response: completion and continuation are emitted in
+      // one click handler immediately before browser navigation.
+      void plausibleSignalSender(signal);
+    })
+    .catch(() => {
+      // Metrics are best-effort and must never interrupt the learning path.
+    });
+}
+
 export function emitLearningSignal(signal: LearningSignal): boolean {
   const sanitized = sanitizeLearningSignal(signal);
   if (!sanitized || typeof window === "undefined") return false;
@@ -130,5 +195,15 @@ export function emitLearningSignal(signal: LearningSignal): boolean {
   window.dispatchEvent(
     new CustomEvent(learningSignalEventName, { detail: sanitized }),
   );
+
+  const environment = getBrowserCollectionEnvironment();
+  if (
+    learningSignalCollectionMode === "plausible-production" &&
+    environment &&
+    shouldCollectPlausibleLearningSignals(environment)
+  ) {
+    queuePlausibleLearningSignal(sanitized);
+  }
+
   return true;
 }

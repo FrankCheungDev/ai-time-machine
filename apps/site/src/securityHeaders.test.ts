@@ -6,9 +6,10 @@ const headers = readFileSync(new URL("../public/_headers", import.meta.url), {
 });
 
 describe("production privacy response policy", () => {
-  it("blocks external scripts and every browser-initiated connection", () => {
+  it("blocks external scripts and allows only the approved Plausible endpoint", () => {
     expect(headers).toContain("script-src 'self' 'unsafe-inline'");
-    expect(headers).toContain("connect-src 'none'");
+    expect(headers).toContain("connect-src https://plausible.io/api/event;");
+    expect(headers).not.toContain("connect-src *");
     expect(headers).not.toContain("static.cloudflareinsights.com");
   });
 

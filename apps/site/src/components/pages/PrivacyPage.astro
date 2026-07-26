@@ -41,6 +41,14 @@ const sections = [
       <p>{copy.analyticsBody}</p>
     </section>
 
+    <section class="section-band" aria-labelledby="provider-processing">
+      <h2 id="provider-processing">{copy.providerHeading}</h2>
+      <p>{copy.providerBody}</p>
+      <ul>
+        {copy.providerItems.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
     {
       sections.map((section) => (
         <section class="section-band" aria-labelledby={section.id}>
@@ -68,6 +76,31 @@ const sections = [
     <section class="section-band" aria-labelledby="privacy-sources">
       <h2 id="privacy-sources">{copy.sourcesHeading}</h2>
       <ul>
+        <li>
+          <a href="https://plausible.io/data-policy">
+            Plausible data policy and daily anonymous identifier
+          </a>
+        </li>
+        <li>
+          <a href="https://plausible.io/dpa">
+            Plausible Data Processing Agreement
+          </a>
+        </li>
+        <li>
+          <a href="https://plausible.io/docs/events-api">
+            Plausible Events API reference
+          </a>
+        </li>
+        <li>
+          <a href="https://plausible.io/docs/stats-api">
+            Plausible Stats API reference
+          </a>
+        </li>
+        <li>
+          <a href="https://plausible.io/docs/excluding-localstorage">
+            Plausible localStorage exclusion
+          </a>
+        </li>
         <li>
           <a href="https://developers.cloudflare.com/web-analytics/about/">
             Cloudflare Web Analytics: privacy-first analytics overview

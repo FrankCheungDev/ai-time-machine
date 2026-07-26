@@ -11,6 +11,9 @@ export interface PrivacyPageCopy {
   localItems: string[];
   analyticsHeading: string;
   analyticsBody: string;
+  providerHeading: string;
+  providerBody: string;
+  providerItems: string[];
   signalHeading: string;
   signalBody: string;
   signalItems: string[];
@@ -27,7 +30,7 @@ export const privacyPageCopy = {
   "zh-CN": {
     title: "隐私与本地学习记录",
     description:
-      "说明交互式人工智能图解史在本地保存什么、当前不收集什么，以及匿名指标的启用门槛。",
+      "说明交互式人工智能图解史在本地保存什么，以及正式域名如何使用 Plausible 处理匿名学习指标。",
     eyebrow: "Privacy",
     heading: "隐私与本地学习记录",
     lede: "本站保持纯静态边界。学习进度和自测记录默认只留在你的浏览器，不需要账号，也不会被发送到项目服务器。",
@@ -37,13 +40,22 @@ export const privacyPageCopy = {
       "界面语言偏好。",
       "已标记完成的章节 id。",
       "自测是否首次答对、尝试次数，以及是否打开过解释。",
+      "开发者或测试参与者主动设置的 plausible_ignore 排除标记；本站不会用它识别学习者。",
     ],
-    analyticsHeading: "客户端学习分析当前保持禁用",
+    analyticsHeading: "匿名学习指标仅在正式域名启用",
     analyticsBody:
-      "本站不主动加载分析 provider、像素或网络 beacon；部署响应还通过 no-transform 与内容安全策略阻止平台自动注入客户端 Web Analytics / RUM。Cloudflare 作为托管与代理服务仍会处理 HTTP 请求，并可能提供聚合边缘流量统计；项目当前不能读取这些统计，也不会把它们当作学习效果指标。自动化测试和发布 smoke 同样不会被冒充为真实学习者数据。",
-    signalHeading: "已评审但不联网的信号契约",
+      "仅当页面位于 https://atlas.z-ai.cc、浏览器不是自动化环境且没有主动设置排除标记时，本站才会向 Plausible Hosted Business 发送五类已评审学习事件。不会自动记录页面浏览、出站链接、表单、下载或 Cloudflare Web Analytics；本地、PR 预览、CI、Playwright、发布 smoke 和已排除的开发者在请求发出前即被阻止。",
+    providerHeading: "Plausible 如何处理请求",
+    providerBody:
+      "浏览器直接把最小事件发送到 Plausible 的欧盟托管端点。网络请求不可避免地携带 IP 与 User-Agent；Plausible 临时使用它们进行 bot 过滤、粗粒度设备与地区派生，并结合每日轮换 salt 生成只在当天有效的匿名标识。原始 IP、User-Agent 和旧 salt 不会被存储。",
+    providerItems: [
+      "不使用 cookie、持久访客 id、项目生成的会话 id、设备指纹或跨站追踪。",
+      "Plausible 会派生浏览器、操作系统、设备类型和地区；项目只读取章节、语言及 Desktop / Laptop / Tablet / Mobile 聚合分段，不导出地区、浏览器版本或单个访问轨迹。",
+      "聚合数据保留在项目所有者的 Plausible 账户中，直至所有者删除站点或账户；Plausible 承诺在删除后无不当延迟地永久清除。",
+    ],
+    signalHeading: "发送到 Plausible 的严格信号契约",
     signalBody:
-      "页面内部可以发出以下类型化事件，供测试验证交互边界；当前没有监听器把它们发送出浏览器：",
+      "正式域名上的严格适配器会再次清洗页面内部事件，只发送规范章节路径以及对应的白名单属性：",
     signalItems: [
       "开始章节。",
       "通过章节旅程标记核心交互完成。",
@@ -53,21 +65,21 @@ export const privacyPageCopy = {
     excludedHeading: "明确排除的数据",
     excludedItems: [
       "任何用户输入正文、姓名、邮箱或账号。",
-      "项目学习信号中的访客 id、设备指纹、精确时间戳或跨站标识符。",
-      "将自动化测试流量解释成真实使用数据。",
+      "访客 id、项目设备指纹、精确时间戳、完整 URL、query、hash、referrer 或跨站标识符。",
+      "自动页面浏览、自动化测试、预览、发布 smoke 或开发者流量。",
     ],
     clearingHeading: "如何清除",
     clearingBody:
       "首页的“重置学习进度”会清除章节完成状态；任意章节自测中的“清除全部自测记录”会删除所有自测结果。浏览器清站点数据也会清除这些本地记录。",
-    futureHeading: "未来启用匿名指标前必须满足什么",
+    futureHeading: "真实数据如何用于迭代",
     futureBody:
-      "必须先确定 provider、数据驻留与保留期，证明字段白名单不含身份或正文，公开更新本页，并取得可读取的真实聚合数据。启用与移除都不得改变章节本身。",
+      "首轮观察必须覆盖至少 14 个完整自然日；章节总体至少 50 位访客、语言或设备分段至少 30 位访客才可用于决策。项目只保存查询定义、窗口、样本量和聚合结果，不保存 API key 或个人级事件；证据充分后只调整一个章节中的一个主要问题，并开启新的独立观察窗口。",
     sourcesHeading: "评审依据",
   },
   en: {
     title: "Privacy And Local Learning Records",
     description:
-      "Learn what Interactive Illustrated AI History stores locally, what it does not collect, and the gate for anonymous metrics.",
+      "Learn what Interactive Illustrated AI History stores locally and how its production domain uses Plausible for anonymous learning metrics.",
     eyebrow: "Privacy",
     heading: "Privacy And Local Learning Records",
     lede: "The site keeps a static boundary. Learning progress and self-check records remain in your browser by default, require no account, and are not sent to a project server.",
@@ -78,13 +90,22 @@ export const privacyPageCopy = {
       "Interface language preference.",
       "IDs of chapters marked complete.",
       "Whether a self-check was correct first time, attempt count, and whether its explanation was opened.",
+      "A plausible_ignore exclusion flag deliberately set by a developer or research participant; the site does not use it to identify learners.",
     ],
-    analyticsHeading: "Client-side Learning Analytics Remain Disabled",
+    analyticsHeading: "Anonymous Learning Metrics Run Only On Production",
     analyticsBody:
-      "The site does not intentionally load an analytics provider, pixel, or network beacon. Deployment responses also use no-transform and a Content Security Policy to prevent automatic client-side Web Analytics or RUM injection. Cloudflare still processes HTTP requests as the hosting proxy and may expose aggregate edge traffic; the project cannot currently read those statistics and never treats them as learning evidence. Automated tests and release smoke traffic are excluded as well.",
-    signalHeading: "Reviewed, In-Page Signal Contract",
+      "Only pages on https://atlas.z-ai.cc send the five reviewed learning events to Plausible Hosted Business, and only when the browser is not automated and has not deliberately enabled the exclusion flag. The site does not automatically track pageviews, outbound links, forms, downloads, or Cloudflare Web Analytics. Local development, pull-request previews, CI, Playwright, release smoke, and excluded developer traffic are blocked before any request is made.",
+    providerHeading: "How Plausible Processes A Request",
+    providerBody:
+      "The browser sends each minimal event directly to Plausible's EU-hosted endpoint. Network requests necessarily carry an IP address and User-Agent. Plausible temporarily uses them for bot filtering, coarse device and location derivation, and a daily identifier generated with a rotating salt. Raw IP addresses, full User-Agents, and old salts are not stored.",
+    providerItems: [
+      "No cookies, persistent visitor IDs, project session IDs, device fingerprints, or cross-site tracking are used.",
+      "Plausible derives browser, operating system, device type, and location. The project reads only chapter, locale, and aggregate Desktop / Laptop / Tablet / Mobile segments; it does not export location, browser version, or individual journeys.",
+      "Aggregate data remains in the project owner's Plausible account until the owner deletes the site or account; Plausible commits to permanent deletion without undue delay.",
+    ],
+    signalHeading: "The Strict Contract Sent To Plausible",
     signalBody:
-      "Pages can emit these typed events so tests can verify interaction boundaries. No listener currently sends them outside the browser:",
+      "The production adapter sanitizes every in-page event again and sends only a canonical chapter path with its allowed properties:",
     signalItems: [
       "Chapter started.",
       "Core interaction marked complete through the chapter journey.",
@@ -94,15 +115,15 @@ export const privacyPageCopy = {
     excludedHeading: "Explicitly Excluded Data",
     excludedItems: [
       "User-entered text, names, email addresses, or accounts.",
-      "Visitor IDs, device fingerprints, precise timestamps, or cross-site identifiers in project learning signals.",
-      "Treating automated test traffic as real usage evidence.",
+      "Visitor IDs, project device fingerprints, precise timestamps, full URLs, queries, hashes, referrers, or cross-site identifiers.",
+      "Automatic pageviews, automation, previews, release smoke, or developer traffic.",
     ],
     clearingHeading: "How To Clear Records",
     clearingBody:
       "Reset learning progress on the home page to remove chapter completion. Use Clear all self-check records in any chapter check to remove every self-check result. Clearing this site's browser data removes both stores as well.",
-    futureHeading: "The Gate Before Anonymous Metrics Can Be Enabled",
+    futureHeading: "How Real Data Can Inform An Iteration",
     futureBody:
-      "A provider, data residency, and retention period must be documented; the field allowlist must be proven free of identity and input text; this page must be updated; and real aggregate data must be readable. Enabling or removing collection cannot change chapter behavior.",
+      "The first observation must span at least 14 complete calendar days. A chapter needs at least 50 visitors overall and a locale or device segment needs at least 30 before it can support a decision. The project keeps only query definitions, windows, sample sizes, and aggregate results—not API keys or person-level events. Sufficient evidence may change one primary issue in one chapter, followed by a separate observation window.",
     sourcesHeading: "Review Sources",
   },
 } satisfies Record<Locale, PrivacyPageCopy>;
