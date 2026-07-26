@@ -1,7 +1,8 @@
 import { chapterRegistry, isChapterId, type ChapterId } from "../chapters.ts";
 import { supportedLocales, type Locale } from "../locales.ts";
 
-export const learningMetricsSchemaVersion = 1 as const;
+export const learningMetricsSchemaVersion = 2 as const;
+export const learningMetricsReportingTimezone = "Asia/Shanghai" as const;
 export const minimumObservationDays = 14;
 export const minimumChapterVisitors = 50;
 export const minimumSegmentVisitors = 30;
@@ -40,7 +41,7 @@ export interface LearningMetricsExport {
   provider: {
     name: string;
     exportedAt: string;
-    queryKind: "sequential-aggregate-visitor-funnels";
+    queryKind: "aggregate-visitor-event-steps";
   };
   observationWindow: {
     startDate: string;
@@ -298,9 +299,9 @@ export function parseLearningMetricsExport(
   if (typeof provider.name !== "string" || provider.name.trim() === "") {
     issues.push("export.provider.name must be a non-empty string");
   }
-  if (provider.queryKind !== "sequential-aggregate-visitor-funnels") {
+  if (provider.queryKind !== "aggregate-visitor-event-steps") {
     issues.push(
-      'export.provider.queryKind must be "sequential-aggregate-visitor-funnels"',
+      'export.provider.queryKind must be "aggregate-visitor-event-steps"',
     );
   }
   const exportedAt = parseIsoDateTime(provider.exportedAt);
@@ -346,9 +347,12 @@ export function parseLearningMetricsExport(
         `export.observationWindow must contain at least ${minimumObservationDays} complete days`,
       );
     }
-    if (exportedAt !== null && exportedAt < endTimestamp) {
+    const reportingTimezoneEndTimestamp = Date.parse(
+      `${observationWindow.endDateExclusive}T00:00:00+08:00`,
+    );
+    if (exportedAt !== null && exportedAt < reportingTimezoneEndTimestamp) {
       issues.push(
-        "export.provider.exportedAt must be on or after endDateExclusive",
+        `export.provider.exportedAt must be on or after endDateExclusive in ${learningMetricsReportingTimezone}`,
       );
     }
   }
@@ -674,8 +678,10 @@ export function renderLearningMetricsMarkdown(
   const lines = [
     "# P2-05 聚合学习指标分析",
     "",
+    `- Schema：v${analysis.schemaVersion}`,
     `- 状态：${analysis.status}`,
     `- Provider：${analysis.provider.name}`,
+    `- 查询契约：${analysis.provider.queryKind}；Dashboard sequential funnels 已冻结（外部 attestation）`,
     `- 观察窗口：${analysis.observationWindow.startDate} → ${analysis.observationWindow.endDateExclusive}（${analysis.observationWindow.completeDays} 个完整自然日）`,
     "- 流量证明：production-only、真实学习者，CI / preview / smoke / developer 均已排除（外部 attestation）",
     "- 数据边界：aggregate-only、无 raw events、无 personal data",

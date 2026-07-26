@@ -10,6 +10,7 @@
     "capture:safety-evidence": "node scripts/capture-safety-evidence.mjs",
     "capture:p2-evidence": "node scripts/capture-p2-evidence.mjs",
     "analyze:learning-metrics": "node scripts/analyze-learning-metrics.ts",
+    "export:learning-metrics": "node scripts/export-plausible-learning-metrics.ts",
     "smoke:production:privacy": "node scripts/smoke-production-privacy.mjs",
     "render:diagrams": "node scripts/render-diagram-assets.mjs",
     "test": "pnpm -r --if-present test",

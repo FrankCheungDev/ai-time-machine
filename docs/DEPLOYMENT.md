@@ -152,6 +152,16 @@ enablement is not a data-driven product adjustment: P2-05 still requires at
 least 14 complete days, sufficient aggregate samples, and a separate one-point
 chapter change.
 
+After that complete observation window, use
+`pnpm --silent export:learning-metrics` first in `--dry-run` mode to save the
+key-free 18-query Stats API plan without package-manager text in stdout. A live
+export requires explicit real-traffic, production/dashboard, exclusion, and
+frozen-filter attestations and reads `PLAUSIBLE_STATS_API_KEY` only from the
+operator process environment. The command has no API-key argument and writes
+only the schema-v2 aggregate artifact to stdout. Pass that artifact to
+`pnpm analyze:learning-metrics`; neither command belongs in the browser or the
+Cloudflare build.
+
 ## Incident Checklist
 
 - Confirm whether the issue affects production, preview, or both.

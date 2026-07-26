@@ -4,6 +4,9 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "include": ["analyze-learning-metrics.ts"],
+  "include": [
+    "analyze-learning-metrics.ts",
+    "export-plausible-learning-metrics.ts"
+  ],
   "exclude": []
 }

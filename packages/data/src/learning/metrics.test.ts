@@ -46,13 +46,13 @@ function row(
 
 function validExport(): LearningMetricsExport {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     site: "atlas.z-ai.cc",
     environment: "production",
     provider: {
       name: "approved-provider",
       exportedAt: "2026-08-09T01:00:00.000Z",
-      queryKind: "sequential-aggregate-visitor-funnels",
+      queryKind: "aggregate-visitor-event-steps",
     },
     observationWindow: {
       startDate: "2026-07-26",
@@ -156,6 +156,15 @@ describe("P2-05 aggregate learning metrics contract", () => {
 
   it.each([
     [
+      "obsolete query contract",
+      (input: LearningMetricsExport) => {
+        input.schemaVersion = 1 as 2;
+        input.provider.queryKind =
+          "sequential-aggregate-visitor-funnels" as "aggregate-visitor-event-steps";
+      },
+      /schemaVersion must be 2/,
+    ],
+    [
       "short observation window",
       (input: LearningMetricsExport) => {
         input.observationWindow.endDateExclusive = "2026-08-08";
@@ -212,6 +221,18 @@ describe("P2-05 aggregate learning metrics contract", () => {
     expect(() => parseLearningMetricsExport(input)).toThrow(expected);
   });
 
+  it("uses the reporting timezone when checking a complete end date", () => {
+    const input = validExport();
+    input.provider.exportedAt = "2026-08-08T16:00:00.000Z";
+
+    expect(() => parseLearningMetricsExport(input)).not.toThrow();
+
+    input.provider.exportedAt = "2026-08-08T15:59:59.999Z";
+    expect(() => parseLearningMetricsExport(input)).toThrow(
+      /endDateExclusive in Asia\/Shanghai/,
+    );
+  });
+
   it("rejects unknown fields instead of silently retaining personal data", () => {
     const input = validExport() as LearningMetricsExport & {
       visitorId?: string;
@@ -248,6 +269,8 @@ describe("P2-05 aggregate learning metrics contract", () => {
     );
 
     expect(markdown).toContain("# P2-05 聚合学习指标分析");
+    expect(markdown).toContain("Schema：v2");
+    expect(markdown).toContain("aggregate-visitor-event-steps");
     expect(markdown).toContain("| overview | 100 | 70.0% (70/100)");
     expect(markdown).toContain("Locale：22/22 个分段达到门槛");
     expect(markdown).toContain("CI / preview / smoke / developer 均已排除");

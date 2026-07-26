@@ -61,7 +61,7 @@ Stats API key 只用于观察期结束后的聚合查询：
 
 - 在 Plausible Account settings 创建 **Stats API** key，而不是 Enterprise Sites API key。
 - 存放在操作系统钥匙串、1Password 或等价的受控 secret store。
-- 只在本机查询进程中临时注入；不得进入浏览器、Cloudflare Pages 构建变量、公开 GitHub Actions、仓库、`.env*`、shell history、日志、PR 或聊天。
+- 只在本机查询进程中以 `PLAUSIBLE_STATS_API_KEY` 临时注入；导出 CLI 不提供 `--api-key` 参数，并会在读取后从自身进程环境删除该变量。不得把值放入浏览器、Cloudflare Pages 构建变量、公开 GitHub Actions、仓库、`.env*`、shell history、日志、PR 或聊天。
 - 若以后确需受控 CI 导出，先单独评审 GitHub Environment、最小权限、日志脱敏与 artifact 保留；本批次不创建该 secret。
 - 发现泄露时立即吊销并创建新 key；无需改动或重新部署静态站点。
 
@@ -86,10 +86,20 @@ Stats API key 只用于观察期结束后的聚合查询：
 
 - 事件映射、属性、funnels 和排除规则在观察期内冻结。
 - 开始日与 `endDateExclusive` 都按 `Asia/Shanghai` 的完整自然日记录，至少相差 14 天。
-- 使用 Stats API v2 的 `POST /api/v2/query`，只查询 aggregate `visitors`，按 `chapterId`、`locale` 和 `visit:device` 生成协议要求的 11 × 7 = 77 行。
+- 使用 Stats API v2 的 `POST /api/v2/query`，只查询 aggregate `visitors`。固定查询计划包含六个事件计数 × overall / locale / device 三种分段，共 18 个请求，再生成协议要求的 11 × 7 = 77 行。
 - 设备值映射为：`Desktop` → `desktop`、`Laptop` → `laptop`、`Tablet` → `tablet`、`Mobile` → `mobile`。
-- 导出中保存查询定义、窗口、样本量和流量排除 attestation，不保存原始响应中的个人级事件；Plausible 的 Stats API 本身不提供 IP 或每日匿名 id。
-- 运行 `pnpm analyze:learning-metrics -- <aggregate-export.json>`。任何 cell 不达门槛都标记为 insufficient evidence，不能用扩窗外数据、测试流量或合成值补齐。
+- Stats API 查询的是漏斗对应事件步骤的聚合访客数，不把 `has_done` 的同 session 行为过滤误写成顺序证明。步骤先后由站内事件发射契约和 Dashboard 中冻结的两个 sequential funnels 验证；导出器继续校验计数层级。
+- 先运行以下无密钥 dry run，人工审查并保存完整查询定义。API 的 date range 为闭区间，因此 `endDateExclusive` 会转换成前一天作为查询结束日：
+
+      pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --dry-run > plausible-query-plan.json
+
+- 由 secret manager 向同一命令进程注入 `PLAUSIBLE_STATS_API_KEY` 后，只有在每项声明真实成立时才运行正式导出：
+
+      pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --attest-real-learner-traffic --attest-production-dashboard-verified --attest-ci-preview-smoke-developer-excluded --attest-filters-frozen > aggregate-export.json
+
+- `--attest-production-dashboard-verified` 表示正式站点、timezone、hostname allowlist、五个 goals 和两个 sequential funnels 已逐项核验；组合排除声明表示 CI、preview、smoke 与开发者均在观察窗口开始前排除。不得为了让 CLI 通过而虚假声明。
+- schema v2 导出保存窗口、样本量和明确 attestation，不保存 API key、原始响应、个人级事件、IP 或每日匿名 id；未知字段、未知章节/语言/设备、分页截断和非规范查询都会失败。
+- 运行 `pnpm analyze:learning-metrics -- <aggregate-export.json>`。任何 cell 不达门槛都标记为 insufficient evidence，不能用扩窗外数据、测试流量或合成值补齐。查询计划与聚合导出只放入经评审的证据位置；提交前再次确认不含 secret 或个人数据。
 
 ## 7. 移除与回滚
 

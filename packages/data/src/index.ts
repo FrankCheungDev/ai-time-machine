@@ -20,6 +20,7 @@ export type {
 export {
   analyzeLearningMetricsExport,
   learningMetricDeviceClasses,
+  learningMetricsReportingTimezone,
   learningMetricsSchemaVersion,
   LearningMetricsValidationError,
   minimumChapterVisitors,
