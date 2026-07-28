@@ -4,7 +4,7 @@
 - Site ID：`atlas.z-ai.cc`
 - Reporting timezone：`Asia/Shanghai`
 - 所有者批准：2026-07-26
-- 当前阶段：P2-05A 实现与站点配置；真实观察窗口尚未开始
+- 当前阶段：P2-05A Draft PR #26 与站点配置；站点、时区和 hostname allowlist 已完成，Goals / Funnels、账户安全、付费与生产发布仍待完成；真实观察窗口尚未开始
 
 ## 1. 已批准的处理边界
 
@@ -32,6 +32,22 @@ Plausible 会从网络请求必然携带的 IP 与 User-Agent 派生浏览器、
    - `core_interaction_completed` → `next_chapter_continued`
 6. 确认 custom properties 可按 `chapterId`、`locale`、`completionSource`、`correct`、`attempt`、`nextChapterId` 过滤。
 7. 指定唯一的 dashboard / Stats API 责任人，并开启账户 2FA。
+
+### 2.1 配置执行记录（2026-07-27，Asia/Shanghai）
+
+- [x] 在项目所有者账户创建 `atlas.z-ai.cc`，30 天免费试用从 2026-07-27 开始；创建过程没有选择套餐、付款或保存支付信息。
+- [x] 在创建表单和 General 设置页双重确认 Reporting timezone 为 `Asia/Shanghai`。
+- [x] 未复制、安装或验证 Plausible tracker snippet；安装检测失败是 Events API-only 方案的预期结果，不作为配置失败。
+- [x] 在 **Shields → Hostnames** 添加且只添加 `atlas.z-ai.cc`；Plausible 显示状态为 `Allowed`。
+- [ ] 删除 provisioning UI 自动生成的 `Form: Submission`、`File Download`、`Outbound Link: Click` 与 `404` Goals。它们不属于获批事件白名单；正式事件发送和观察窗口开始前必须清空。
+- [ ] 创建并逐项核验五个同名 Custom event goals。
+- [ ] 创建并逐项核验两个 sequential funnels。
+- [ ] 通过真实事件进入 Dashboard 后，核验六个 custom properties 可用于过滤；不得用作者、自动化或合成事件制造验证数据。
+- [ ] 指定唯一 Dashboard / Stats API 责任人并启用账户 2FA。
+- [ ] 单独确认 Business 订阅付款并完成购买；本次免费试用建站授权不等于付款授权。
+- [ ] 创建 Stats API key，并确认其仅存放在操作系统钥匙串、1Password 或等价受控 secret store。
+
+在上述未完成项关闭、PR #26 发布并完成生产排除验证前，不记录观察期开始日，也不运行带真实 key 的导出。
 
 ## 3. 流量排除
 
