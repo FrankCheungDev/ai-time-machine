@@ -33,11 +33,14 @@ follows the staged process in
 - **v1.1 — Complete — Safety / Evaluation and diagram assets:** add the next teaching
   chapter and turn the diagram page into a reusable asset library covering all
   demos.
-- **v1.2 — Implementation complete, observation pending — Historical depth and
+- **v1.2 — P2-01 through P2-04 complete; P2-05 paused — Historical depth and
   learning validation:** source-backed milestone events, lightweight concept
-  checks, and privacy-reviewed in-page product signals are implemented. Client
-  collection remains disabled and deployment policy blocks automatic RUM until
-  a provider and real aggregate-data access pass the privacy gate.
+  checks, privacy-reviewed in-page product signals, and a provider-neutral
+  aggregate analyzer are implemented. On 2026-07-28, the project owner declined
+  Plausible Hosted because the required learning-metrics features need a paid
+  plan; Draft PR #26 was closed without merging. No hosted analytics provider is
+  approved or scheduled. Client collection remains disabled, and deployment
+  policy continues to block browser analytics and RUM.
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching
@@ -47,7 +50,11 @@ correctness gates defined in the process document.
 
 The next adjustment cycle must use an approved observation window and genuine
 aggregate learner traffic. CI, Playwright, preview checks, production smoke, and
-developer interactions are excluded from product metrics. See
+developer interactions are excluded from product metrics; Cloudflare Web
+Analytics and simulated exports are not substitutes. The provider-neutral
+analyzer and typed local `CustomEvent` contract remain available without sending
+data over the network. Any future hosted-provider proposal requires a separate
+privacy, cost, implementation, and production-release approval. See
 [`docs/P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](docs/P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)
 for the provider gate, event allowlist, and fact-check record.
 

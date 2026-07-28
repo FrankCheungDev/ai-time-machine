@@ -1,8 +1,9 @@
 # P2 历史深度、学习自测与隐私评审
 
-- 状态：P2-01 至 P2-04 已发布；P2-05 等待获批 provider、真实聚合数据访问与观察窗口
+- 状态：P2-01 至 P2-04 已发布；P2-05 因暂无获批或计划中的 hosted provider 而暂停
 - 对应任务：P2-01 / P2-02 / P2-03 / P2-04 / P2-05
 - 评审日期：2026-07-25
+- 决策更新：2026-07-28
 
 ## 1. 本批次要解决的问题
 
@@ -79,6 +80,8 @@ P1 已经把学习主线延伸到 Safety / Eval，但时间线仍主要是一章
 
 **客户端学习收集保持禁用。** 当前仓库没有分析 provider、API key、后端或数据库；现有 Chrome 与应用内浏览器会话也都无法读取 Cloudflare 项目分析。因此本批次不声称拥有章节完成率、首次正确率或继续率的真实数据。
 
+项目所有者于 2026-07-28 决定不采用需要付费计划的 Plausible Hosted。相关 [Draft PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26) 已关闭且未合并；其中的 adapter、网络采集、CSP 放宽和 provider 专用导出器均未进入 `main`。当前没有获批或计划中的 hosted analytics provider，先前对候选方案的讨论不授权未来自动恢复。若以后重新考虑任何 provider，必须另案完成费用、隐私、数据访问、实现和生产发布批准。
+
 PR #20 合并后的生产浏览器 smoke 发现，Cloudflare Pages 虽然没有对应仓库代码，仍通过 automatic setup 注入 `beacon.min.js` 并向 `/cdn-cgi/rum` 发送请求。这与最初“生产无网络分析”的假设冲突，也说明本地 Playwright 不能替代部署层网络检查。
 
 [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 增加两层强制边界：
@@ -109,9 +112,9 @@ Cloudflare 作为托管代理仍会处理 HTTP 请求，并可能提供无法由
 - 未经白名单的任意 payload；
 - 把 Playwright、CI、开发或 smoke 流量混入真实学习者指标。
 
-### 5.3 未来启用门
+### 5.3 未来若重议采集的门槛
 
-只有以下条件全部满足，才可以在独立 PR 中把 collection mode 从 `disabled` 改为启用：
+当前没有启用 hosted provider 的排期。只有未来另案获得明确批准并满足以下全部条件，才可以在独立 PR 中把 collection mode 从 `disabled` 改为启用：
 
 1. 记录 provider、数据驻留、保留期、删除和访问控制。
 2. 证明 provider 端也只接收白名单字段，并排除测试/预览环境。
@@ -126,13 +129,14 @@ Cloudflare 作为托管代理仍会处理 HTTP 请求，并可能提供无法由
 
 - 不生成合成转化率或首次正确率；
 - 不以本批次作者自己的测试操作代表普通学习者；
+- 不把 Cloudflare Web Analytics、provider-neutral 分析器或页面内 `CustomEvent` 当作真实学习事件数据；
 - 不声称已根据使用数据调整章节；
-- 等生产发布、provider 评审通过且积累真实样本后，再启动独立 P2-05 调整 PR。
+- 只有未来另案批准 provider、完成生产发布并积累真实样本后，才启动独立 P2-05 调整 PR。
 
-这不是技术实现遗漏，而是隐私门和证据门的预期结果。要完成 P2-05 的产品调整，仍需要项目所有者提供经过授权的真实聚合指标访问或批准合适的匿名 provider。
+这不是技术实现遗漏，而是隐私门和证据门的预期结果。provider-neutral 分析器和页面内类型化 `CustomEvent` 继续保留，以维持已经评审的证据格式与交互测试；它们没有网络监听器，也不自行产生真实学习证据。要完成 P2-05 的产品调整，仍需要未来另案取得经过授权的真实聚合指标访问和真实学习者样本。
 
-候选 provider 的官方资料比较、条件式推荐、事件映射、测试流量排除、观察窗口、指标分母和所有者批准项详见
-[`P2_METRICS_PROVIDER_DECISION.md`](P2_METRICS_PROVIDER_DECISION.md)。该文档不授权启用采集；在批准清单完成前，collection mode、CSP 与生产网络行为保持不变。
+候选 provider 的历史比较、事件映射、测试流量排除、观察窗口和指标分母详见
+[`P2_METRICS_PROVIDER_DECISION.md`](P2_METRICS_PROVIDER_DECISION.md)。该文档记录 2026-07-28 的撤回决定，不授权启用采集；除非未来独立方案重新获批，collection mode、CSP 与生产网络行为保持不变。
 
 ## 7. 发布验收
 

@@ -1,6 +1,6 @@
 # Post-MVP 迭代过程文档
 
-- 状态：执行中（P0、P1、P2-01 至 P2-04 已发布；P2-05 的决策协议与聚合证据分析器已发布，采集启用和数据驱动调整等待所有者批准、真实聚合数据访问与至少 14 天观察窗口）
+- 状态：执行中（P0、P1、P2-01 至 P2-04 已发布；所有者于 2026-07-28 因付费要求决定不采用 Plausible，PR #26 已关闭且未合并，`main` 从未启用该 provider；客户端学习采集继续保持 `disabled`。P2-05 的 provider-neutral 事件契约与聚合证据分析器已发布，但 provider 决策重新开放，P2-05A、P2-05B、P2-05C 均未完成，真实指标闭环暂停）
 - 基线日期：2026-07-25
 - 基线提交：1a574a4
 - 目标版本：v1.0.1 → v1.1 → v1.2
@@ -213,18 +213,21 @@
 - 不阻断继续学习。
 - 本地记录完成状态，并允许清除。
 
-### 7.3 匿名产品指标
+### 7.3 匿名产品指标（当前禁用）
 
-只有在完成隐私评审后才启用，最小事件集包括：
+隐私评审只是启用采集的必要条件，不是实施授权。所有者已决定不采用需要付费的 Plausible，当前也没有获批替代 provider；`learningSignalCollectionMode` 在 `main` 上保持 `disabled`，生产 CSP 保持 `connect-src 'none'`。
+
+项目继续保留以下经过评审的站内事件契约，供产品逻辑与测试验证；当前没有 listener 把它们发送出浏览器：
 
 - 章节开始。
 - 核心交互完成。
 - 自测完成。
+- 打开自测解释。
 - 继续到下一章。
 
 不采集用户输入正文、个人身份信息或跨站追踪数据。
 
-用于决策的指标：
+只有未来另行批准的数据来源积累了真实聚合证据后，以下指标才可用于决策：
 
 - 章节开始到核心交互完成率。
 - 完成后继续下一章的比例。
@@ -378,35 +381,43 @@
 
 本节记录方案实际落地状态。任务只有合并、远程门禁通过并完成生产 smoke 后才从“候选”改为“完成”。
 
-| 范围           | 状态         | 交付证据                                                                                                                             |
-| -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 过程基线       | 完成         | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                               |
-| P0-01 / P0-04  | 完成并发布   | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                      |
-| P0-02 / P0-03  | 完成并发布   | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                             |
-| P0-05 / P0-06  | 完成并发布   | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                   |
-| P1-01 → P1-05  | 完成并发布   | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                     |
-| P2-01 / P2-02  | 完成并发布   | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                            |
-| P2-03          | 完成并发布   | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                      |
-| P2-04          | 完成并发布   | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 完成生产隐私加固；PR #22 固化 CI、Pages 与生产浏览器 smoke 证据  |
-| P2-05 决策门   | 前置已发布   | [PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23)：完成 provider 比较、条件式推荐、观察协议与所有者批准清单        |
-| P2-05 证据分析 | 前置已发布   | [PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24)：增加严格的 aggregate-only 证据契约、验证器、分析 CLI 与单元测试 |
-| P2-05 产品调整 | 等待真实指标 | 无获批 provider 或可读取的真实聚合数据；明确排除 CI、Playwright、smoke、开发者流量与合成数据                                         |
+| 范围                 | 状态             | 交付证据                                                                                                                            |
+| -------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 过程基线             | 完成             | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                              |
+| P0-01 / P0-04        | 完成并发布       | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                     |
+| P0-02 / P0-03        | 完成并发布       | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                            |
+| P0-05 / P0-06        | 完成并发布       | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                  |
+| P1-01 → P1-05        | 完成并发布       | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                    |
+| P2-01 / P2-02        | 完成并发布       | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                           |
+| P2-03                | 完成并发布       | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                     |
+| P2-04                | 完成并发布       | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 完成生产隐私加固；PR #22 固化 CI、Pages 与生产浏览器 smoke 证据 |
+| P2-05 provider 比较  | 已发布，决策重开 | [PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 完成条件式比较；2026-07-28 所有者因付费要求决定不采用 Plausible |
+| P2-05 证据分析       | 前置已发布       | [PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加严格的 aggregate-only 证据契约、验证器、分析 CLI 与单元测试 |
+| P2-05A provider 启用 | 未完成，已撤回   | Draft [PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26) 已关闭且未合并；`main` 从未启用 Plausible                 |
+| P2-05B 真实观察      | 未完成，未开始   | 没有获批 provider、可读取的真实聚合数据或有效观察窗口                                                                               |
+| P2-05C 产品调整      | 未完成，未开始   | 没有达到样本门槛的真实证据；明确排除 CI、Playwright、preview、smoke、开发者流量、Cloudflare Web Analytics 与模拟数据                |
 
 P2 的历史声明、教学契约、隐私结论与真实数据门详见
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)。
-P2-05 的候选 provider 比较、条件式推荐、观察协议与所有者批准项详见
+P2-05 的候选比较、2026-07-28 拒绝记录、provider-neutral 观察协议与重新开放条件详见
 [`P2_METRICS_PROVIDER_DECISION.md`](P2_METRICS_PROVIDER_DECISION.md)。
 
-P2-05 不得为了把表格改成“完成”而填入模拟转化率。进入独立调整 PR 前，必须先满足隐私评审中的 provider、访问、观察窗口和测试流量排除条件。
+P2-05 不得为了把表格改成“完成”而填入模拟转化率，也不得使用 Cloudflare Web Analytics、RUM、edge analytics、CI、Playwright、preview、smoke 或开发者流量替代真实学习者证据。进入独立调整 PR 前，必须先重新选择并批准数据来源，再满足隐私、访问、观察窗口、流量排除和样本门槛。
 
 PR #20 的 SSR 路由 smoke 通过后，真实浏览器交互进一步发现 Cloudflare Pages 在生产响应中自动注入 Web Analytics。这一差异没有被本地或 CI 捕获。
 
 [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 随后增加 `Cache-Control: no-transform`、限制外部脚本与连接的 Content Security Policy，以及独立生产隐私 smoke，并以 merge commit [`c8693c8`](https://github.com/FrankCheungDev/ai-time-machine/commit/c8693c8581a18b17722304cba89aacaea38e6650) 进入 `main`。[GitHub CI run 30142645267](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30142645267) 的 Quality 与 Chromium job 均成功，Cloudflare Pages 对该提交的生产部署也成功。部署后的 `pnpm smoke:production:privacy` 完成 29 个请求，覆盖 22 个双语章节路由与 28 个 HTML 响应策略检查；`missingNoTransform`、`missingNoConnectPolicy`、`invalidScriptPolicy` 均为 0，真实浏览器自测、解释和续学成功，`forbiddenRequests` 与 `failures` 均为空。因此 P2-04 于 2026-07-25 完成并发布。
 
-P2-05 不随 P2-04 自动完成：在 provider 获批、项目能够读取真实聚合数据并积累明确观察窗口前，继续禁止使用 edge analytics、CI、Playwright、smoke 或开发者流量代替学习者证据。
+P2-05 不随 P2-04 自动完成。`main` 上的 `learningSignalCollectionMode` 始终为 `disabled`，没有 provider listener、adapter、API key、后端或数据库接收站内事件；生产 CSP 继续使用 `connect-src 'none'`。站内类型化事件契约可以继续服务产品逻辑与测试，但不构成联网授权或真实学习者数据。
 
-截至 2026-07-25 的 provider-neutral 审计结论是：Cloudflare Web Analytics 不支持本站五类自定义学习事件；自托管 Umami 需要数据库；Plausible Hosted Business 在功能上满足自定义事件、属性、漏斗、设备分段和 Stats API，但其费用、欧盟数据处理、每日匿名标识以及 IP/User-Agent 的临时处理必须由项目所有者明确批准。批准前客户端采集继续保持禁用。
+截至 2026-07-25 的 provider-neutral 审计结论是：Cloudflare Web Analytics 不支持本站五类自定义学习事件，自托管 Umami 需要数据库，Plausible Hosted Business 功能上可满足部分需求但依赖付费方案并增加外部数据处理。项目所有者于 2026-07-28 因付费要求决定不采用 Plausible。这个决定不会自动批准 Umami、Cloudflare Web Analytics 或人工同意导出；provider 决策重新开放，客户端采集继续保持禁用。
 
-[PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 将上述结论固化为独立的 provider 决策与观察协议，并以 merge commit [`df1a98c`](https://github.com/FrankCheungDev/ai-time-machine/commit/df1a98c3731c6dd213ab81ce5b9617511f4e1fd0) 进入 `main`。协议把 P2-05 拆为“获批并启用候选 provider”“只观察不改产品”“单点数据驱动调整”三批，要求先明确费用、数据处理、匿名标识、设备派生、访问权限、流量排除、至少 14 天观察期以及每个分析单元的样本门槛。所有者批准前不得进入启用批次，也不得在仓库或对话中传递 API key。
+[PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 以 merge commit [`df1a98c`](https://github.com/FrankCheungDev/ai-time-machine/commit/df1a98c3731c6dd213ab81ce5b9617511f4e1fd0) 进入 `main`，保留候选比较、观察窗口和证据门。它不授权默认启用任何 provider。Draft [PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26) 曾实施 Plausible 路径，但现已关闭且未合并；因此 `main` 从未包含 Plausible adapter、网络端点、Stats API exporter、运行手册或 CSP 放宽。
 
-[PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加 provider-neutral 的聚合证据分析器，并以 merge commit [`c23cb68`](https://github.com/FrankCheungDev/ai-time-machine/commit/c23cb684b86149ffa6fc5413e92429b587b9dc44) 进入 `main`。`pnpm analyze:learning-metrics -- <aggregate-export.json>` 只接受 11 章 × 7 个规范分段的 77 行聚合导出，拒绝不足 14 天、未确认真实学习者流量、未排除自动化和开发者、包含原始事件或个人数据、出现未知字段或非法漏斗计数的输入；它不联网、不启用 provider，也不自行决定产品改动。[GitHub CI run 30144692632](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30144692632) 的 Quality 与 Chromium job 均成功，Cloudflare Pages 对该合并提交的部署也成功。因此 P2-05 的决策与证据准备已经完成，但里程碑本身仍需所有者批准、真实流量、完整观察窗口和后续单点产品调整才能完成。
+仓库状态本身不能证明仓库外对象已经删除，因此本次又在 Plausible 控制台独立完成清理：`atlas.z-ai.cc` 已从站点列表消失，页面明确提示站点与 page views 删除流程已启动。该操作只移除本项目站点，不删除用户的整个 Plausible 账户；控制台提示描述的是后台删除流程已经启动，不把物理清除时间误写成即时完成。无论后台处理进度如何，`main` 的零采集事实不变。
+
+[PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加 provider-neutral 的聚合证据分析器，并以 merge commit [`c23cb68`](https://github.com/FrankCheungDev/ai-time-machine/commit/c23cb684b86149ffa6fc5413e92429b587b9dc44) 进入 `main`。`pnpm analyze:learning-metrics -- <aggregate-export.json>` 只接受 11 章 × 7 个规范分段的 77 行聚合导出，拒绝不足 14 天、未确认真实学习者流量、未排除自动化和开发者、包含原始事件或个人数据、出现未知字段或非法漏斗计数的输入；它不联网、不读取 API key、不启用 provider，也不自行决定产品改动。拒绝 Plausible 不删除或降级该分析器，但分析器本身不能证明外部 attestation，也不能把 P2-05 标记为完成。
+
+该分析器当前仍是预备性的证据验证器，而不是已经可用的观察闭环：现有 `ChapterJourney` 会在一次“完成并继续”动作中连续派发核心完成与续学事件，尚不能把两者解释成独立选择。未来若重开 P2-05A，必须先重审交互、事件语义、查询定义和证据 schema，并在真实观察开始前完成版本化测试。
+
+因此，当前仅完成了 P2-05 的 provider 比较、站内事件契约与 provider-neutral 证据工具；P2-05A、P2-05B、P2-05C 均未完成。真实指标闭环暂停，直到新的数据来源在独立决策中获批并满足真实流量、完整观察窗口、流量排除和样本门槛。
