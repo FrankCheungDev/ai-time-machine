@@ -99,6 +99,14 @@ typed, sanitized in-page event contract for chapter start, journey completion,
 concept check completion, explanation opening, and continuation, but no
 application listener sends those signals over the network.
 
+On 2026-07-28, the project owner declined Plausible Hosted because the required
+learning-metrics features need a paid plan. Draft PR #26 was closed without
+merging, so its adapter, network collection, provider-specific exporter, and CSP
+changes never entered `main`. No hosted analytics provider is approved or
+scheduled. The provider-neutral aggregate analyzer and local `CustomEvent`
+contract remain in the repository, but neither collects data or proves real
+learner behavior.
+
 Production smoke after PR #20 found that Cloudflare Pages automatically
 injected its Web Analytics / RUM beacon even though the repository contained no
 analytics script. `apps/site/public/_headers` now applies `no-transform` to all
@@ -109,14 +117,19 @@ tests and a post-deployment browser network check.
 Cloudflare still processes HTTP requests as the hosting proxy and may expose
 aggregate edge traffic. Those provider-level operational metrics are separate
 from the project's learning-signal contract, are not currently readable by the
-project, and must not be presented as learner evidence.
+project, and must not be presented as learner evidence. Simulated exports,
+automated checks, smoke traffic, and developer interactions are not substitutes
+for genuine learner traffic either.
 
 The privacy review, exact field allowlist, excluded data, provider gate, and
 real-usage evidence boundary are recorded in
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md).
 The same decision is visible to learners at `/privacy/` and `/en/privacy/`.
 
-Before enabling collection in a separate pull request:
+No provider enablement is currently planned. If collection is reconsidered, it
+must start as a new proposal with explicit cost and privacy approval; prior
+provider discussion or configuration does not carry forward. Before enabling
+collection in that separate pull request:
 
 - document the provider, data residency, retention, deletion, and access;
 - prove no user-entered text, identity, precise timestamp, full URL, device

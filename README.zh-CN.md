@@ -55,7 +55,9 @@ pnpm format:check
 Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md)。
 发布收口、章节扩展架构、Safety / Eval、图源资产库、事件级历史和章节自测
-已经实现。剩余证据门是独立的真实使用观察周期；自动化流量不会被当作学习者数据。
+已经实现。P2-05 真实使用闭环当前暂停：provider 决策重新开放，没有获批或排期
+中的数据来源，自动化流量不会被当作学习者数据。页面内事件契约与聚合分析器
+继续保留，但不会因此启用网络采集。
 
 ## 部署
 

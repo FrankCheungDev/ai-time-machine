@@ -7,7 +7,7 @@ import {
 } from "./learningSignals";
 
 describe("learning signal privacy boundary", () => {
-  it("keeps production collection disabled until a provider is approved", () => {
+  it("keeps production collection disabled by default", () => {
     expect(learningSignalCollectionMode).toBe("disabled");
   });
 

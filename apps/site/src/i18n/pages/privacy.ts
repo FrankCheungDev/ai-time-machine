@@ -59,9 +59,9 @@ export const privacyPageCopy = {
     clearingHeading: "如何清除",
     clearingBody:
       "首页的“重置学习进度”会清除章节完成状态；任意章节自测中的“清除全部自测记录”会删除所有自测结果。浏览器清站点数据也会清除这些本地记录。",
-    futureHeading: "未来启用匿名指标前必须满足什么",
+    futureHeading: "当前没有计划启用托管型学习分析",
     futureBody:
-      "必须先确定 provider、数据驻留与保留期，证明字段白名单不含身份或正文，公开更新本页，并取得可读取的真实聚合数据。启用与移除都不得改变章节本身。",
+      "当前没有获批或排期中的托管型分析服务，客户端学习信号采集及其外发分析请求继续保持禁用。未来若重新提出方案，必须另行批准费用、隐私、数据驻留与保留期，证明字段白名单不含身份或正文，公开更新本页，并取得可读取的真实聚合数据。",
     sourcesHeading: "评审依据",
   },
   en: {
@@ -100,9 +100,9 @@ export const privacyPageCopy = {
     clearingHeading: "How To Clear Records",
     clearingBody:
       "Reset learning progress on the home page to remove chapter completion. Use Clear all self-check records in any chapter check to remove every self-check result. Clearing this site's browser data removes both stores as well.",
-    futureHeading: "The Gate Before Anonymous Metrics Can Be Enabled",
+    futureHeading: "No Hosted Learning Analytics Are Currently Planned",
     futureBody:
-      "A provider, data residency, and retention period must be documented; the field allowlist must be proven free of identity and input text; this page must be updated; and real aggregate data must be readable. Enabling or removing collection cannot change chapter behavior.",
+      "No hosted provider is approved or scheduled, so client learning-signal collection and analytics-related outbound requests remain disabled. Any future proposal requires separate approval for cost, privacy, data residency, and retention; proof that the field allowlist excludes identity and input text; a public update to this page; and access to genuine aggregate data.",
     sourcesHeading: "Review Sources",
   },
 } satisfies Record<Locale, PrivacyPageCopy>;

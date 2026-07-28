@@ -54,8 +54,10 @@ Post-MVP work is sequenced in
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md).
 Release hardening, extension architecture, Safety / Evaluation, diagram assets,
 source-backed historical depth, and chapter self-checks are implemented. The
-remaining evidence gate is an explicitly separate real-usage observation cycle;
-automated traffic is not treated as learner data.
+P2-05 real-usage loop is paused: the provider decision is open again, no data
+source is approved or scheduled, and automated traffic is not treated as learner
+data. The in-page event contract and aggregate analyzer remain available without
+enabling network collection.
 
 ## Deployment
 
