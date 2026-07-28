@@ -1,32 +1,46 @@
 import { chromium } from "@playwright/test";
+import { chapterRegistry } from "../packages/data/src/chapters.ts";
 
 const baseUrl = new URL(process.env.SITE_URL ?? "https://atlas.z-ai.cc");
 const canonicalBaseUrl = new URL(
   process.env.CANONICAL_SITE_URL ?? "https://atlas.z-ai.cc",
 );
-const chapterIds = [
-  "overview",
-  "search",
-  "expert-system",
-  "bayes",
-  "decision-boundary",
-  "cnn",
-  "attention",
-  "llm-system",
-  "rag",
-  "agent",
-  "safety",
-];
-const chapterRoutes = chapterIds.flatMap((chapterId) => [
-  `/chapters/${chapterId}/`,
-  `/en/chapters/${chapterId}/`,
+const chapterRoutes = chapterRegistry.flatMap(({ route }) => [
+  route,
+  `/en${route}`,
 ]);
+const supportingRoutes = [
+  "/",
+  "/en/",
+  "/timeline/",
+  "/en/timeline/",
+  "/lineage/",
+  "/en/lineage/",
+  "/diagrams/",
+  "/en/diagrams/",
+  "/privacy/",
+  "/en/privacy/",
+];
 const failures = [];
+const releaseDocumentRoutes = [...chapterRoutes, ...supportingRoutes];
+const expectedReleaseDocumentCount = 32;
+if (
+  releaseDocumentRoutes.length !== expectedReleaseDocumentCount ||
+  new Set(releaseDocumentRoutes).size !== expectedReleaseDocumentCount
+) {
+  failures.push(
+    `release document contract expected ${expectedReleaseDocumentCount} unique routes, received ${releaseDocumentRoutes.length} routes and ${new Set(releaseDocumentRoutes).size} unique routes`,
+  );
+}
 const checkedResponses = [];
 const headerFailures = {
   noTransform: [],
   invalidConnectPolicy: [],
   scriptPolicy: [],
+};
+const documentContractFailures = {
+  collectionMode: [],
+  canonical: [],
 };
 
 function checkDocumentHeaders(route, response) {
@@ -61,6 +75,22 @@ function summarizeRoutes(routes) {
     : preview;
 }
 
+function checkDocumentBody(route, body) {
+  const collectionModeMatches =
+    body.match(/data-learning-signal-collection="plausible-production"/g) ?? [];
+  if (collectionModeMatches.length !== 1) {
+    documentContractFailures.collectionMode.push(route);
+  }
+
+  const canonicalTags =
+    body.match(/<link\b[^>]*\brel="canonical"[^>]*>/gi) ?? [];
+  const canonicalHref = canonicalTags[0]?.match(/\bhref="([^"]+)"/i)?.[1];
+  const expectedCanonicalHref = new URL(route, canonicalBaseUrl).href;
+  if (canonicalTags.length !== 1 || canonicalHref !== expectedCanonicalHref) {
+    documentContractFailures.canonical.push(route);
+  }
+}
+
 async function readDocument(route) {
   const response = await fetch(new URL(route, baseUrl), {
     headers: { "user-agent": "ai-time-machine-release-smoke/1.0" },
@@ -69,6 +99,7 @@ async function readDocument(route) {
 
   if (!response.ok) failures.push(`${route} returned ${response.status}`);
   checkDocumentHeaders(route, response);
+  checkDocumentBody(route, body);
   checkedResponses.push({ route, status: response.status });
   return body;
 }
@@ -100,21 +131,10 @@ await Promise.all(
   }),
 );
 
-const [
-  chineseTimeline,
-  englishTimeline,
-  chinesePrivacy,
-  englishPrivacy,
-  chineseHome,
-  englishHome,
-  sitemap,
-] = await Promise.all([
-  readDocument("/timeline/"),
-  readDocument("/en/timeline/"),
-  readDocument("/privacy/"),
-  readDocument("/en/privacy/"),
-  readDocument("/"),
-  readDocument("/en/"),
+const [supportingDocuments, sitemap] = await Promise.all([
+  Promise.all(
+    supportingRoutes.map(async (route) => [route, await readDocument(route)]),
+  ).then((entries) => new Map(entries)),
   fetch(new URL("/sitemap-0.xml", baseUrl)).then(async (response) => {
     if (!response.ok)
       failures.push(`/sitemap-0.xml returned ${response.status}`);
@@ -122,6 +142,12 @@ const [
     return response.text();
   }),
 ]);
+const chineseTimeline = supportingDocuments.get("/timeline/") ?? "";
+const englishTimeline = supportingDocuments.get("/en/timeline/") ?? "";
+const chinesePrivacy = supportingDocuments.get("/privacy/") ?? "";
+const englishPrivacy = supportingDocuments.get("/en/privacy/") ?? "";
+const chineseHome = supportingDocuments.get("/") ?? "";
+const englishHome = supportingDocuments.get("/en/") ?? "";
 
 for (const [label, routes] of [
   ["missing Cache-Control no-transform", headerFailures.noTransform],
@@ -130,6 +156,22 @@ for (const [label, routes] of [
     headerFailures.invalidConnectPolicy,
   ],
   ["not restricted to static-site scripts", headerFailures.scriptPolicy],
+]) {
+  if (routes.length > 0) {
+    failures.push(
+      `${routes.length} HTML routes are ${label}: ${summarizeRoutes(routes)}`,
+    );
+  }
+}
+for (const [label, routes] of [
+  [
+    'missing the exact data-learning-signal-collection="plausible-production" marker',
+    documentContractFailures.collectionMode,
+  ],
+  [
+    "missing its one exact production canonical URL",
+    documentContractFailures.canonical,
+  ],
 ]) {
   if (routes.length > 0) {
     failures.push(
@@ -333,6 +375,8 @@ try {
           missingNoTransform: headerFailures.noTransform.length,
           invalidConnectPolicy: headerFailures.invalidConnectPolicy.length,
           invalidScriptPolicy: headerFailures.scriptPolicy.length,
+          invalidCollectionMode: documentContractFailures.collectionMode.length,
+          invalidCanonical: documentContractFailures.canonical.length,
         },
         browserInteraction:
           "concept check, explanation, separate completion, continuation",

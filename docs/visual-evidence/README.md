@@ -23,8 +23,17 @@ pnpm capture:safety-evidence
 - `p2-timeline-event-desktop.png`: source, impact, chapter, and lineage links on a representative Lighthill event card.
 - `p2-concept-check-mobile.png`: incorrect Search answer with the explanation open at 390px.
 - `p2-concept-check-english.png`: correct English Safety / Eval answer with its explanation open.
+- `p2-completion-next-chinese.png`: Chinese RAG post-completion UI at desktop width, with the separate Agent Loop continuation link visible.
+- `p2-completion-next-english-mobile.png`: the same post-completion UI in English at 390px.
 - `p2-plausible-privacy-chinese.png`: Chinese production-only Plausible disclosure and provider-processing boundary.
 - `p2-plausible-privacy-english.png`: English production-only Plausible disclosure and provider-processing boundary.
+
+Before taking either completion screenshot, the capture script asserts that the
+next-chapter link is absent before completion, the route remains unchanged,
+completion emits exactly one `core_interaction_completed` signal and no
+`next_chapter_continued` signal, and the newly visible link has the expected
+localized destination. The production network boundary remains covered by
+`scripts/smoke-production-privacy.mjs` rather than by these cropped images.
 
 Recreate them against the same local preview:
 

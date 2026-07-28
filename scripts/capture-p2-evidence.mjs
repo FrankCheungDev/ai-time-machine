@@ -5,7 +5,7 @@ import { chromium } from "@playwright/test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = path.join(root, "docs/visual-evidence");
-const baseUrl = process.env.SITE_URL ?? "http://127.0.0.1:4330";
+const baseUrl = new URL(process.env.SITE_URL ?? "http://127.0.0.1:4330");
 
 await mkdir(outputDir, { recursive: true });
 
@@ -14,11 +14,89 @@ const browser = await chromium.launch();
 async function openPage(route, viewport, locale = "zh-CN") {
   const page = await browser.newPage({ locale, viewport });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto(`${baseUrl}${route}`);
+  await page.goto(new URL(route, baseUrl).href);
   await page.addStyleTag({
     content: ".site-header { display: none !important; }",
   });
   return page;
+}
+
+async function captureCompletedChapter({
+  route,
+  viewport,
+  locale,
+  completionHeading,
+  nextHref,
+  outputName,
+}) {
+  const page = await openPage(route, viewport, locale);
+
+  try {
+    const journey = page.getByTestId("chapter-journey");
+    const completionButton = journey.getByTestId("complete-chapter");
+    const continuationLink = journey.getByTestId("continue-next-chapter");
+    const routeBeforeCompletion = new URL(page.url()).pathname;
+
+    await completionButton.waitFor({ state: "visible" });
+    if ((await continuationLink.count()) !== 0) {
+      throw new Error(
+        `Next-chapter link was visible before completion on ${route}`,
+      );
+    }
+    await page.evaluate(() => {
+      window.__p2CaptureSignals = [];
+      window.addEventListener("ai-history:learning-signal", (event) => {
+        window.__p2CaptureSignals.push(event.detail);
+      });
+    });
+    await completionButton.click();
+
+    await journey
+      .getByRole("heading", { name: completionHeading, exact: true })
+      .waitFor({ state: "visible" });
+
+    await continuationLink.waitFor({ state: "visible" });
+
+    const completionSignalNames = await page.evaluate(() =>
+      window.__p2CaptureSignals.map((signal) => signal.name),
+    );
+    const coreCompletionCount = completionSignalNames.filter(
+      (name) => name === "core_interaction_completed",
+    ).length;
+    const prematureContinuationCount = completionSignalNames.filter(
+      (name) => name === "next_chapter_continued",
+    ).length;
+    if (coreCompletionCount !== 1 || prematureContinuationCount !== 0) {
+      throw new Error(
+        `Completion emitted core=${coreCompletionCount}, continuation=${prematureContinuationCount} on ${route}`,
+      );
+    }
+
+    const routeAfterCompletion = new URL(page.url()).pathname;
+    if (
+      routeBeforeCompletion !== route ||
+      routeAfterCompletion !== routeBeforeCompletion
+    ) {
+      throw new Error(
+        `Chapter completion navigated unexpectedly: ${routeBeforeCompletion} -> ${routeAfterCompletion}`,
+      );
+    }
+
+    const continuationHref = await continuationLink.getAttribute("href");
+    if (continuationHref !== nextHref) {
+      throw new Error(
+        `Unexpected next chapter href: expected ${nextHref}, received ${continuationHref}`,
+      );
+    }
+
+    await journey.scrollIntoViewIfNeeded();
+    await journey.screenshot({
+      animations: "disabled",
+      path: path.join(outputDir, outputName),
+    });
+  } finally {
+    await page.close();
+  }
 }
 
 const timelinePage = await openPage("/timeline/", {
@@ -71,6 +149,24 @@ await englishCheck.screenshot({
   path: path.join(outputDir, "p2-concept-check-english.png"),
 });
 await englishCheckPage.close();
+
+await captureCompletedChapter({
+  route: "/chapters/rag/",
+  viewport: { width: 1440, height: 900 },
+  locale: "zh-CN",
+  completionHeading: "本章已完成",
+  nextHref: "/chapters/agent/",
+  outputName: "p2-completion-next-chinese.png",
+});
+
+await captureCompletedChapter({
+  route: "/en/chapters/rag/",
+  viewport: { width: 390, height: 844 },
+  locale: "en-US",
+  completionHeading: "Chapter complete",
+  nextHref: "/en/chapters/agent/",
+  outputName: "p2-completion-next-english-mobile.png",
+});
 
 const chinesePrivacyPage = await openPage("/privacy/", {
   width: 1440,
