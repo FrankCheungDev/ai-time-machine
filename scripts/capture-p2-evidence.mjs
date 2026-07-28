@@ -72,5 +72,34 @@ await englishCheck.screenshot({
 });
 await englishCheckPage.close();
 
+const chinesePrivacyPage = await openPage("/privacy/", {
+  width: 1440,
+  height: 1600,
+});
+await chinesePrivacyPage
+  .getByRole("heading", { name: "匿名学习指标仅在正式域名启用" })
+  .waitFor({ state: "visible" });
+await chinesePrivacyPage.screenshot({
+  animations: "disabled",
+  path: path.join(outputDir, "p2-plausible-privacy-chinese.png"),
+});
+await chinesePrivacyPage.close();
+
+const englishPrivacyPage = await openPage(
+  "/en/privacy/",
+  { width: 1440, height: 1600 },
+  "en-US",
+);
+await englishPrivacyPage
+  .getByRole("heading", {
+    name: "Anonymous Learning Metrics Run Only On Production",
+  })
+  .waitFor({ state: "visible" });
+await englishPrivacyPage.screenshot({
+  animations: "disabled",
+  path: path.join(outputDir, "p2-plausible-privacy-english.png"),
+});
+await englishPrivacyPage.close();
+
 await browser.close();
 console.log(`Captured P2 evidence in ${outputDir}.`);

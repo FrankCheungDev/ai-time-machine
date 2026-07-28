@@ -23,6 +23,8 @@ pnpm capture:safety-evidence
 - `p2-timeline-event-desktop.png`: source, impact, chapter, and lineage links on a representative Lighthill event card.
 - `p2-concept-check-mobile.png`: incorrect Search answer with the explanation open at 390px.
 - `p2-concept-check-english.png`: correct English Safety / Eval answer with its explanation open.
+- `p2-plausible-privacy-chinese.png`: Chinese production-only Plausible disclosure and provider-processing boundary.
+- `p2-plausible-privacy-english.png`: English production-only Plausible disclosure and provider-processing boundary.
 
 Recreate them against the same local preview:
 
