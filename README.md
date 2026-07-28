@@ -13,7 +13,7 @@ default language, with a complete English learning path under `/en/`.
 - Eleven chapter routes from overview through Safety / Evaluation.
 - Nine teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, RAG pipeline, Agent loop, and the Safety / Eval release feedback loop.
 - Complete Chinese and English routes, copy, demo state, and references.
-- Resumable local learning progress, one bilingual concept check per chapter, and previous/next navigation.
+- Resumable local learning progress, one bilingual concept check per chapter, and separate chapter-completion and next-chapter actions.
 - A 22-event, source-backed history layer linked to chapters and lineage, plus a manifest-driven library of nine downloadable SVG/PNG diagram pairs.
 - Public privacy pages and a reviewed learning-signal allowlist; the exact production origin uses a strict Plausible Events API adapter while local, preview, automation, smoke, and excluded developer traffic stay offline. Deployment headers still reject automatic Cloudflare RUM injection, and hosting-level edge metrics are not treated as learner data.
 - CI coverage for formatting, types, data contracts, static builds, unit tests, browser behavior, visual regressions, accessibility controls, and teaching correctness.
@@ -56,7 +56,10 @@ Release hardening, extension architecture, Safety / Evaluation, diagram assets,
 source-backed historical depth, and chapter self-checks are implemented. The
 remaining evidence gate is an explicitly separate real-usage observation cycle;
 Plausible is approved for production-only learning events, but automated traffic
-is not treated as learner data and the 14-day observation has not started.
+is not treated as learner data and the 14-day observation has not started. The
+schema-v3 evidence path combines reviewed Dashboard sequential-funnel
+aggregates with public Stats API self-check counts; independent event counts are
+not treated as ordered conversion.
 
 ## Deployment
 

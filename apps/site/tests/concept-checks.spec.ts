@@ -34,7 +34,7 @@ for (const locale of ["zh-CN", "en"] as const) {
           name: locale === "zh-CN" ? "提交答案" : "Submit answer",
         }),
       ).toBeDisabled();
-      await expect(page.getByTestId("complete-and-continue")).toBeVisible();
+      await expect(page.getByTestId("complete-chapter")).toBeVisible();
     }
   });
 }
@@ -128,7 +128,7 @@ test("English feedback explains the chapter intuition without blocking navigatio
   ).toBeVisible();
   await check.getByRole("button", { name: "See why" }).click();
   await expect(check.getByText(/does not cover unknown cases/)).toBeVisible();
-  await expect(page.getByTestId("complete-and-continue")).toBeVisible();
+  await expect(page.getByTestId("complete-chapter")).toBeVisible();
 });
 
 test("concept checks remain keyboard-operable and mobile-safe", async ({
@@ -185,7 +185,7 @@ test("storage failure keeps feedback and continuation available", async ({
   await expect(
     check.getByTestId("concept-check-storage-warning"),
   ).toContainText("无法保存自测记录");
-  await expect(page.getByTestId("complete-and-continue")).toBeVisible();
+  await expect(page.getByTestId("complete-chapter")).toBeVisible();
 });
 
 test("reviewed signals stay offline on local and preview origins", async ({

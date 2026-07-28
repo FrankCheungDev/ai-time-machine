@@ -107,11 +107,13 @@ Cloudflare 作为托管代理仍会处理 HTTP 请求，并可能提供无法由
 明确禁止：
 
 - 用户输入正文、答案文字、姓名、邮箱或账号；
-- payload 中的 visitor id、设备指纹、精确时间戳、完整 URL、query、hash、referrer、IP、User-Agent 或跨站标识；
+- payload 中的 visitor id、设备指纹、项目生成或主动发送的精确事件时间戳、浏览器当前或原始完整 URL、query、hash、referrer、IP、User-Agent 或跨站标识；
 - 未经白名单的任意 payload；
 - 把 Playwright、CI、开发或 smoke 流量混入真实学习者指标。
 
 浏览器网络连接必然向 Plausible 暴露来源 IP 与 User-Agent；所有者已批准 Plausible 临时使用它们做 bot 过滤、每日匿名访客计算和粗粒度设备/地区派生。原始值不进入事件 JSON，项目不生成 visitor/session id，也不查询地区、浏览器版本或单人轨迹。请求固定使用规范章节 URL、`credentials: omit` 与 `referrerPolicy: no-referrer`。
+
+请求中的 `url` 字段不是从浏览器当前地址复制。适配器依据白名单章节 id，重建并发送正式域名 `https://atlas.z-ai.cc` 上的规范绝对章节 URL（canonical absolute chapter URL）；浏览器当前或原始完整 URL、query 与 hash 均不进入 payload。项目不生成或主动发送精确事件时间戳，但 Plausible 会记录每个事件到达其服务的接收时间。
 
 ### 5.3 获批实施门
 

@@ -1,8 +1,12 @@
 import { chapterRegistry, isChapterId, type ChapterId } from "../chapters.ts";
 import { supportedLocales, type Locale } from "../locales.ts";
 
-export const learningMetricsSchemaVersion = 2 as const;
+export const learningMetricsSchemaVersion = 3 as const;
 export const learningMetricsReportingTimezone = "Asia/Shanghai" as const;
+export const learningMetricsFunnelEvidenceSchemaVersion = 1 as const;
+export const learningMetricsFunnelCapturePlanVersion = 1 as const;
+export const learningMetricsFunnelEvidenceSource =
+  "operator-supplied-plausible-dashboard" as const;
 export const minimumObservationDays = 14;
 export const minimumChapterVisitors = 50;
 export const minimumSegmentVisitors = 30;
@@ -14,24 +18,43 @@ export const learningMetricDeviceClasses = [
   "mobile",
 ] as const;
 
+export const learningMetricSequentialFunnels = [
+  {
+    id: "started-to-core",
+    steps: ["chapter_started", "core_interaction_completed"],
+    allowOtherActivityBetweenSteps: true,
+  },
+  {
+    id: "core-to-continued",
+    steps: ["core_interaction_completed", "next_chapter_continued"],
+    allowOtherActivityBetweenSteps: true,
+  },
+] as const;
+export const learningMetricsTerminalChapterId =
+  chapterRegistry[chapterRegistry.length - 1].id;
+
 export type LearningMetricDeviceClass =
   (typeof learningMetricDeviceClasses)[number];
 export type LearningMetricLocale = Locale | "all";
 export type LearningMetricDevice = LearningMetricDeviceClass | "all";
 
 export interface LearningMetricCounts {
-  startedVisitors: number;
-  coreCompletedVisitors: number;
+  startedToCoreEnteredVisitors: number;
+  startedToCoreConvertedVisitors: number;
+  coreToContinuedEnteredVisitors: number | null;
+  coreToContinuedConvertedVisitors: number | null;
   conceptCheckVisitors: number;
+  conceptCheckFirstAttemptVisitors: number;
   firstCorrectVisitors: number;
   explanationOpenedVisitors: number;
-  continuedVisitors: number;
 }
 
 export interface LearningMetricRow extends LearningMetricCounts {
   chapterId: ChapterId;
   locale: LearningMetricLocale;
   device: LearningMetricDevice;
+  startedToCoreEvidenceRef: string;
+  coreToContinuedEvidenceRef: string | null;
 }
 
 export interface LearningMetricsExport {
@@ -41,12 +64,34 @@ export interface LearningMetricsExport {
   provider: {
     name: string;
     exportedAt: string;
-    queryKind: "aggregate-visitor-event-steps";
+    queryKind: "canonical-stats-with-operator-sequential-funnels";
   };
   observationWindow: {
     startDate: string;
     endDateExclusive: string;
     completeDays: number;
+  };
+  funnelEvidence: {
+    schemaVersion: typeof learningMetricsFunnelEvidenceSchemaVersion;
+    capturePlanVersion: typeof learningMetricsFunnelCapturePlanVersion;
+    source: typeof learningMetricsFunnelEvidenceSource;
+    capturedAt: string;
+    evidenceBundleSha256: string;
+    operatorAttestation: {
+      dashboardCountsTranscribed: true;
+      aggregateOnlyConfirmed: true;
+    };
+    reviewerAttestation: {
+      independentlyReviewed: true;
+      capturePlanMatched: true;
+    };
+    reportingTimezone: typeof learningMetricsReportingTimezone;
+    observationWindow: {
+      startDate: string;
+      endDateExclusive: string;
+      completeDays: number;
+    };
+    funnels: typeof learningMetricSequentialFunnels;
   };
   trafficPolicy: {
     realLearnerTrafficConfirmed: true;
@@ -58,6 +103,7 @@ export interface LearningMetricsExport {
   };
   queryPolicy: {
     sequentialFunnels: true;
+    funnelEvidenceSource: typeof learningMetricsFunnelEvidenceSource;
     aggregateVisitors: true;
     filtersFrozen: true;
     eventMappingVersion: 1;
@@ -71,8 +117,8 @@ export interface LearningMetricsExport {
 }
 
 export interface LearningMetricRate {
-  numerator: number;
-  denominator: number;
+  numerator: number | null;
+  denominator: number | null;
   value: number | null;
   percentage: number | null;
   usableForDecision: boolean;
@@ -82,7 +128,7 @@ export interface LearningMetricSegmentAnalysis {
   chapterId: ChapterId;
   locale: LearningMetricLocale;
   device: LearningMetricDevice;
-  startedVisitors: number;
+  startedToCoreEnteredVisitors: number;
   sampleThreshold: number;
   sampleEligible: boolean;
   metrics: {
@@ -107,6 +153,7 @@ export interface LearningMetricsAnalysis {
   site: LearningMetricsExport["site"];
   provider: LearningMetricsExport["provider"];
   observationWindow: LearningMetricsExport["observationWindow"];
+  funnelEvidence: LearningMetricsExport["funnelEvidence"];
   trafficPolicy: LearningMetricsExport["trafficPolicy"];
   queryPolicy: LearningMetricsExport["queryPolicy"];
   dataPolicy: LearningMetricsExport["dataPolicy"];
@@ -137,6 +184,7 @@ const rootKeys = [
   "environment",
   "provider",
   "observationWindow",
+  "funnelEvidence",
   "trafficPolicy",
   "queryPolicy",
   "dataPolicy",
@@ -148,6 +196,26 @@ const observationWindowKeys = [
   "endDateExclusive",
   "completeDays",
 ] as const;
+const funnelEvidenceKeys = [
+  "schemaVersion",
+  "capturePlanVersion",
+  "source",
+  "capturedAt",
+  "evidenceBundleSha256",
+  "operatorAttestation",
+  "reviewerAttestation",
+  "reportingTimezone",
+  "observationWindow",
+  "funnels",
+] as const;
+const operatorAttestationKeys = [
+  "dashboardCountsTranscribed",
+  "aggregateOnlyConfirmed",
+] as const;
+const reviewerAttestationKeys = [
+  "independentlyReviewed",
+  "capturePlanMatched",
+] as const;
 const trafficPolicyKeys = [
   "realLearnerTrafficConfirmed",
   "productionOnly",
@@ -158,6 +226,7 @@ const trafficPolicyKeys = [
 ] as const;
 const queryPolicyKeys = [
   "sequentialFunnels",
+  "funnelEvidenceSource",
   "aggregateVisitors",
   "filtersFrozen",
   "eventMappingVersion",
@@ -171,20 +240,38 @@ const rowKeys = [
   "chapterId",
   "locale",
   "device",
-  "startedVisitors",
-  "coreCompletedVisitors",
+  "startedToCoreEvidenceRef",
+  "coreToContinuedEvidenceRef",
+  "startedToCoreEnteredVisitors",
+  "startedToCoreConvertedVisitors",
+  "coreToContinuedEnteredVisitors",
+  "coreToContinuedConvertedVisitors",
   "conceptCheckVisitors",
+  "conceptCheckFirstAttemptVisitors",
   "firstCorrectVisitors",
   "explanationOpenedVisitors",
-  "continuedVisitors",
 ] as const;
 const countKeys = [
-  "startedVisitors",
-  "coreCompletedVisitors",
+  "startedToCoreEnteredVisitors",
+  "startedToCoreConvertedVisitors",
+  "coreToContinuedEnteredVisitors",
+  "coreToContinuedConvertedVisitors",
   "conceptCheckVisitors",
+  "conceptCheckFirstAttemptVisitors",
   "firstCorrectVisitors",
   "explanationOpenedVisitors",
-  "continuedVisitors",
+] as const satisfies readonly (keyof LearningMetricCounts)[];
+const requiredIntegerCountKeys = [
+  "startedToCoreEnteredVisitors",
+  "startedToCoreConvertedVisitors",
+  "conceptCheckVisitors",
+  "conceptCheckFirstAttemptVisitors",
+  "firstCorrectVisitors",
+  "explanationOpenedVisitors",
+] as const satisfies readonly (keyof LearningMetricCounts)[];
+const terminalNullableCountKeys = [
+  "coreToContinuedEnteredVisitors",
+  "coreToContinuedConvertedVisitors",
 ] as const satisfies readonly (keyof LearningMetricCounts)[];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -224,6 +311,33 @@ function checkRequiredRecord(
 
 function isNonNegativeInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+export function isSafeLearningMetricEvidenceRef(
+  value: unknown,
+): value is string {
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    value.length > 200 ||
+    value.startsWith("/") ||
+    value.endsWith("/") ||
+    value.includes("\\") ||
+    value.includes("?") ||
+    value.includes("#") ||
+    /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)
+  ) {
+    return false;
+  }
+
+  const segments = value.split("/");
+  return segments.every(
+    (segment) =>
+      segment !== "" &&
+      segment !== "." &&
+      segment !== ".." &&
+      /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(segment),
+  );
 }
 
 function parseUtcDate(value: unknown): number | null {
@@ -299,9 +413,11 @@ export function parseLearningMetricsExport(
   if (typeof provider.name !== "string" || provider.name.trim() === "") {
     issues.push("export.provider.name must be a non-empty string");
   }
-  if (provider.queryKind !== "aggregate-visitor-event-steps") {
+  if (
+    provider.queryKind !== "canonical-stats-with-operator-sequential-funnels"
+  ) {
     issues.push(
-      'export.provider.queryKind must be "aggregate-visitor-event-steps"',
+      'export.provider.queryKind must be "canonical-stats-with-operator-sequential-funnels"',
     );
   }
   const exportedAt = parseIsoDateTime(provider.exportedAt);
@@ -317,6 +433,7 @@ export function parseLearningMetricsExport(
   );
   const startTimestamp = parseUtcDate(observationWindow.startDate);
   const endTimestamp = parseUtcDate(observationWindow.endDateExclusive);
+  let reportingTimezoneEndTimestamp: number | null = null;
   if (startTimestamp === null) {
     issues.push(
       "export.observationWindow.startDate must be a valid YYYY-MM-DD date",
@@ -347,7 +464,7 @@ export function parseLearningMetricsExport(
         `export.observationWindow must contain at least ${minimumObservationDays} complete days`,
       );
     }
-    const reportingTimezoneEndTimestamp = Date.parse(
+    reportingTimezoneEndTimestamp = Date.parse(
       `${observationWindow.endDateExclusive}T00:00:00+08:00`,
     );
     if (exportedAt !== null && exportedAt < reportingTimezoneEndTimestamp) {
@@ -355,6 +472,111 @@ export function parseLearningMetricsExport(
         `export.provider.exportedAt must be on or after endDateExclusive in ${learningMetricsReportingTimezone}`,
       );
     }
+  }
+
+  const funnelEvidence = checkRequiredRecord(
+    root.funnelEvidence,
+    funnelEvidenceKeys,
+    "export.funnelEvidence",
+    issues,
+  );
+  if (
+    funnelEvidence.schemaVersion !== learningMetricsFunnelEvidenceSchemaVersion
+  ) {
+    issues.push(
+      `export.funnelEvidence.schemaVersion must be ${learningMetricsFunnelEvidenceSchemaVersion}`,
+    );
+  }
+  if (
+    funnelEvidence.capturePlanVersion !==
+    learningMetricsFunnelCapturePlanVersion
+  ) {
+    issues.push(
+      `export.funnelEvidence.capturePlanVersion must be ${learningMetricsFunnelCapturePlanVersion}`,
+    );
+  }
+  if (funnelEvidence.source !== learningMetricsFunnelEvidenceSource) {
+    issues.push(
+      `export.funnelEvidence.source must be "${learningMetricsFunnelEvidenceSource}"`,
+    );
+  }
+  if (funnelEvidence.reportingTimezone !== learningMetricsReportingTimezone) {
+    issues.push(
+      `export.funnelEvidence.reportingTimezone must be "${learningMetricsReportingTimezone}"`,
+    );
+  }
+  if (
+    typeof funnelEvidence.evidenceBundleSha256 !== "string" ||
+    !/^[a-f0-9]{64}$/.test(funnelEvidence.evidenceBundleSha256)
+  ) {
+    issues.push(
+      "export.funnelEvidence.evidenceBundleSha256 must be a lowercase SHA-256 digest",
+    );
+  }
+  const operatorAttestation = checkRequiredRecord(
+    funnelEvidence.operatorAttestation,
+    operatorAttestationKeys,
+    "export.funnelEvidence.operatorAttestation",
+    issues,
+  );
+  for (const key of operatorAttestationKeys) {
+    if (operatorAttestation[key] !== true) {
+      issues.push(
+        `export.funnelEvidence.operatorAttestation.${key} must be true`,
+      );
+    }
+  }
+  const reviewerAttestation = checkRequiredRecord(
+    funnelEvidence.reviewerAttestation,
+    reviewerAttestationKeys,
+    "export.funnelEvidence.reviewerAttestation",
+    issues,
+  );
+  for (const key of reviewerAttestationKeys) {
+    if (reviewerAttestation[key] !== true) {
+      issues.push(
+        `export.funnelEvidence.reviewerAttestation.${key} must be true`,
+      );
+    }
+  }
+  const funnelEvidenceCapturedAt = parseIsoDateTime(funnelEvidence.capturedAt);
+  if (funnelEvidenceCapturedAt === null) {
+    issues.push("export.funnelEvidence.capturedAt must be an ISO date-time");
+  } else {
+    if (
+      reportingTimezoneEndTimestamp !== null &&
+      funnelEvidenceCapturedAt < reportingTimezoneEndTimestamp
+    ) {
+      issues.push(
+        `export.funnelEvidence.capturedAt must be on or after endDateExclusive in ${learningMetricsReportingTimezone}`,
+      );
+    }
+    if (exportedAt !== null && funnelEvidenceCapturedAt > exportedAt) {
+      issues.push(
+        "export.funnelEvidence.capturedAt cannot be after export.provider.exportedAt",
+      );
+    }
+  }
+  const funnelEvidenceWindow = checkRequiredRecord(
+    funnelEvidence.observationWindow,
+    observationWindowKeys,
+    "export.funnelEvidence.observationWindow",
+    issues,
+  );
+  for (const key of observationWindowKeys) {
+    if (funnelEvidenceWindow[key] !== observationWindow[key]) {
+      issues.push(
+        `export.funnelEvidence.observationWindow.${key} must match export.observationWindow.${key}`,
+      );
+    }
+  }
+  if (
+    JSON.stringify(funnelEvidence.funnels) !==
+    JSON.stringify(learningMetricSequentialFunnels)
+  ) {
+    issues.push(
+      "export.funnelEvidence.funnels must match the two canonical sequential funnel definitions",
+    );
   }
 
   const trafficPolicy = checkRequiredRecord(
@@ -384,6 +606,13 @@ export function parseLearningMetricsExport(
       issues.push(`export.queryPolicy.${key} must be true`);
     }
   }
+  if (
+    queryPolicy.funnelEvidenceSource !== learningMetricsFunnelEvidenceSource
+  ) {
+    issues.push(
+      `export.queryPolicy.funnelEvidenceSource must be "${learningMetricsFunnelEvidenceSource}"`,
+    );
+  }
   if (queryPolicy.eventMappingVersion !== 1) {
     issues.push("export.queryPolicy.eventMappingVersion must be 1");
   }
@@ -409,6 +638,7 @@ export function parseLearningMetricsExport(
   }
 
   const rowsBySegment = new Map<string, LearningMetricRow>();
+  const evidenceRefs = new Set<string>();
   const rows = Array.isArray(root.rows) ? root.rows : [];
   for (const [index, candidate] of rows.entries()) {
     const path = `export.rows[${index}]`;
@@ -437,14 +667,55 @@ export function parseLearningMetricsExport(
       );
     }
 
-    const counts = {} as Record<keyof LearningMetricCounts, number>;
+    let refsValid = true;
+    if (!isSafeLearningMetricEvidenceRef(row.startedToCoreEvidenceRef)) {
+      issues.push(
+        `${path}.startedToCoreEvidenceRef must be a safe relative artifact path`,
+      );
+      refsValid = false;
+    } else if (evidenceRefs.has(row.startedToCoreEvidenceRef)) {
+      issues.push(`${path}.startedToCoreEvidenceRef must be unique`);
+      refsValid = false;
+    } else {
+      evidenceRefs.add(row.startedToCoreEvidenceRef);
+    }
+    if (chapterId === learningMetricsTerminalChapterId) {
+      if (row.coreToContinuedEvidenceRef !== null) {
+        issues.push(
+          `${path}.coreToContinuedEvidenceRef must be null for the terminal chapter`,
+        );
+        refsValid = false;
+      }
+    } else if (
+      !isSafeLearningMetricEvidenceRef(row.coreToContinuedEvidenceRef)
+    ) {
+      issues.push(
+        `${path}.coreToContinuedEvidenceRef must be a safe relative artifact path`,
+      );
+      refsValid = false;
+    } else if (evidenceRefs.has(row.coreToContinuedEvidenceRef)) {
+      issues.push(`${path}.coreToContinuedEvidenceRef must be unique`);
+      refsValid = false;
+    } else {
+      evidenceRefs.add(row.coreToContinuedEvidenceRef);
+    }
+
     let countsValid = true;
-    for (const key of countKeys) {
+    for (const key of requiredIntegerCountKeys) {
       if (!isNonNegativeInteger(row[key])) {
         issues.push(`${path}.${key} must be a non-negative integer`);
         countsValid = false;
-      } else {
-        counts[key] = row[key];
+      }
+    }
+    for (const key of terminalNullableCountKeys) {
+      if (chapterId === learningMetricsTerminalChapterId) {
+        if (row[key] !== null) {
+          issues.push(`${path}.${key} must be null for the terminal chapter`);
+          countsValid = false;
+        }
+      } else if (!isNonNegativeInteger(row[key])) {
+        issues.push(`${path}.${key} must be a non-negative integer`);
+        countsValid = false;
       }
     }
 
@@ -456,7 +727,8 @@ export function parseLearningMetricsExport(
           device as LearningMetricDeviceClass,
         )) &&
       !(locale !== "all" && device !== "all") &&
-      countsValid
+      countsValid &&
+      refsValid
     ) {
       const typedLocale = locale as LearningMetricLocale;
       const typedDevice = device as LearningMetricDevice;
@@ -468,35 +740,66 @@ export function parseLearningMetricsExport(
           chapterId,
           locale: typedLocale,
           device: typedDevice,
-          ...counts,
+          startedToCoreEvidenceRef: row.startedToCoreEvidenceRef as string,
+          coreToContinuedEvidenceRef: row.coreToContinuedEvidenceRef as
+            string | null,
+          startedToCoreEnteredVisitors:
+            row.startedToCoreEnteredVisitors as number,
+          startedToCoreConvertedVisitors:
+            row.startedToCoreConvertedVisitors as number,
+          coreToContinuedEnteredVisitors: row.coreToContinuedEnteredVisitors as
+            number | null,
+          coreToContinuedConvertedVisitors:
+            row.coreToContinuedConvertedVisitors as number | null,
+          conceptCheckVisitors: row.conceptCheckVisitors as number,
+          conceptCheckFirstAttemptVisitors:
+            row.conceptCheckFirstAttemptVisitors as number,
+          firstCorrectVisitors: row.firstCorrectVisitors as number,
+          explanationOpenedVisitors: row.explanationOpenedVisitors as number,
         };
         rowsBySegment.set(key, parsedRow);
 
-        if (parsedRow.coreCompletedVisitors > parsedRow.startedVisitors) {
+        if (
+          parsedRow.startedToCoreConvertedVisitors >
+          parsedRow.startedToCoreEnteredVisitors
+        ) {
           issues.push(
-            `${path}.coreCompletedVisitors cannot exceed startedVisitors`,
-          );
-        }
-        if (parsedRow.conceptCheckVisitors > parsedRow.startedVisitors) {
-          issues.push(
-            `${path}.conceptCheckVisitors cannot exceed startedVisitors`,
-          );
-        }
-        if (parsedRow.firstCorrectVisitors > parsedRow.conceptCheckVisitors) {
-          issues.push(
-            `${path}.firstCorrectVisitors cannot exceed conceptCheckVisitors`,
+            `${path}.startedToCoreConvertedVisitors cannot exceed startedToCoreEnteredVisitors`,
           );
         }
         if (
-          parsedRow.explanationOpenedVisitors > parsedRow.conceptCheckVisitors
+          parsedRow.coreToContinuedConvertedVisitors !== null &&
+          parsedRow.coreToContinuedEnteredVisitors !== null &&
+          parsedRow.coreToContinuedConvertedVisitors >
+            parsedRow.coreToContinuedEnteredVisitors
         ) {
           issues.push(
-            `${path}.explanationOpenedVisitors cannot exceed conceptCheckVisitors`,
+            `${path}.coreToContinuedConvertedVisitors cannot exceed coreToContinuedEnteredVisitors`,
           );
         }
-        if (parsedRow.continuedVisitors > parsedRow.coreCompletedVisitors) {
+        if (
+          parsedRow.coreToContinuedEnteredVisitors !== null &&
+          parsedRow.startedToCoreConvertedVisitors >
+            parsedRow.coreToContinuedEnteredVisitors
+        ) {
           issues.push(
-            `${path}.continuedVisitors cannot exceed coreCompletedVisitors`,
+            `${path}.startedToCoreConvertedVisitors cannot exceed coreToContinuedEnteredVisitors`,
+          );
+        }
+        if (
+          parsedRow.conceptCheckFirstAttemptVisitors >
+          parsedRow.conceptCheckVisitors
+        ) {
+          issues.push(
+            `${path}.conceptCheckFirstAttemptVisitors cannot exceed conceptCheckVisitors`,
+          );
+        }
+        if (
+          parsedRow.firstCorrectVisitors >
+          parsedRow.conceptCheckFirstAttemptVisitors
+        ) {
+          issues.push(
+            `${path}.firstCorrectVisitors cannot exceed conceptCheckFirstAttemptVisitors`,
           );
         }
       }
@@ -517,7 +820,13 @@ export function parseLearningMetricsExport(
 
       if (overall && row !== overall) {
         for (const countKey of countKeys) {
-          if (row[countKey] > overall[countKey]) {
+          const segmentCount = row[countKey];
+          const overallCount = overall[countKey];
+          if (
+            segmentCount !== null &&
+            overallCount !== null &&
+            segmentCount > overallCount
+          ) {
             issues.push(
               `${key}.${countKey} cannot exceed overall chapter count`,
             );
@@ -542,18 +851,24 @@ function rounded(value: number, digits: number): number {
 }
 
 function metricRate(
-  numerator: number,
-  denominator: number,
-  sampleEligible: boolean,
+  numerator: number | null,
+  denominator: number | null,
+  sampleThreshold: number,
 ): LearningMetricRate {
-  const value = denominator === 0 ? null : numerator / denominator;
+  const value =
+    numerator === null || denominator === null || denominator === 0
+      ? null
+      : numerator / denominator;
 
   return {
     numerator,
     denominator,
     value: value === null ? null : rounded(value, 4),
     percentage: value === null ? null : rounded(value * 100, 1),
-    usableForDecision: sampleEligible && denominator > 0,
+    usableForDecision:
+      numerator !== null &&
+      denominator !== null &&
+      denominator >= sampleThreshold,
   };
 }
 
@@ -561,37 +876,43 @@ function analyzeSegment(
   row: LearningMetricRow,
   sampleThreshold: number,
 ): LearningMetricSegmentAnalysis {
-  const sampleEligible = row.startedVisitors >= sampleThreshold;
+  const metrics = {
+    coreCompletionRate: metricRate(
+      row.startedToCoreConvertedVisitors,
+      row.startedToCoreEnteredVisitors,
+      sampleThreshold,
+    ),
+    continuationRate: metricRate(
+      row.coreToContinuedConvertedVisitors,
+      row.coreToContinuedEnteredVisitors,
+      sampleThreshold,
+    ),
+    firstCorrectRate: metricRate(
+      row.firstCorrectVisitors,
+      row.conceptCheckFirstAttemptVisitors,
+      sampleThreshold,
+    ),
+    explanationOpenRate: metricRate(
+      row.explanationOpenedVisitors,
+      row.conceptCheckVisitors,
+      sampleThreshold,
+    ),
+  };
+  const applicableRates = Object.values(metrics).filter(
+    ({ denominator }) => denominator !== null,
+  );
+  const sampleEligible = applicableRates.every(
+    ({ usableForDecision }) => usableForDecision,
+  );
 
   return {
     chapterId: row.chapterId,
     locale: row.locale,
     device: row.device,
-    startedVisitors: row.startedVisitors,
+    startedToCoreEnteredVisitors: row.startedToCoreEnteredVisitors,
     sampleThreshold,
     sampleEligible,
-    metrics: {
-      coreCompletionRate: metricRate(
-        row.coreCompletedVisitors,
-        row.startedVisitors,
-        sampleEligible,
-      ),
-      continuationRate: metricRate(
-        row.continuedVisitors,
-        row.coreCompletedVisitors,
-        sampleEligible,
-      ),
-      firstCorrectRate: metricRate(
-        row.firstCorrectVisitors,
-        row.conceptCheckVisitors,
-        sampleEligible,
-      ),
-      explanationOpenRate: metricRate(
-        row.explanationOpenedVisitors,
-        row.conceptCheckVisitors,
-        sampleEligible,
-      ),
-    },
+    metrics,
   };
 }
 
@@ -650,6 +971,7 @@ export function analyzeLearningMetricsExport(
     site: parsed.site,
     provider: { ...parsed.provider },
     observationWindow: { ...parsed.observationWindow },
+    funnelEvidence: structuredClone(parsed.funnelEvidence),
     trafficPolicy: { ...parsed.trafficPolicy },
     queryPolicy: { ...parsed.queryPolicy },
     dataPolicy: { ...parsed.dataPolicy },
@@ -662,7 +984,7 @@ export function analyzeLearningMetricsExport(
     insufficientChapterIds,
     chapters,
     caveat:
-      "This validates aggregate evidence and sample gates only; it does not prove the traffic attestation or complete P2-05 by itself.",
+      "This validates aggregate evidence and per-rate denominator gates only; it does not prove the traffic attestation or complete P2-05 by itself. Explanation-opened and concept-check-attempted are independent event visitor counts, not a cohort or sequential funnel, so explanation-open rate may exceed 100% at an observation-window boundary.",
   };
 }
 
@@ -681,20 +1003,20 @@ export function renderLearningMetricsMarkdown(
     `- Schema：v${analysis.schemaVersion}`,
     `- 状态：${analysis.status}`,
     `- Provider：${analysis.provider.name}`,
-    `- 查询契约：${analysis.provider.queryKind}；Dashboard sequential funnels 已冻结（外部 attestation）`,
+    `- 查询契约：${analysis.provider.queryKind}`,
+    `- 漏斗证据：${analysis.funnelEvidence.source}；采集于 ${analysis.funnelEvidence.capturedAt}`,
     `- 观察窗口：${analysis.observationWindow.startDate} → ${analysis.observationWindow.endDateExclusive}（${analysis.observationWindow.completeDays} 个完整自然日）`,
     "- 流量证明：production-only、真实学习者，CI / preview / smoke / developer 均已排除（外部 attestation）",
     "- 数据边界：aggregate-only、无 raw events、无 personal data",
-    `- 章节决策门槛：${analysis.thresholds.minimumChapterVisitors} 个 started visitors`,
-    `- 分段比较门槛：${analysis.thresholds.minimumSegmentVisitors} 个 started visitors`,
+    `- 比率证据门槛：每个比率按自身 denominator；总体 ${analysis.thresholds.minimumChapterVisitors}，locale / device ${analysis.thresholds.minimumSegmentVisitors}`,
     "",
-    "| Chapter | Started | Core completion | Continuation | First correct | Explanation open | Evidence |",
+    "| Chapter | Started→core entered | Core completion | Continuation | First correct | Explanation open | Evidence |",
     "| --- | ---: | ---: | ---: | ---: | ---: | --- |",
   ];
 
   for (const chapter of analysis.chapters) {
     lines.push(
-      `| ${chapter.chapterId} | ${chapter.overall.startedVisitors} | ${displayRate(chapter.overall.metrics.coreCompletionRate)} | ${displayRate(chapter.overall.metrics.continuationRate)} | ${displayRate(chapter.overall.metrics.firstCorrectRate)} | ${displayRate(chapter.overall.metrics.explanationOpenRate)} | ${chapter.decisionEligible ? "eligible" : "insufficient"} |`,
+      `| ${chapter.chapterId} | ${chapter.overall.startedToCoreEnteredVisitors} | ${displayRate(chapter.overall.metrics.coreCompletionRate)} | ${displayRate(chapter.overall.metrics.continuationRate)} | ${displayRate(chapter.overall.metrics.firstCorrectRate)} | ${displayRate(chapter.overall.metrics.explanationOpenRate)} | ${chapter.decisionEligible ? "eligible" : "insufficient"} |`,
     );
   }
 

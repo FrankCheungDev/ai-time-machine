@@ -220,9 +220,12 @@
 - 章节开始。
 - 核心交互完成。
 - 自测完成。
+- 自测解释展开。
 - 继续到下一章。
 
 不采集用户输入正文、个人身份信息或跨站追踪数据。
+
+核心交互完成与继续下一章是两个独立决策：学习者点击“标记本章完成”后留在本页，只发送完成事件；只有随后单独点击“下一章”才发送续学事件。终章没有续学动作或续学漏斗。
 
 用于决策的指标：
 
@@ -230,6 +233,8 @@
 - 完成后继续下一章的比例。
 - 自测首次正确率与解释展开率。
 - 中文与英文、桌面与移动端之间的明显差异。
+
+每个比率按自己的分母执行样本门：章节总体至少 50，语言/设备分段至少 30。顺序漏斗必须来自配置好的 Dashboard sequential funnel 聚合结果；独立事件计数不能作为顺序证据。
 
 ## 8. 标准执行流程
 
@@ -378,21 +383,21 @@
 
 本节记录方案实际落地状态。任务只有合并、远程门禁通过并完成生产 smoke 后才从“候选”改为“完成”。
 
-| 范围            | 状态              | 交付证据                                                                                                                                                                                                                                                                                        |
-| --------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 过程基线        | 完成              | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                                                                                                                                                                                          |
-| P0-01 / P0-04   | 完成并发布        | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                                                                                                                                                                                 |
-| P0-02 / P0-03   | 完成并发布        | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                                                                                                                                                                                        |
-| P0-05 / P0-06   | 完成并发布        | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                                                                                                                                                                              |
-| P1-01 → P1-05   | 完成并发布        | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                                                                                                                                                                                |
-| P2-01 / P2-02   | 完成并发布        | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                                                                                                                                                                                       |
-| P2-03           | 完成并发布        | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                                                                                                                                                                                 |
-| P2-04           | 完成并发布        | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 完成生产隐私加固；PR #22 固化 CI、Pages 与生产浏览器 smoke 证据                                                                                                                                                             |
-| P2-05 决策门    | 已批准            | [PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 完成 provider 比较；所有者于 2026-07-26 批准 Plausible 完整方案                                                                                                                                                             |
-| P2-05 证据分析  | 前置已发布        | [PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24)：增加严格的 aggregate-only 证据契约、验证器、分析 CLI 与单元测试                                                                                                                                                            |
-| P2-05A 启用批次 | Draft / 配置中    | [Draft PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26)：严格适配器、双语隐私披露、CSP、网络测试、运行手册及 schema-v2 聚合导出器已就绪；正式站点、时区、hostname allowlist、五个 Goals 与两个 Funnels 已完成，账户安全、付费、Dashboard / Stats API 责任人与生产发布仍待完成 |
-| P2-05B 真实观察 | 工具就绪 / 待发布 | 18-query dry-run 计划、密钥隔离导出和 77 行严格转换已具备；发布并核验 Dashboard 后才可开始至少 14 个完整自然日，且排除 CI、Playwright、smoke、开发者与合成流量                                                                                                                                  |
-| P2-05C 产品调整 | 等待真实指标      | 仅在 77 行聚合导出通过样本与隐私门后，另开 PR 完成一个章节中的一个主要调整                                                                                                                                                                                                                      |
+| 范围            | 状态              | 交付证据                                                                                                                                                                                                                                                                                                           |
+| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 过程基线        | 完成              | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                                                                                                                                                                                                             |
+| P0-01 / P0-04   | 完成并发布        | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                                                                                                                                                                                                    |
+| P0-02 / P0-03   | 完成并发布        | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                                                                                                                                                                                                           |
+| P0-05 / P0-06   | 完成并发布        | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                                                                                                                                                                                                 |
+| P1-01 → P1-05   | 完成并发布        | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                                                                                                                                                                                                   |
+| P2-01 / P2-02   | 完成并发布        | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                                                                                                                                                                                                          |
+| P2-03           | 完成并发布        | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                                                                                                                                                                                                    |
+| P2-04           | 完成并发布        | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 完成生产隐私加固；PR #22 固化 CI、Pages 与生产浏览器 smoke 证据                                                                                                                                                                                |
+| P2-05 决策门    | 已批准            | [PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 完成 provider 比较；所有者于 2026-07-26 批准 Plausible 完整方案                                                                                                                                                                                |
+| P2-05 证据分析  | 前置已发布        | [PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24)：增加严格的 aggregate-only 证据契约、验证器、分析 CLI 与单元测试                                                                                                                                                                               |
+| P2-05A 启用批次 | Draft / 配置中    | [Draft PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26)：严格适配器、完成/续学两步交互、双语隐私披露、CSP、网络测试、运行手册及 schema-v3 聚合导出器已就绪；正式站点、时区、hostname allowlist、五个 Goals 与两个 Funnels 已完成，账户安全、付费、Dashboard / Stats API 责任人与生产发布仍待完成 |
+| P2-05B 真实观察 | 工具就绪 / 待发布 | dry run 固定输出 12 个 Stats API 自测查询与 147 个 Dashboard sequential-funnel 人工聚合采集任务；密钥隔离、独立复核与 77 行严格转换已具备。发布并核验 Dashboard 后才可开始至少 14 个完整自然日，且排除 CI、Playwright、smoke、开发者与合成流量                                                                     |
+| P2-05C 产品调整 | 等待真实指标      | 仅在 77 行聚合导出通过样本与隐私门后，另开 PR 完成一个章节中的一个主要调整                                                                                                                                                                                                                                         |
 
 P2 的历史声明、教学契约、隐私结论与真实数据门详见
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)。
@@ -408,6 +413,10 @@ PR #20 的 SSR 路由 smoke 通过后，真实浏览器交互进一步发现 Clo
 P2-05 不随 P2-04 自动完成：在 provider 获批、项目能够读取真实聚合数据并积累明确观察窗口前，继续禁止使用 edge analytics、CI、Playwright、smoke 或开发者流量代替学习者证据。
 
 Plausible 外部配置于 2026-07-27 至 2026-07-28 完成当前获授权范围：创建 `atlas.z-ai.cc`，将 Reporting timezone 设为 `Asia/Shanghai`，hostname allowlist 只保留正式域名，保持 outbound links、file downloads 与 form submissions 自动测量关闭，并且不安装 tracker snippet、不启用 pageview、404 采集或 revenue tracking。项目所有者清空 provisioning UI 自动生成的四个默认 Goals 后，逐项创建并核验 `chapter_started`、`core_interaction_completed`、`concept_check_completed`、`concept_explanation_opened`、`next_chapter_continued` 五个同名 Custom Event Goals；随后建立 `chapter_started → core_interaction_completed` 与 `core_interaction_completed → next_chapter_continued` 两个 2-step sequential funnels，并开启步骤间允许其他活动。新增 Goal 对话框仍展示四个历史检测事件作为候选，但没有重新添加。配置过程未发送作者、自动化或合成验证事件，因此六个 custom properties 仍必须等待真实学习者事件后核验。
+
+PR #26 的正式评审发现，公开 Plausible Stats API v2 不提供 sequential-funnel metric；原有 18 个独立事件计数不能证明同一访客按顺序完成步骤。修订后的 schema v3 将数据源明确拆开：公开 Stats API 只执行四个自测计数 × overall / locale / device 的 12 个查询；两个真实顺序漏斗由操作员按 dry-run 计划从 Dashboard 人工采集 aggregate-only entered / converted visitors，共 77 个 started-to-core cell 和 70 个非终章 core-to-continued cell。正式导出必须通过 `--dashboard-funnel-evidence=PATH` 提供恰好 147 个 capture、安全且唯一的相对 evidence refs、operator attestation 与独立 reviewer attestation，并通过 `--dashboard-funnel-evidence-bundle=PATH` 提供经复核证据包；导出器在读取 Stats API key 或发网络请求前对 bundle 原始 bytes 重算 SHA-256 并与证据 JSON 精确匹配。禁止使用独立事件计数冒充顺序漏斗，也禁止调用未公开内部 API、提供 cookie/session，或在未知参数错误中回显秘密值。
+
+同一轮评审还发现旧的一键“标记完成并继续”会同时发送完成与续学事件，使第二个漏斗失去判断价值。交互现拆为两个动作：先“标记本章完成”并留在本页，只发送 `core_interaction_completed`；再由用户单独点击“下一章”发送 `next_chapter_continued`。终章的 core-to-continued counts 与 evidence ref 在 77 行导出中明确为 `null` / N/A。核心完成率、续学率、首次正确率与解释展开率分别按 started-to-core entered、core-to-continued entered、首次作答、自测发生作为自身分母，逐项应用总体 50 / 分段 30 门槛。解释展开与自测发生是独立事件的访客数，不宣称同一 cohort 或 sequential 顺序；观察窗口边界上的解释展开率允许超过 100%。
 
 截至 2026-07-25 的 provider-neutral 审计结论是：Cloudflare Web Analytics 不支持本站五类自定义学习事件；自托管 Umami 需要数据库；Plausible Hosted Business 在功能上满足自定义事件、属性、漏斗、设备分段和 Stats API，但其费用、欧盟数据处理、每日匿名标识以及 IP/User-Agent 的临时处理必须由项目所有者明确批准。项目所有者于 2026-07-26 对此前逐项列出的条件回复“批准 Plausible 方案”，因此可以实施 P2-05A；这项批准不代替账户、Dashboard / Stats API、真实流量和观察窗口证据。
 

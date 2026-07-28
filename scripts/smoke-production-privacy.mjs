@@ -79,8 +79,23 @@ await Promise.all(
     if (!body.includes('data-testid="concept-check"')) {
       failures.push(`${route} is missing its server-rendered concept check`);
     }
-    if (!body.includes('data-testid="complete-and-continue"')) {
-      failures.push(`${route} is missing its continuation control`);
+    if (!body.includes('data-testid="complete-chapter"')) {
+      failures.push(`${route} is missing its chapter completion control`);
+    }
+    const isTerminalChapter = route.endsWith("/chapters/safety/");
+    if (
+      !isTerminalChapter &&
+      !body.includes('data-testid="continue-next-chapter"')
+    ) {
+      failures.push(`${route} is missing its no-script next-chapter link`);
+    }
+    if (
+      isTerminalChapter &&
+      body.includes('data-testid="continue-next-chapter"')
+    ) {
+      failures.push(
+        `${route} exposes a next-chapter link for the terminal chapter`,
+      );
     }
   }),
 );
@@ -209,7 +224,44 @@ try {
   await conceptCheck.getByRole("button", { name: "提交答案" }).click();
   await conceptCheck.getByRole("button", { name: "查看为什么" }).click();
   await conceptCheck.getByText(/A\* 同时考虑已经付出的路径成本 g/).waitFor();
-  await page.getByTestId("complete-and-continue").click();
+  const completionControl = page.getByTestId("complete-chapter");
+  const completionControlHeight = await completionControl.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  await completionControl.click();
+
+  const completionUrl = page.url();
+  const completionSignals = await page.evaluate(() =>
+    JSON.parse(sessionStorage.getItem("release-smoke-signals") ?? "[]"),
+  );
+  const completionSignalNames = completionSignals.map((signal) => signal.name);
+  const completionCoreCount = completionSignalNames.filter(
+    (name) => name === "core_interaction_completed",
+  ).length;
+  const prematureNextCount = completionSignalNames.filter(
+    (name) => name === "next_chapter_continued",
+  ).length;
+  if (completionCoreCount !== 1) {
+    failures.push(
+      `the completion action emitted core_interaction_completed ${completionCoreCount} times`,
+    );
+  }
+  if (prematureNextCount !== 0) {
+    failures.push(
+      `the completion action emitted next_chapter_continued ${prematureNextCount} times too early`,
+    );
+  }
+  if (!completionUrl.endsWith("/chapters/search/")) {
+    failures.push(
+      "the completion action navigated away from the current chapter",
+    );
+  }
+
+  const continuationControl = page.getByTestId("continue-next-chapter");
+  const continuationControlHeight = await continuationControl.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  await continuationControl.click();
   await page.waitForURL("**/chapters/expert-system/");
   await page.waitForLoadState("networkidle");
 
@@ -237,6 +289,16 @@ try {
       failures.push(`the production interaction did not emit ${name}`);
     }
   }
+  for (const name of ["core_interaction_completed", "next_chapter_continued"]) {
+    const count = signalNames.filter(
+      (signalName) => signalName === name,
+    ).length;
+    if (count !== 1) {
+      failures.push(
+        `the production interaction emitted ${name} ${count} times`,
+      );
+    }
+  }
 
   const layout = await page.evaluate(() => ({
     viewport: window.innerWidth,
@@ -248,6 +310,9 @@ try {
     layout.bodyWidth > layout.viewport
   ) {
     failures.push("the 390px production chapter overflows horizontally");
+  }
+  if (completionControlHeight < 44 || continuationControlHeight < 44) {
+    failures.push("one or both two-stage journey controls are below 44px");
   }
 
   if (forbiddenRequests.length > 0) {
@@ -269,7 +334,8 @@ try {
           invalidConnectPolicy: headerFailures.invalidConnectPolicy.length,
           invalidScriptPolicy: headerFailures.scriptPolicy.length,
         },
-        browserInteraction: "concept check, explanation, continuation",
+        browserInteraction:
+          "concept check, explanation, separate completion, continuation",
         plausibleExclusion: "localStorage.plausible_ignore=true",
         observedSignalNames: signalNames,
         forbiddenRequests: [...new Set(forbiddenRequests)],

@@ -179,8 +179,8 @@ function queuePlausibleLearningSignal(signal: LearningSignal): void {
     .then(({ sendPlausibleLearningSignal }) => {
       plausibleSignalSender = sendPlausibleLearningSignal;
       // Calling the sender starts the keepalive request synchronously. Do not
-      // wait for a prior response: completion and continuation are emitted in
-      // one click handler immediately before browser navigation.
+      // delay the current signal for a prior response; a continuation action
+      // may navigate immediately after its own handler emits.
       void plausibleSignalSender(signal);
     })
     .catch(() => {

@@ -1,9 +1,12 @@
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   buildLearningMetricsExportFromPlausible,
   createPlausibleStatsQueryPlan,
   assertCanonicalPlausibleStatsQueryPlan,
+  parsePlausibleSequentialFunnelEvidence,
   plausibleStatsEndpoint,
   type PlausibleMetricsAttestation,
   type PlausibleStatsQueryPlan,
@@ -14,6 +17,8 @@ const statsApiKeyEnvironmentVariable = "PLAUSIBLE_STATS_API_KEY";
 export interface PlausibleExportArguments {
   startDate: string;
   endDateExclusive: string;
+  dashboardFunnelEvidencePath: string | null;
+  dashboardFunnelEvidenceBundlePath: string | null;
   dryRun: boolean;
   attestRealLearnerTraffic: boolean;
   attestProductionDashboardVerified: boolean;
@@ -36,7 +41,7 @@ function usage(): string {
   return [
     "Usage:",
     "  pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --dry-run",
-    "  pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --attest-real-learner-traffic --attest-production-dashboard-verified --attest-ci-preview-smoke-developer-excluded --attest-filters-frozen",
+    "  pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --dashboard-funnel-evidence=PATH --dashboard-funnel-evidence-bundle=PATH --attest-real-learner-traffic --attest-production-dashboard-verified --attest-ci-preview-smoke-developer-excluded --attest-filters-frozen",
     "",
     `The live export reads ${statsApiKeyEnvironmentVariable} from the process environment.`,
     "There is deliberately no command-line API-key option. JSON is written to stdout.",
@@ -47,6 +52,14 @@ function optionValue(argument: string, prefix: string): string | null {
   return argument.startsWith(prefix) ? argument.slice(prefix.length) : null;
 }
 
+function safeOptionName(argument: string): string {
+  const separator = argument.indexOf("=");
+  const candidate = separator === -1 ? argument : argument.slice(0, separator);
+  return /^--[A-Za-z0-9][A-Za-z0-9-]*$/.test(candidate)
+    ? candidate
+    : "unsupported option";
+}
+
 export function parsePlausibleExportArguments(
   args: string[],
 ): PlausibleExportArguments | { help: true } {
@@ -54,6 +67,8 @@ export function parsePlausibleExportArguments(
 
   let startDate: string | undefined;
   let endDateExclusive: string | undefined;
+  let dashboardFunnelEvidencePath: string | null = null;
+  let dashboardFunnelEvidenceBundlePath: string | null = null;
   let dryRun = false;
   let attestRealLearnerTraffic = false;
   let attestProductionDashboardVerified = false;
@@ -80,6 +95,36 @@ export function parsePlausibleExportArguments(
       continue;
     }
 
+    const funnelEvidenceValue = optionValue(
+      argument,
+      "--dashboard-funnel-evidence=",
+    );
+    if (funnelEvidenceValue !== null) {
+      if (dashboardFunnelEvidencePath !== null) {
+        throw new Error("--dashboard-funnel-evidence is duplicated");
+      }
+      if (funnelEvidenceValue.trim() === "") {
+        throw new Error("--dashboard-funnel-evidence must not be empty");
+      }
+      dashboardFunnelEvidencePath = funnelEvidenceValue;
+      continue;
+    }
+
+    const funnelEvidenceBundleValue = optionValue(
+      argument,
+      "--dashboard-funnel-evidence-bundle=",
+    );
+    if (funnelEvidenceBundleValue !== null) {
+      if (dashboardFunnelEvidenceBundlePath !== null) {
+        throw new Error("--dashboard-funnel-evidence-bundle is duplicated");
+      }
+      if (funnelEvidenceBundleValue.trim() === "") {
+        throw new Error("--dashboard-funnel-evidence-bundle must not be empty");
+      }
+      dashboardFunnelEvidenceBundlePath = funnelEvidenceBundleValue;
+      continue;
+    }
+
     switch (argument) {
       case "--dry-run":
         dryRun = true;
@@ -97,7 +142,7 @@ export function parsePlausibleExportArguments(
         attestFiltersFrozen = true;
         break;
       default:
-        throw new Error(`Unknown argument: ${argument}`);
+        throw new Error(`Unknown argument: ${safeOptionName(argument)}`);
     }
   }
 
@@ -108,12 +153,49 @@ export function parsePlausibleExportArguments(
   return {
     startDate,
     endDateExclusive,
+    dashboardFunnelEvidencePath,
+    dashboardFunnelEvidenceBundlePath,
     dryRun,
     attestRealLearnerTraffic,
     attestProductionDashboardVerified,
     attestExclusions,
     attestFiltersFrozen,
   };
+}
+
+async function readFunnelEvidence(path: string): Promise<unknown> {
+  let serialized: string;
+  try {
+    serialized = await readFile(path, "utf8");
+  } catch {
+    throw new Error("funnel evidence file could not be read");
+  }
+
+  try {
+    return JSON.parse(serialized) as unknown;
+  } catch {
+    throw new Error("funnel evidence file must contain valid JSON");
+  }
+}
+
+async function readFunnelEvidenceBundle(path: string): Promise<Buffer> {
+  try {
+    return await readFile(path);
+  } catch {
+    throw new Error("dashboard funnel evidence bundle could not be read");
+  }
+}
+
+function assertFunnelEvidenceBundleDigest(
+  bundle: Uint8Array,
+  expectedSha256: string,
+): void {
+  const actualSha256 = createHash("sha256").update(bundle).digest("hex");
+  if (actualSha256 !== expectedSha256) {
+    throw new Error(
+      "dashboard funnel evidence bundle digest does not match evidence metadata",
+    );
+  }
 }
 
 function reportingDate(now: Date): string {
@@ -229,12 +311,32 @@ export async function runPlausibleExport(
   if (parsed.dryRun) return JSON.stringify(plan, null, 2);
 
   requireLiveAttestations(parsed);
+  if (parsed.dashboardFunnelEvidencePath === null) {
+    throw new Error("Live export requires --dashboard-funnel-evidence=PATH");
+  }
+  if (parsed.dashboardFunnelEvidenceBundlePath === null) {
+    throw new Error(
+      "Live export requires --dashboard-funnel-evidence-bundle=PATH",
+    );
+  }
   const currentReportingDate = reportingDate(now);
   if (parsed.endDateExclusive > currentReportingDate) {
     throw new Error(
       `endDateExclusive must be no later than ${currentReportingDate} in Asia/Shanghai`,
     );
   }
+
+  const funnelEvidence = parsePlausibleSequentialFunnelEvidence(
+    plan,
+    await readFunnelEvidence(parsed.dashboardFunnelEvidencePath),
+  );
+  const funnelEvidenceBundle = await readFunnelEvidenceBundle(
+    parsed.dashboardFunnelEvidenceBundlePath,
+  );
+  assertFunnelEvidenceBundleDigest(
+    funnelEvidenceBundle,
+    funnelEvidence.evidenceBundleSha256,
+  );
 
   const apiKey = environment[statsApiKeyEnvironmentVariable]?.trim();
   if (environment === process.env) {
@@ -250,6 +352,7 @@ export async function runPlausibleExport(
   const exported = buildLearningMetricsExportFromPlausible(
     plan,
     responses,
+    funnelEvidence,
     now.toISOString(),
     createAttestation(),
   );

@@ -50,13 +50,18 @@
   let progress = createEmptyLearningProgress();
   let hydrated = false;
   let showStorageWarning = false;
-  let continueWithoutSaving = false;
-  let finalCompletionHeading: HTMLHeadingElement | undefined;
+  let transientChapterComplete = false;
+  let completionSubmitted = false;
+  let continuationSubmitted = false;
+  let completionHeading: HTMLHeadingElement | undefined;
 
-  $: currentChapterComplete = progress.completedChapterIds.includes(chapterId);
-  $: pathComplete = isLearningPathComplete(progress.completedChapterIds);
+  $: effectiveCompletedChapterIds = transientChapterComplete
+    ? [...new Set([...progress.completedChapterIds, chapterId])]
+    : progress.completedChapterIds;
+  $: currentChapterComplete = effectiveCompletedChapterIds.includes(chapterId);
+  $: pathComplete = isLearningPathComplete(effectiveCompletedChapterIds);
   $: firstIncompleteDefinition = getFirstIncompleteChapter(
-    progress.completedChapterIds,
+    effectiveCompletedChapterIds,
   );
   $: firstIncompleteChapter = firstIncompleteDefinition
     ? getLocalizedLearningChapter(firstIncompleteDefinition.id, locale)
@@ -66,7 +71,7 @@
     const snapshot = readLearningProgress();
     progress = snapshot.progress;
     showStorageWarning = !snapshot.storageAvailable;
-    continueWithoutSaving = !snapshot.storageAvailable;
+    if (snapshot.storageAvailable) transientChapterComplete = false;
   }
 
   onMount(() => {
@@ -118,48 +123,38 @@
     });
   }
 
-  function emitCompletionAndNext(nextChapterId: LearningChapterId): void {
-    emitCoreCompletion();
+  function continueToNextChapter(nextChapterId: LearningChapterId): void {
+    if (continuationSubmitted) return;
+    continuationSubmitted = true;
     emitNextChapter(nextChapterId);
   }
 
-  function completeBeforeNavigation(event: MouseEvent): void {
+  async function completeChapter(): Promise<void> {
+    if (currentChapterComplete || completionSubmitted) return;
+    completionSubmitted = true;
+
     const result = completeLearningChapter(chapterId);
 
-    if (!result.persisted) {
-      event.preventDefault();
+    if (result.persisted) {
+      progress = result.progress;
+      transientChapterComplete = false;
+      showStorageWarning = false;
+      dispatchLearningProgressChanged(progress);
+    } else {
+      transientChapterComplete = true;
       showStorageWarning = true;
-      continueWithoutSaving = true;
-      return;
     }
 
-    progress = result.progress;
-    showStorageWarning = false;
-    dispatchLearningProgressChanged(progress);
-    if (nextChapter) emitCompletionAndNext(nextChapter.id);
-  }
-
-  async function completeFinalChapter(): Promise<void> {
-    const result = completeLearningChapter(chapterId);
-
-    if (!result.persisted) {
-      showStorageWarning = true;
-      return;
-    }
-
-    progress = result.progress;
-    showStorageWarning = false;
-    dispatchLearningProgressChanged(progress);
     emitCoreCompletion();
     await tick();
-    finalCompletionHeading?.focus();
+    completionHeading?.focus();
   }
 </script>
 
 <section class="chapter-journey" data-testid="chapter-journey">
   <div class="chapter-journey-status" aria-live="polite">
     {#if currentChapterComplete}
-      <h2 bind:this={finalCompletionHeading} tabindex="-1">
+      <h2 bind:this={completionHeading} tabindex="-1">
         {pathComplete ? copy.pathComplete : copy.currentChapterComplete}
       </h2>
       {#if !pathComplete && !nextChapter && firstIncompleteChapter}
@@ -191,42 +186,41 @@
       {#if currentChapterComplete}
         <a
           class="button primary"
-          data-testid="complete-and-continue"
+          data-testid="continue-next-chapter"
           href={nextChapter.href}
-          onclick={() => emitNextChapter(nextChapter.id)}
+          onclick={() => continueToNextChapter(nextChapter.id)}
         >
           <span>{copy.nextChapter(nextChapter.title)}</span>
         </a>
-      {:else if continueWithoutSaving}
-        <a
-          class="button primary"
-          data-testid="complete-and-continue"
-          href={nextChapter.href}
-          onclick={() => emitCompletionAndNext(nextChapter.id)}
-        >
-          <span>{copy.continueWithoutSaving}</span>
-          <small>{copy.nextChapter(nextChapter.title)}</small>
-        </a>
       {:else}
-        <a
+        <button
           class="button primary"
-          data-testid="complete-and-continue"
-          href={nextChapter.href}
-          onclick={completeBeforeNavigation}
+          data-testid="complete-chapter"
+          type="button"
+          disabled={!hydrated || completionSubmitted}
+          onclick={completeChapter}
         >
-          <span>{copy.completeAndContinue}</span>
-          <small>{copy.nextChapter(nextChapter.title)}</small>
-        </a>
+          {copy.completeChapter}
+        </button>
+        <noscript>
+          <a
+            class="button primary"
+            data-testid="continue-next-chapter"
+            href={nextChapter.href}
+          >
+            <span>{copy.nextChapter(nextChapter.title)}</span>
+          </a>
+        </noscript>
       {/if}
     {:else if !currentChapterComplete}
       <button
         class="button primary"
-        data-testid="complete-and-continue"
+        data-testid="complete-chapter"
         type="button"
-        disabled={!hydrated}
-        onclick={completeFinalChapter}
+        disabled={!hydrated || completionSubmitted}
+        onclick={completeChapter}
       >
-        {copy.completeAndContinue}
+        {copy.completeChapter}
       </button>
     {/if}
   </div>

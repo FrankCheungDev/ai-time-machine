@@ -74,7 +74,7 @@ await englishCheckPage.close();
 
 const chinesePrivacyPage = await openPage("/privacy/", {
   width: 1440,
-  height: 1600,
+  height: 1900,
 });
 await chinesePrivacyPage
   .getByRole("heading", { name: "匿名学习指标仅在正式域名启用" })
@@ -87,7 +87,7 @@ await chinesePrivacyPage.close();
 
 const englishPrivacyPage = await openPage(
   "/en/privacy/",
-  { width: 1440, height: 1600 },
+  { width: 1440, height: 1900 },
   "en-US",
 );
 await englishPrivacyPage

@@ -24,7 +24,7 @@ P2-05 要根据真实学习者数据调整章节与交互。代码已经在浏�
 - 仍然保持纯静态站点，不增加项目自有后端、数据库、用户系统或运行时 secret。
 - 只发送现有五类学习事件和已经评审的字段。
 - 不发送用户输入正文、答案文字、姓名、邮箱、账号、访客 id、设备指纹或项目生成的跨会话标识。
-- 不主动发送精确时间戳、完整页面 URL、query、hash、referrer、IP 或 User-Agent。
+- 不复制或发送浏览器当前/原始 URL、query、hash、referrer，也不主动发送精确事件时间戳、IP 或 User-Agent；Events API 所需 URL 由注册表重建为正式域名下的规范 absolute chapter URL，Plausible 会记录事件接收时间。
 - 只有正式域名 `atlas.z-ai.cc` 可以加载 provider；本地和 Cloudflare 预览不能加载。
 - 自动化、smoke 和开发者流量必须在发送前被排除，不能在查询后靠猜测扣除。
 - Stats API key 只能存在于本机安全存储或受控 CI secret，不进入浏览器、仓库、PR、日志或构建产物。
@@ -32,13 +32,15 @@ P2-05 要根据真实学习者数据调整章节与交互。代码已经在浏�
 
 ## 3. 候选方案核查
 
-| 方案                      | 功能证据                                                                                                                                                 | 隐私与运维影响                                                                                                                                                                                                                                                | 结论                                                                                                              |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Plausible Hosted Business | 支持 JavaScript 自定义事件、custom properties、按访客计算的漏斗、设备过滤和 Stats API；API 可查询 visitors、events、conversion rate、device 与自定义属性 | 无 cookie 或持久标识；但每个 HTTP 请求仍会携带 IP 与 User-Agent，Plausible 用它们和每日 salt 生成 24 小时标识，并从中派生设备与地区；原始 IP/User-Agent 不存储，数据在欧盟处理。Custom properties 与 funnels 属于 Business 功能，需要付费账户和 Stats API key | **已批准采用**。所有者于 2026-07-26 批准每日匿名标识、设备/地区派生、费用和欧盟数据处理；账户与观察前置项仍须完成 |
-| Cloudflare Web Analytics  | 提供页面、路径、设备、浏览器和性能维度                                                                                                                   | 官方 FAQ 明确不支持直接向 RUM endpoint 做 custom integration；beacon 面向页面浏览与性能，不能表达本站五类学习事件。自动注入还曾与本站隐私声明冲突                                                                                                             | **不用于 P2-05**。保留托管层 edge analytics 与学习证据的隔离                                                      |
-| Umami Cloud               | 支持自定义事件、事件数据和 API；API 有 event、device、language 等维度                                                                                    | tracker 默认包含 hostname、language、referrer、screen、title 和 URL，超过当前白名单；Cloud 的驻留、保留、删除与访问控制仍需单独审核                                                                                                                           | **暂不采用**。功能可行，但最小化配置和托管条款证据弱于推荐项                                                      |
-| 自托管 Umami              | 与 Umami Cloud 相同，并可自行控制数据                                                                                                                    | 官方文档要求 PostgreSQL；会给纯静态项目增加数据库、部署、备份、安全与删除责任                                                                                                                                                                                 | **拒绝**。违反本项目静态、无数据库边界                                                                            |
-| 人工同意的本地记录导出    | 不自动联网，可由参与者主动交付匿名本地记录                                                                                                               | 需要另行实现本地事件记录、导出、知情同意和人工招募；目前没有真实参与者或观察窗口                                                                                                                                                                              | **无 provider 时的回退方案**，但不能用作者、CI 或 smoke 生成的文件替代真实参与者                                  |
+| 方案                      | 功能证据                                                                                                                                                                                                       | 隐私与运维影响                                                                                                                                                                                                                                                | 结论                                                                                                              |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Plausible Hosted Business | 支持 JavaScript 自定义事件、custom properties、Dashboard sequential funnels、设备过滤和公开 Stats API 聚合查询；公开 Stats API 可查询 visitors、events、device 与自定义属性，但不提供 sequential-funnel metric | 无 cookie 或持久标识；但每个 HTTP 请求仍会携带 IP 与 User-Agent，Plausible 用它们和每日 salt 生成 24 小时标识，并从中派生设备与地区；原始 IP/User-Agent 不存储，数据在欧盟处理。Custom properties 与 funnels 属于 Business 功能，需要付费账户和 Stats API key | **已批准采用**。所有者于 2026-07-26 批准每日匿名标识、设备/地区派生、费用和欧盟数据处理；账户与观察前置项仍须完成 |
+| Cloudflare Web Analytics  | 提供页面、路径、设备、浏览器和性能维度                                                                                                                                                                         | 官方 FAQ 明确不支持直接向 RUM endpoint 做 custom integration；beacon 面向页面浏览与性能，不能表达本站五类学习事件。自动注入还曾与本站隐私声明冲突                                                                                                             | **不用于 P2-05**。保留托管层 edge analytics 与学习证据的隔离                                                      |
+| Umami Cloud               | 支持自定义事件、事件数据和 API；API 有 event、device、language 等维度                                                                                                                                          | tracker 默认包含 hostname、language、referrer、screen、title 和 URL，超过当前白名单；Cloud 的驻留、保留、删除与访问控制仍需单独审核                                                                                                                           | **暂不采用**。功能可行，但最小化配置和托管条款证据弱于推荐项                                                      |
+| 自托管 Umami              | 与 Umami Cloud 相同，并可自行控制数据                                                                                                                                                                          | 官方文档要求 PostgreSQL；会给纯静态项目增加数据库、部署、备份、安全与删除责任                                                                                                                                                                                 | **拒绝**。违反本项目静态、无数据库边界                                                                            |
+| 人工同意的本地记录导出    | 不自动联网，可由参与者主动交付匿名本地记录                                                                                                                                                                     | 需要另行实现本地事件记录、导出、知情同意和人工招募；目前没有真实参与者或观察窗口                                                                                                                                                                              | **无 provider 时的回退方案**，但不能用作者、CI 或 smoke 生成的文件替代真实参与者                                  |
+
+Plausible 的产品能力与公开 API 能力必须分开理解：Dashboard 能展示配置好的 sequential funnels，但公开 Stats API v2 没有 funnel metric。正式证据因此必须把 Dashboard 人工采集的顺序漏斗聚合值与公开 Stats API 的自测聚合值合并；禁止把独立事件计数相除后命名为顺序转化，也禁止依赖未公开 Dashboard API、浏览器 cookie 或 session 做导出。
 
 ### 3.1 获批方案的隐私差异
 
@@ -75,6 +77,8 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 - `correct` 等非字符串字段采用固定枚举序列化，并以网络契约测试锁定；
 - 任何未知事件、未知字段或非正式 hostname 都必须在发送前丢弃。
 
+完成与续学必须是两个独立用户动作：点击“标记本章完成”只发送 `core_interaction_completed` 并留在本页；之后用户单独点击“下一章”才发送 `next_chapter_continued`。禁止同一次点击发送两者，否则第二个漏斗会被产品结构强制接近 100%；终章不显示下一章动作，也没有续学漏斗结果。
+
 ## 5. 流量排除协议
 
 1. 发送模块在运行时精确匹配 `window.location.origin === "https://atlas.z-ai.cc"`；本地、CI 和 preview 不动态加载适配器。项目不加载 Plausible 外部脚本，而是使用官方 Events API 的最小请求契约。
@@ -87,8 +91,8 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 
 - 从启用 PR 的生产部署与网络复验均成功后的下一个完整自然日开始。
 - 首个观察窗口至少 14 个完整自然日；发布当天和不完整结束日不计入。
-- 章节级调整至少需要该章节 50 个真实 `chapter_started` 聚合访客；不足则延长窗口，不作“数据驱动”改动。
-- 语言或设备分段只在对应 cell 至少 30 个聚合访客时作方向性比较；低于该数只报告样本不足。
+- 章节总体 cell 的每个比率都按自己的分母应用 50 位真实聚合访客门槛；不能用 `chapter_started` 充当所有比率的统一样本量。
+- 语言或设备 cell 的每个比率都按自己的分母应用 30 位聚合访客门槛；任一适用比率低于该数时，该 cell 只报告样本不足。
 - 不使用行业 benchmark。只比较同一站点、同一查询定义下的章节差异，或后续独立窗口的前后变化。
 - 第一轮只选择一个有充分样本、且在核心完成率、续学率、首次正确率或解释展开率中出现最大可解释缺口的章节。
 - 调整 PR 必须写清假设、目标指标、非目标、改动前窗口、样本量、查询定义和教学简化；一次只改一个主要交互假设。
@@ -96,14 +100,14 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 
 ### 6.1 固定指标定义
 
-| 指标           | 分子                                                    | 分母                                         |
-| -------------- | ------------------------------------------------------- | -------------------------------------------- |
-| 核心交互完成率 | 完成 `core_interaction_completed` 的漏斗访客            | 完成 `chapter_started` 的漏斗访客            |
-| 完成后续学率   | 完成 `next_chapter_continued` 的漏斗访客                | 完成 `core_interaction_completed` 的漏斗访客 |
-| 自测首次正确率 | 首次 `concept_check_completed` 且 `correct=true` 的访客 | 首次触发 `concept_check_completed` 的访客    |
-| 解释展开率     | 完成 `concept_explanation_opened` 的访客                | 触发 `concept_check_completed` 的访客        |
+| 指标           | 分子                                                    | 分母                                         | 权威数据源                         |
+| -------------- | ------------------------------------------------------- | -------------------------------------------- | ---------------------------------- |
+| 核心交互完成率 | 完成 `core_interaction_completed` 的漏斗访客            | 进入 `chapter_started` 的漏斗访客            | Dashboard `started-to-core` funnel |
+| 完成后续学率   | 完成 `next_chapter_continued` 的漏斗访客                | 进入 `core_interaction_completed` 的漏斗访客 | Dashboard `core-to-continued`      |
+| 自测首次正确率 | 首次 `concept_check_completed` 且 `correct=true` 的访客 | 首次触发 `concept_check_completed` 的访客    | 公开 Stats API 聚合查询            |
+| 解释展开率     | 完成 `concept_explanation_opened` 的访客                | 触发 `concept_check_completed` 的访客        | 公开 Stats API 聚合查询            |
 
-所有漏斗使用 sequential 顺序；允许学习者在步骤间查看解释或页面内容。查询按 `chapterId` 过滤，并分别输出总体、`locale` 和获批的粗粒度 device 维度。
+两个 Dashboard 漏斗都使用 sequential 顺序并允许学习者在步骤间查看解释或页面内容。采集任务按 `chapterId` 过滤，并分别覆盖总体、`locale` 和获批的粗粒度 device 维度。终章的完成后续学率明确为 N/A。Stats API 只提供自测相关的四个独立聚合计数，不承担顺序证明。
 
 ## 7. 分批实施
 
@@ -124,13 +128,14 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 
 - 冻结事件名、字段、漏斗和排除规则；
 - 运行至少 14 个完整自然日；
-- 先用 `pnpm --silent export:learning-metrics -- ... --dry-run` 保存并评审无密钥查询计划，再通过 secret manager 临时注入 `PLAUSIBLE_STATS_API_KEY` 执行正式导出；`--silent` 保证重定向文件只有 JSON，CLI 不接受命令行 key；
-- 导出器固定运行 18 个 Stats API v2 `visitors` 聚合查询：六个事件计数分别按 overall、`locale`、`visit:device` breakdown。它拒绝非规范查询、未知维度、分页截断和缺失响应，并生成 `packages/data/src/learning/metrics.ts` 定义的 77 行 schema v2；
-- Stats API 结果按事件步骤聚合，不用 session 级 `has_done` 冒充顺序漏斗。两个 Dashboard sequential funnels、站内发射契约和导出层级校验共同固定顺序语义；
+- 先用 `pnpm --silent export:learning-metrics -- ... --dry-run` 保存并评审无密钥计划；计划固定为 12 个 Stats API v2 `visitors` 查询（四个自测计数 × overall / locale / device）和 147 个 Dashboard sequential-funnel capture tasks（77 个 started-to-core、70 个非终章 core-to-continued）；
+- 操作员按 capture plan 从 Dashboard 人工记录 aggregate-only entered / converted visitors 与唯一的安全相对 evidence refs；每个 ref 禁止空段、`.` / `..`、绝对路径、反斜杠、URL scheme、query、hash 和尾斜杠。证据文件必须绑定完全相同的观察窗口、两个漏斗定义、operator attestation、不同评审者的 reviewer attestation，以及经复核证据包原始 bytes 的 lowercase SHA-256；
+- 通过 secret manager 临时注入 `PLAUSIBLE_STATS_API_KEY`，并同时以 `--dashboard-funnel-evidence=PATH` 提供证据 JSON、以 `--dashboard-funnel-evidence-bundle=PATH` 提供经复核 bundle 后执行正式导出；导出器必须在读取或删除 key、发起网络请求前重新计算 bundle digest 并精确匹配。`--silent` 保证重定向文件只有 JSON，CLI 不接受命令行 key、cookie、session 或内部 API 参数，未知参数错误也不得回显 `=` 后的值；
+- 导出器生成 `packages/data/src/learning/metrics.ts` 定义的 77 行 schema v3。每行独立保存两个漏斗的 entered / converted counts 与 evidence refs、四个自测计数；终章的 core-to-continued 字段必须为 `null` / N/A；
 - 运行 `pnpm analyze:learning-metrics -- <aggregate-export.json>`；分析器会拒绝不完整窗口、未确认真实流量、未排除自动化、原始事件/个人数据、未知字段、非规范章节/分段和不可能的漏斗计数；
-- 将不达门槛的结果明确标记为 insufficient evidence。
+- 每个比率按自身分母应用总体 50 / 分段 30 门槛，并将不达门槛的结果明确标记为 insufficient evidence。
 
-导出器和分析器要求每章恰好包含一个总体行、两个 locale 行和四个 device 行，并从章节注册表派生合法 id。导出器只把密钥放在 Plausible Authorization header，stdout 仅包含查询计划或通过验证的聚合导出；分析器不联网、不写文件、不验证外部 attestation 的真实性，也不会自行选择产品改动或把 P2-05 标记完成。
+导出器和分析器要求每章恰好包含一个总体行、两个 locale 行和四个 device 行，并从章节注册表派生合法 id。它们验证 converted ≤ entered、started-to-core converted ≤ core-to-continued entered（不要求相等）以及首次正确 ≤ 首次作答 ≤ 自测发生。解释展开与自测发生来自两个独立事件的 aggregate visitor counts，不宣称同一 cohort 或 sequential 顺序，因此观察窗口边界上的解释展开率可以超过 100%。导出器只把 Stats key 放在公开 API 的 Plausible Authorization header，stdout 仅包含计划或通过验证的聚合导出；分析器不联网、不写文件，也无法自行证明人工 attestation 的真实性、选择产品改动或把 P2-05 标记完成。
 
 ### P2-05C：单点数据驱动调整
 
@@ -149,7 +154,7 @@ Plausible Hosted 虽然不存储原始 IP/User-Agent，也不生成跨日持久�
 - [ ] 指定拥有 provider dashboard 和 Stats API 读取权限的人。
 - [ ] 确认 Stats API key 的安全存放方式，不进入公开构建。
 - [x] 批准至少 14 个完整自然日的观察窗口。
-- [x] 批准 50 个章节总体访客和 30 个分段访客的最低决策门槛。
+- [x] 批准每个比率按自身分母执行章节总体 50、语言/设备分段 30 位访客的最低决策门槛。
 - [ ] 确认正式观察期开始前有真实学习者流量来源。
 
 本次批准是对上一轮明确列出的费用、欧盟数据处理、临时 IP/User-Agent、每日匿名标识、设备派生、14 天窗口和 50/30 门槛的整体确认。账户、Dashboard 责任人、Stats API key 实际存放和真实流量仍需要外部配置，不能由代码或测试结果代替。具体站点设置、排除、发布、观察和 removal 步骤见 [`P2_PLAUSIBLE_RUNBOOK.md`](P2_PLAUSIBLE_RUNBOOK.md)。

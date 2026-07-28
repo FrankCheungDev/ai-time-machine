@@ -24,6 +24,12 @@ test("privacy pages disclose production-only Plausible processing in both langua
       provider: "Plausible 如何处理请求",
       excluded: "明确排除的数据",
       nav: "隐私",
+      canonicalUrlDisclosure:
+        "正式域名上的严格适配器不会复制浏览器当前或原始完整 URL、query 或 hash；它会重建并发送正式域名 https://atlas.z-ai.cc 上的规范绝对章节 URL（canonical absolute chapter URL），以及对应的白名单属性：",
+      receiptTimeDisclosure:
+        "项目不会生成或主动发送精确事件时间戳；Plausible 会记录每个事件到达其服务的接收时间。",
+      excludedUrlDisclosure:
+        "访客 id、项目设备指纹、项目生成的精确事件时间戳、浏览器当前或原始完整 URL、query、hash、referrer 或跨站标识符。",
     },
     {
       route: "/en/privacy/",
@@ -32,6 +38,12 @@ test("privacy pages disclose production-only Plausible processing in both langua
       provider: "How Plausible Processes A Request",
       excluded: "Explicitly Excluded Data",
       nav: "Privacy",
+      canonicalUrlDisclosure:
+        "The production adapter does not copy the browser's current or original full URL, query, or hash. It reconstructs and sends a canonical absolute chapter URL on the production domain https://atlas.z-ai.cc, together with only its allowed properties:",
+      receiptTimeDisclosure:
+        "The project does not generate or actively send a precise event timestamp; Plausible records the receipt time when each event reaches its service.",
+      excludedUrlDisclosure:
+        "Visitor IDs, project device fingerprints, project-generated precise event timestamps, the browser's current or original full URL, query, hash, referrer, or cross-site identifiers.",
     },
   ];
 
@@ -52,6 +64,15 @@ test("privacy pages disclose production-only Plausible processing in both langua
     await expect(
       page.getByRole("link", { name: entry.nav, exact: true }),
     ).toHaveAttribute("aria-current", "page");
+    await expect(
+      page.getByText(entry.canonicalUrlDisclosure, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(entry.receiptTimeDisclosure, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(entry.excludedUrlDisclosure, { exact: true }),
+    ).toBeVisible();
     await expect(page.getByText(/visitor id|访客 id/i).first()).toBeVisible();
     await expect(
       page.getByText(/daily identifier|每日.*匿名标识/i).first(),
@@ -149,7 +170,11 @@ test("the narrow Plausible CSP preserves self-check hydration and continuation",
   await expect(
     check.getByRole("heading", { level: 3, name: "回答正确" }),
   ).toBeVisible();
-  await page.getByTestId("complete-and-continue").click();
+  await page.getByTestId("complete-chapter").click();
+  await expect(page).toHaveURL(/\/chapters\/search\/$/);
+  await page.waitForTimeout(50);
+  expect(forbiddenRequests).toEqual([]);
+  await page.getByTestId("continue-next-chapter").click();
   await expect(page).toHaveURL(/\/chapters\/expert-system\/$/);
   expect(forbiddenRequests).toEqual([]);
 });

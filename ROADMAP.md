@@ -9,7 +9,7 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 - Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, LLM systems, RAG, Agent, and Safety / Eval.
 - Nine teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Complete Chinese and English routes with resumable local learning progress,
-  chapter completion, and previous/next navigation.
+  separate chapter-completion and next-chapter actions, and previous navigation.
 - Timeline, lineage map, and a manifest-driven diagram library with SVG and PNG assets for all nine demos.
 - Twenty-two source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
@@ -49,7 +49,10 @@ correctness gates defined in the process document.
 
 The next adjustment cycle must use an approved observation window and genuine
 aggregate learner traffic. CI, Playwright, preview checks, production smoke, and
-developer interactions are excluded from product metrics. See
+developer interactions are excluded from product metrics. Sequential-funnel
+results come from independently reviewed, aggregate-only Dashboard captures;
+the public Stats API supplies self-check counts but no sequential-funnel metric.
+See
 [`docs/P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](docs/P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)
 for the provider gate, event allowlist, and fact-check record.
 

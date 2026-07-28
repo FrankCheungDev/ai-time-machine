@@ -8,9 +8,9 @@
 
 ## 1. 已批准的处理边界
 
-项目所有者已批准 Plausible Hosted Business 费用、欧盟数据处理、请求阶段的 IP/User-Agent 临时处理、每日匿名标识、粗粒度设备派生、至少 14 个完整自然日的观察窗口，以及章节总体 50、语言/设备分段 30 位访客的最低决策门槛。
+项目所有者已批准 Plausible Hosted Business 费用、欧盟数据处理、请求阶段的 IP/User-Agent 临时处理、每日匿名标识、粗粒度设备派生、至少 14 个完整自然日的观察窗口，以及每个指标按自身分母执行的最低决策门槛：章节总体 50 位访客，语言/设备分段 30 位访客。
 
-浏览器只向 `https://plausible.io/api/event` 发送五类自定义事件。项目不加载 Plausible 外部脚本，不自动记录 pageview、出站链接、下载、表单或 404，也不发送 cookie、项目 visitor/session id、用户输入、精确时间戳、浏览器当前完整 URL、query、hash 或 referrer。事件 URL 由章节注册表重新生成，只包含正式域名和规范章节路径。
+浏览器只向 `https://plausible.io/api/event` 发送五类自定义事件。项目不加载 Plausible 外部脚本，不自动记录 pageview、出站链接、下载、表单或 404，也不发送 cookie、项目 visitor/session id、用户输入、浏览器当前/原始 URL、query、hash 或 referrer。事件 URL 由章节注册表重新生成为 `https://atlas.z-ai.cc` 下的规范 absolute chapter URL。项目不主动发送事件时间戳；Plausible 会记录事件到达服务端的接收时间。
 
 Plausible 会从网络请求必然携带的 IP 与 User-Agent 派生浏览器、操作系统、设备与地区，并用每日 salt 生成 24 小时匿名标识。项目只使用 `Desktop`、`Laptop`、`Tablet`、`Mobile` 聚合设备分段，不查询或导出地区、浏览器版本或单个访问轨迹。聚合数据保留在所有者账户中，直到所有者删除站点或账户；Plausible 的 DPA 与 data policy 承诺永久删除且无不当延迟。
 
@@ -32,6 +32,8 @@ Plausible 会从网络请求必然携带的 IP 与 User-Agent 派生浏览器、
    - `core_interaction_completed` → `next_chapter_continued`
 6. 确认 custom properties 可按 `chapterId`、`locale`、`completionSource`、`correct`、`attempt`、`nextChapterId` 过滤。
 7. 指定唯一的 dashboard / Stats API 责任人，并开启账户 2FA。
+
+站内交互必须与两个漏斗的决策语义一致：用户先点击“标记本章完成”，页面留在本章且只发送 `core_interaction_completed`；随后出现的“下一章”链接在被单独点击时才发送 `next_chapter_continued`。禁止一次点击同时发送两个事件；终章没有“下一章”动作，也不采集第二个漏斗。
 
 ### 2.1 配置执行记录（2026-07-27 至 2026-07-28，Asia/Shanghai）
 
@@ -87,14 +89,14 @@ Stats API key 只用于观察期结束后的聚合查询：
 ### PR preview
 
 1. 确认页面仍有 `data-learning-signal-collection="plausible-production"`，说明构建包含已批准模式。
-2. 完成章节开始、自测、解释与续学流程。
+2. 完成章节开始、自测、解释流程；先点击“标记本章完成”并确认仍停留在本页，再单独点击“下一章”。
 3. Network 中必须没有 `plausible.io` 请求；Cloudflare preview hostname 不能进入发送模块。
 4. 确认 CSP 只增加 `connect-src https://plausible.io/api/event`，`script-src` 仍只允许本站脚本。
 
 ### Production
 
 1. 发布人员先设置 `plausible_ignore=true`，再运行 `pnpm smoke:production:privacy`。
-2. Smoke 必须观察到五类站内信号，同时对 Plausible、Cloudflare beacon 与 RUM 保持零请求。
+2. Smoke 必须观察到五类站内信号，并证明完成与下一章是两个独立动作，同时对 Plausible、Cloudflare beacon 与 RUM 保持零请求。
 3. 检查生产 HTML、CSP、双语隐私页和规范章节路径。
 4. 在 Dashboard 确认站点、五个 goals、两个 funnels、hostname allowlist、timezone 和访问责任人均已配置。
 5. 只在以上检查完成且有真实学习者流量入口时记录观察期开始日。发布者自己的事件不能用于 Dashboard 验证。
@@ -103,20 +105,34 @@ Stats API key 只用于观察期结束后的聚合查询：
 
 - 事件映射、属性、funnels 和排除规则在观察期内冻结。
 - 开始日与 `endDateExclusive` 都按 `Asia/Shanghai` 的完整自然日记录，至少相差 14 天。
-- 使用 Stats API v2 的 `POST /api/v2/query`，只查询 aggregate `visitors`。固定查询计划包含六个事件计数 × overall / locale / device 三种分段，共 18 个请求，再生成协议要求的 11 × 7 = 77 行。
+- 公开 Stats API v2 的 `POST /api/v2/query` 只负责四个自测相关的 aggregate `visitors` 计数：自测发生、首次作答、首次作答正确、解释展开；每项分别查询 overall、locale、device，共 12 个请求。
+- 两个 sequential funnel 的 entered / converted visitors 只能来自 Plausible Dashboard 对同一观察窗口和同一冻结过滤条件的人工聚合采集。公开 Stats API 没有 sequential-funnel metric；独立事件访客数即使来自同一日期和分段，也不能相除后冒充顺序漏斗。
+- 固定 Dashboard 采集计划包含 147 个任务：`started-to-core` 覆盖 11 章 × 7 分段 = 77 个 cell；`core-to-continued` 只覆盖前 10 章 × 7 分段 = 70 个 cell。终章续学计数与 evidence ref 在最终导出中必须是 `null` / N/A，不能写成 0。
 - 设备值映射为：`Desktop` → `desktop`、`Laptop` → `laptop`、`Tablet` → `tablet`、`Mobile` → `mobile`。
-- Stats API 查询的是漏斗对应事件步骤的聚合访客数，不把 `has_done` 的同 session 行为过滤误写成顺序证明。步骤先后由站内事件发射契约和 Dashboard 中冻结的两个 sequential funnels 验证；导出器继续校验计数层级。
+- 禁止调用 Plausible 未公开的 Dashboard 内部 API，禁止向脚本、导出器、证据文件或对话提供浏览器 cookie、session、Access token 或其他已登录状态。Stats API key 只能调用公开 Stats API，并继续遵守第 4 节的 secret 边界。
 - 先运行以下无密钥 dry run，人工审查并保存完整查询定义。API 的 date range 为闭区间，因此 `endDateExclusive` 会转换成前一天作为查询结束日：
 
       pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --dry-run > plausible-query-plan.json
 
-- 由 secret manager 向同一命令进程注入 `PLAUSIBLE_STATS_API_KEY` 后，只有在每项声明真实成立时才运行正式导出：
+  dry run 输出必须恰好包含 12 个 Stats API 查询和 `requiredFunnelEvidence.captureTasks` 中的 147 个 Dashboard 采集任务；它不读取 key，也不调用网络。
 
-      pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --attest-real-learner-traffic --attest-production-dashboard-verified --attest-ci-preview-smoke-developer-excluded --attest-filters-frozen > aggregate-export.json
+- 操作员按 dry-run 任务逐项在 Dashboard 记录 aggregate-only 的 `enteredVisitors`、`convertedVisitors` 与唯一、非敏感 `evidenceRef`。`evidenceRef` 必须是安全的相对 artifact path：每段非空且不得为 `.` / `..`，不得使用绝对路径、反斜杠、URL scheme、query、hash 或尾斜杠。证据输入文件使用独立的 funnel-evidence schema v1，并必须固定以下内容：
+  - source 为 `operator-supplied-plausible-dashboard`，site、reporting timezone、观察窗口、两个 funnel 定义和 capture plan 与 dry run 完全一致；
+  - 恰好 147 个 capture，且每项的 `captureId`、funnel、chapter、locale、device 与任务一致；
+  - `operatorAttestation.dashboardCountsTranscribed` 与 `aggregateOnlyConfirmed` 均为 `true`；
+  - 由不同于操作员的评审者逐项复核，并把 `reviewerAttestation.independentlyReviewed` 与 `capturePlanMatched` 设为 `true`；
+  - `evidenceBundleSha256` 为被复核证据包原始 bytes 的 lowercase SHA-256；证据包只保留聚合 cell 与必要上下文，先裁剪/脱敏账户界面，不包含凭据、cookie、session、个人级轨迹或原始事件；正式导出必须单独提供该 bundle 文件，导出器会在读取或删除 Stats API key、发起任何网络请求之前重新计算并比对 digest；
+  - `capturedAt` 不早于 `endDateExclusive` 在 `Asia/Shanghai` 的开始时刻；文件中的 observation window 与查询计划完全一致。
+
+- 由 secret manager 向同一命令进程注入 `PLAUSIBLE_STATS_API_KEY` 后，只有在证据与每项声明真实成立时才运行正式导出。CLI 必须同时提供证据 JSON 与经复核 bundle：
+
+      pnpm --silent export:learning-metrics -- --start-date=YYYY-MM-DD --end-date-exclusive=YYYY-MM-DD --dashboard-funnel-evidence=/controlled/path/plausible-funnel-evidence.json --dashboard-funnel-evidence-bundle=/controlled/path/plausible-funnel-evidence-bundle.zip --attest-real-learner-traffic --attest-production-dashboard-verified --attest-ci-preview-smoke-developer-excluded --attest-filters-frozen > aggregate-export.json
 
 - `--attest-production-dashboard-verified` 表示正式站点、timezone、hostname allowlist、五个 goals 和两个 sequential funnels 已逐项核验；组合排除声明表示 CI、preview、smoke 与开发者均在观察窗口开始前排除。不得为了让 CLI 通过而虚假声明。
-- schema v2 导出保存窗口、样本量和明确 attestation，不保存 API key、原始响应、个人级事件、IP 或每日匿名 id；未知字段、未知章节/语言/设备、分页截断和非规范查询都会失败。
-- 运行 `pnpm analyze:learning-metrics -- <aggregate-export.json>`。任何 cell 不达门槛都标记为 insufficient evidence，不能用扩窗外数据、测试流量或合成值补齐。查询计划与聚合导出只放入经评审的证据位置；提交前再次确认不含 secret 或个人数据。
+- schema v3 最终导出必须恰好包含 11 章 × 7 个规范分段 = 77 行。每行分别保存两个 funnel 的 entered / converted counts 与非敏感 evidence refs，以及四个 Stats API 自测计数；终章的第二个 funnel 字段均为 `null`。
+- 导出器验证每个 funnel 的 converted ≤ entered、`started-to-core.converted ≤ core-to-continued.entered`（允许不相等）以及首次正确 ≤ 首次作答 ≤ 自测发生；它还拒绝未知字段、未知章节/语言/设备、不安全或重复的 evidence ref、分页截断、非规范查询和窗口不一致。
+- 运行 `pnpm analyze:learning-metrics -- <aggregate-export.json>`。四个比率分别用自己的分母判断门槛：核心完成率用 started-to-core entered，续学率用 core-to-continued entered，首次正确率用首次作答，自测解释展开率用自测发生。总体 cell 的每个适用分母至少 50，locale/device cell 的每个适用分母至少 30；终章续学率为 N/A，不参与该项门槛。解释展开与自测发生是两个独立事件的访客数，不是同一 cohort 或 sequential funnel；在观察窗口边界上解释展开率可以超过 100%。任一适用比率不达门槛都标记为 insufficient evidence，不能用扩窗外数据、测试流量或合成值补齐。
+- schema v3 保存窗口、样本量、Dashboard evidence metadata、operator / reviewer attestations 和 evidence bundle SHA-256；不保存 API key、公开 API 原始响应、个人级事件、IP 或每日匿名 id。查询计划、证据输入和聚合导出只放入经评审的受控证据位置；提交前再次确认不含 secret 或个人数据。
 
 ## 7. 移除与回滚
 

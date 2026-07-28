@@ -201,7 +201,10 @@ test("overview completion persists across reload and resumes from Search on home
 }) => {
   await seedLearningProgress(page, []);
   await page.goto("/chapters/overview/");
-  await page.getByTestId("complete-and-continue").click();
+  await page.getByTestId("complete-chapter").click();
+  await expect(page).toHaveURL(/\/chapters\/overview\/$/);
+  await expect(page.getByRole("heading", { name: "本章已完成" })).toBeFocused();
+  await page.getByTestId("continue-next-chapter").click();
   await expect(page).toHaveURL(/\/chapters\/search\/$/);
 
   await page.goto("/");
@@ -218,7 +221,7 @@ test("locale shares Chinese progress with the English home continuation", async 
 }) => {
   await seedLearningProgress(page, []);
   await page.goto("/chapters/overview/");
-  await page.getByTestId("complete-and-continue").click();
+  await page.getByTestId("complete-chapter").click();
 
   await page.goto("/en/");
   const progress = page.getByTestId("home-learning-progress");
@@ -308,16 +311,26 @@ for (const [index, chapter] of chapterCases.entries()) {
     }
 
     const nextChapter = chapterCases[index + 1];
-    const completionControl = journey.getByTestId("complete-and-continue");
+    const completionControl = journey.getByTestId("complete-chapter");
+    await expect(completionControl).toHaveRole("button");
+    await expect(completionControl).toHaveText("标记本章完成");
+    await expect(journey.getByTestId("continue-next-chapter")).toHaveCount(0);
+
+    await completionControl.click();
+    expect(new URL(page.url()).pathname).toBe(chapter.route);
+    await expect(
+      journey.getByRole("heading", { name: "本章已完成" }),
+    ).toBeFocused();
+
     if (nextChapter) {
-      await expect(completionControl).toHaveRole("link");
-      await expect(completionControl).toHaveAttribute(
-        "href",
-        nextChapter.route,
-      );
-      await expect(completionControl).toContainText(nextChapter.title);
+      const continuationLink = journey.getByTestId("continue-next-chapter");
+      await expect(completionControl).toHaveCount(0);
+      await expect(continuationLink).toHaveRole("link");
+      await expect(continuationLink).toHaveAttribute("href", nextChapter.route);
+      await expect(continuationLink).toContainText(nextChapter.title);
     } else {
-      await expect(completionControl).toHaveRole("button");
+      await expect(completionControl).toHaveCount(0);
+      await expect(journey.getByTestId("continue-next-chapter")).toHaveCount(0);
       await expect(
         journey.getByRole("link", { name: "回顾时间线" }),
       ).toHaveAttribute("href", "/timeline/");
@@ -338,9 +351,7 @@ test("keeps chapter navigation usable without JavaScript", async ({
   const page = await context.newPage();
   await page.goto("/chapters/rag/");
   await expect(
-    page.getByTestId("chapter-journey").getByRole("link", {
-      name: /Agent/,
-    }),
+    page.getByTestId("chapter-journey").getByTestId("continue-next-chapter"),
   ).toHaveAttribute("href", "/chapters/agent/");
   await context.close();
 });
@@ -366,12 +377,13 @@ test("completed chapters continue without rewriting progress", async ({
     journey.getByRole("heading", { name: "本章已完成" }),
   ).toBeVisible();
 
-  const completionLink = journey.getByTestId("complete-and-continue");
-  await expect(completionLink).toHaveRole("link");
-  await expect(completionLink).toHaveText("下一章：Agent Loop");
-  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
+  await expect(journey.getByTestId("complete-chapter")).toHaveCount(0);
+  const continuationLink = journey.getByTestId("continue-next-chapter");
+  await expect(continuationLink).toHaveRole("link");
+  await expect(continuationLink).toHaveText("下一章：Agent Loop");
+  await expect(continuationLink).toHaveAttribute("href", "/chapters/agent/");
 
-  await completionLink.click();
+  await continuationLink.click();
   await expect(page).toHaveURL(/\/chapters\/agent\/$/);
 });
 
@@ -379,28 +391,84 @@ test("falls back to no-save navigation after a storage write fails", async ({
   page,
 }) => {
   await page.addInitScript(() => {
-    Storage.prototype.setItem = () => {
-      throw new Error("storage unavailable");
+    const learningProgressKey = "ai-history-learning-progress";
+    const signalStorageKey = "two-stage-learning-signals";
+    const originalSetItem = Storage.prototype.setItem;
+
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (this === window.localStorage && key === learningProgressKey) {
+        throw new Error("storage unavailable");
+      }
+
+      return originalSetItem.call(this, key, value);
     };
+
+    if (window.sessionStorage.getItem(signalStorageKey) === null) {
+      originalSetItem.call(window.sessionStorage, signalStorageKey, "[]");
+    }
+    window.addEventListener("ai-history:learning-signal", (event) => {
+      const names = JSON.parse(
+        window.sessionStorage.getItem(signalStorageKey) ?? "[]",
+      );
+      names.push((event as CustomEvent<{ name: string }>).detail.name);
+      originalSetItem.call(
+        window.sessionStorage,
+        signalStorageKey,
+        JSON.stringify(names),
+      );
+    });
   });
   await page.goto("/chapters/rag/");
 
   const journey = page.getByTestId("chapter-journey");
-  const completionLink = journey.getByTestId("complete-and-continue");
-  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
-  await completionLink.click();
+  const completionButton = journey.getByTestId("complete-chapter");
+  await expect(completionButton).toHaveRole("button");
+  await expect(journey.getByTestId("continue-next-chapter")).toHaveCount(0);
+  await completionButton.click();
 
   await expect(page).toHaveURL(/\/chapters\/rag\/$/);
+  await expect(
+    journey.getByRole("heading", { name: "本章已完成" }),
+  ).toBeFocused();
   await expect(journey.getByTestId("storage-warning")).toContainText(
     "本设备无法保存学习进度",
   );
-  await expect(completionLink).toContainText("继续下一章（不保存进度）");
+  await expect(completionButton).toHaveCount(0);
+  const continuationLink = journey.getByTestId("continue-next-chapter");
+  await expect(continuationLink).toHaveText("下一章：Agent Loop");
+  await expect(continuationLink).toHaveAttribute("href", "/chapters/agent/");
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        JSON.parse(
+          window.sessionStorage.getItem("two-stage-learning-signals") ?? "[]",
+        ).filter((name: string) =>
+          ["core_interaction_completed", "next_chapter_continued"].includes(
+            name,
+          ),
+        ),
+      ),
+    )
+    .toEqual(["core_interaction_completed"]);
 
-  await completionLink.click();
+  await continuationLink.click();
   await expect(page).toHaveURL(/\/chapters\/agent\/$/);
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        JSON.parse(
+          window.sessionStorage.getItem("two-stage-learning-signals") ?? "[]",
+        ).filter((name: string) =>
+          ["core_interaction_completed", "next_chapter_continued"].includes(
+            name,
+          ),
+        ),
+      ),
+    )
+    .toEqual(["core_interaction_completed", "next_chapter_continued"]);
 });
 
-test("shows no-save chapter navigation immediately when storage reads fail and recovers", async ({
+test("keeps completion separate when storage reads fail and recovers", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -426,15 +494,13 @@ test("shows no-save chapter navigation immediately when storage reads fail and r
   await page.goto("/chapters/rag/");
 
   const journey = page.getByTestId("chapter-journey");
-  const completionLink = journey.getByTestId("complete-and-continue");
+  const completionButton = journey.getByTestId("complete-chapter");
   await expect(journey.getByTestId("storage-warning")).toHaveText(
     "本设备无法保存学习进度，章节仍可正常阅读。",
   );
-  await expect(completionLink).toHaveText(
-    /继续下一章（不保存进度）.*下一章：Agent Loop/,
-  );
-  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
-  await expect(completionLink).toHaveRole("link");
+  await expect(completionButton).toHaveRole("button");
+  await expect(completionButton).toHaveText("标记本章完成");
+  await expect(journey.getByTestId("continue-next-chapter")).toHaveCount(0);
 
   await page.evaluate(() => {
     (
@@ -448,21 +514,27 @@ test("shows no-save chapter navigation immediately when storage reads fail and r
   });
 
   await expect(journey.getByTestId("storage-warning")).toHaveCount(0);
-  await expect(completionLink).toHaveText(/标记完成并继续.*下一章：Agent Loop/);
-  await expect(completionLink).toHaveAttribute("href", "/chapters/agent/");
+  await expect(completionButton).toHaveText("标记本章完成");
+  await completionButton.click();
+  await expect(completionButton).toHaveCount(0);
+  await expect(journey.getByTestId("continue-next-chapter")).toHaveAttribute(
+    "href",
+    "/chapters/agent/",
+  );
 });
 
 test("completing Safety alone returns to the first incomplete chapter", async ({
   page,
 }) => {
   await page.goto("/chapters/safety/");
-  await page.getByTestId("complete-and-continue").click();
+  await page.getByTestId("complete-chapter").click();
 
   const journey = page.getByTestId("chapter-journey");
   const completionHeading = journey.getByRole("heading", {
     name: "本章已完成",
   });
   await expect(completionHeading).toBeFocused();
+  await expect(page.getByTestId("continue-next-chapter")).toHaveCount(0);
   await expect(journey.getByText("学习主线已完成")).toHaveCount(0);
   await expect(
     journey.getByRole("link", { name: "继续未完成章节：总览" }),

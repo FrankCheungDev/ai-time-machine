@@ -38,7 +38,7 @@ export interface LearningUiCopy {
   completedCount: (completed: number, total: number) => string;
   continueLearning: (title: string) => string;
   currentChapterComplete: string;
-  completeAndContinue: string;
+  completeChapter: string;
   previousChapter: (title: string) => string;
   nextChapter: (title: string) => string;
   continueFirstIncomplete: (title: string) => string;
@@ -48,7 +48,6 @@ export interface LearningUiCopy {
   confirmReset: string;
   cancelReset: string;
   storageWarning: string;
-  continueWithoutSaving: string;
   reviewTimeline: string;
   reviewLineage: string;
   reviewDiagrams: string;
@@ -65,7 +64,7 @@ export const learningUiCopy = {
     completedCount: (completed, total) => `已完成 ${completed} / ${total}`,
     continueLearning: (title) => `继续学习：${title}`,
     currentChapterComplete: "本章已完成",
-    completeAndContinue: "标记完成并继续",
+    completeChapter: "标记本章完成",
     previousChapter: (title) => `上一章：${title}`,
     nextChapter: (title) => `下一章：${title}`,
     continueFirstIncomplete: (title) => `继续未完成章节：${title}`,
@@ -75,7 +74,6 @@ export const learningUiCopy = {
     confirmReset: "确定重置",
     cancelReset: "取消",
     storageWarning: "本设备无法保存学习进度，章节仍可正常阅读。",
-    continueWithoutSaving: "继续下一章（不保存进度）",
     reviewTimeline: "回顾时间线",
     reviewLineage: "回顾谱系图",
     reviewDiagrams: "回顾图源",
@@ -90,7 +88,7 @@ export const learningUiCopy = {
     completedCount: (completed, total) => `Completed ${completed} / ${total}`,
     continueLearning: (title) => `Continue: ${title}`,
     currentChapterComplete: "Chapter complete",
-    completeAndContinue: "Mark complete and continue",
+    completeChapter: "Mark chapter complete",
     previousChapter: (title) => `Previous: ${title}`,
     nextChapter: (title) => `Next: ${title}`,
     continueFirstIncomplete: (title) => `Continue incomplete chapter: ${title}`,
@@ -101,8 +99,6 @@ export const learningUiCopy = {
     cancelReset: "Cancel",
     storageWarning:
       "Learning progress cannot be saved on this device. Chapters remain available to read.",
-    continueWithoutSaving:
-      "Continue to the next chapter (progress will not be saved)",
     reviewTimeline: "Review the timeline",
     reviewLineage: "Review the lineage",
     reviewDiagrams: "Review diagram sources",

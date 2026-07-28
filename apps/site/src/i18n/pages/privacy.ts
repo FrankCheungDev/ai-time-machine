@@ -51,11 +51,12 @@ export const privacyPageCopy = {
     providerItems: [
       "不使用 cookie、持久访客 id、项目生成的会话 id、设备指纹或跨站追踪。",
       "Plausible 会派生浏览器、操作系统、设备类型和地区；项目只读取章节、语言及 Desktop / Laptop / Tablet / Mobile 聚合分段，不导出地区、浏览器版本或单个访问轨迹。",
+      "项目不会生成或主动发送精确事件时间戳；Plausible 会记录每个事件到达其服务的接收时间。",
       "聚合数据保留在项目所有者的 Plausible 账户中，直至所有者删除站点或账户；Plausible 承诺在删除后无不当延迟地永久清除。",
     ],
     signalHeading: "发送到 Plausible 的严格信号契约",
     signalBody:
-      "正式域名上的严格适配器会再次清洗页面内部事件，只发送规范章节路径以及对应的白名单属性：",
+      "正式域名上的严格适配器不会复制浏览器当前或原始完整 URL、query 或 hash；它会重建并发送正式域名 https://atlas.z-ai.cc 上的规范绝对章节 URL（canonical absolute chapter URL），以及对应的白名单属性：",
     signalItems: [
       "开始章节。",
       "通过章节旅程标记核心交互完成。",
@@ -65,7 +66,7 @@ export const privacyPageCopy = {
     excludedHeading: "明确排除的数据",
     excludedItems: [
       "任何用户输入正文、姓名、邮箱或账号。",
-      "访客 id、项目设备指纹、精确时间戳、完整 URL、query、hash、referrer 或跨站标识符。",
+      "访客 id、项目设备指纹、项目生成的精确事件时间戳、浏览器当前或原始完整 URL、query、hash、referrer 或跨站标识符。",
       "自动页面浏览、自动化测试、预览、发布 smoke 或开发者流量。",
     ],
     clearingHeading: "如何清除",
@@ -101,11 +102,12 @@ export const privacyPageCopy = {
     providerItems: [
       "No cookies, persistent visitor IDs, project session IDs, device fingerprints, or cross-site tracking are used.",
       "Plausible derives browser, operating system, device type, and location. The project reads only chapter, locale, and aggregate Desktop / Laptop / Tablet / Mobile segments; it does not export location, browser version, or individual journeys.",
+      "The project does not generate or actively send a precise event timestamp; Plausible records the receipt time when each event reaches its service.",
       "Aggregate data remains in the project owner's Plausible account until the owner deletes the site or account; Plausible commits to permanent deletion without undue delay.",
     ],
     signalHeading: "The Strict Contract Sent To Plausible",
     signalBody:
-      "The production adapter sanitizes every in-page event again and sends only a canonical chapter path with its allowed properties:",
+      "The production adapter does not copy the browser's current or original full URL, query, or hash. It reconstructs and sends a canonical absolute chapter URL on the production domain https://atlas.z-ai.cc, together with only its allowed properties:",
     signalItems: [
       "Chapter started.",
       "Core interaction marked complete through the chapter journey.",
@@ -115,7 +117,7 @@ export const privacyPageCopy = {
     excludedHeading: "Explicitly Excluded Data",
     excludedItems: [
       "User-entered text, names, email addresses, or accounts.",
-      "Visitor IDs, project device fingerprints, precise timestamps, full URLs, queries, hashes, referrers, or cross-site identifiers.",
+      "Visitor IDs, project device fingerprints, project-generated precise event timestamps, the browser's current or original full URL, query, hash, referrer, or cross-site identifiers.",
       "Automatic pageviews, automation, previews, release smoke, or developer traffic.",
     ],
     clearingHeading: "How To Clear Records",
