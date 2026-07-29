@@ -29,6 +29,11 @@ export interface DemoChapterCopy {
   references: ChapterReference[];
 }
 
+export type StandardDemoChapterId = Exclude<
+  CanonicalDemoChapterId,
+  "llm-system"
+>;
+
 export const demoChapterCopy = {
   search: {
     "zh-CN": {
@@ -464,6 +469,6 @@ export const demoChapterCopy = {
       ],
     },
   },
-} satisfies Record<CanonicalDemoChapterId, Record<Locale, DemoChapterCopy>>;
+} satisfies Record<StandardDemoChapterId, Record<Locale, DemoChapterCopy>>;
 
-export type DemoChapterId = CanonicalDemoChapterId;
+export type DemoChapterId = StandardDemoChapterId;

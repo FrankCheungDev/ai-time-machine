@@ -437,7 +437,9 @@ test("Chapter pages expose references and simplification notes", async ({
   for (const route of chapterRoutes) {
     await page.goto(route);
     await expect(page.getByText("参考资料", { exact: true })).toBeVisible();
-    await expect(page.getByText("简化说明", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("简化说明", { exact: true }).first(),
+    ).toBeVisible();
     await expect(page.getByText("参考资料建议后续补充")).toHaveCount(0);
     await expect(
       page.locator("main a[href^='https://']").first(),

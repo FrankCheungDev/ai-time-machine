@@ -80,7 +80,7 @@ const definitions = [
   {
     id: "llm-system",
     route: "/chapters/llm-system/",
-    kind: "chapter",
+    kind: "demo",
     number: "07",
     shortTitle: { "zh-CN": "LLM 系统地图", en: "LLM System Map" },
     timelineId: "llm-system",

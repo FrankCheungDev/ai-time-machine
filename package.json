@@ -8,6 +8,7 @@
     "build": "pnpm --filter site build",
     "preview": "pnpm --filter site preview",
     "capture:safety-evidence": "node scripts/capture-safety-evidence.mjs",
+    "capture:llm-system-evidence": "node scripts/capture-llm-system-evidence.mjs",
     "capture:p2-evidence": "node scripts/capture-p2-evidence.mjs",
     "analyze:learning-metrics": "node scripts/analyze-learning-metrics.ts",
     "smoke:production:privacy": "node scripts/smoke-production-privacy.mjs",

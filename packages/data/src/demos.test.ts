@@ -26,11 +26,13 @@ import {
   getDiagramAssets,
   getExpertSystemDemo,
   getLlmSystemConnections,
+  getLlmSystemDemo,
   getLlmSystemLayers,
   getRagPipelineDemo,
   getSafetyEvalDemo,
   getSearchTreeDemo,
   llmSystemConnections,
+  llmSystemDemo,
   llmSystemLayers,
   isChapterId,
   ragPipelineDemo,
@@ -47,6 +49,7 @@ const demos = [
   bayesUpdateDemo,
   decisionBoundaryDemo,
   cnnKernelDemo,
+  llmSystemDemo,
   safetyEvalDemo,
 ];
 
@@ -138,7 +141,7 @@ describe("diagram asset registry", () => {
       .filter(({ kind }) => kind === "demo")
       .map(({ id }) => id);
 
-    expect(diagramAssets).toHaveLength(9);
+    expect(diagramAssets).toHaveLength(10);
     expect(diagramAssets.map(({ chapterId }) => chapterId)).toEqual(
       demoChapterIds,
     );
@@ -147,14 +150,20 @@ describe("diagram asset registry", () => {
     );
 
     for (const asset of diagramAssets) {
-      expect(asset.version).toBe("1.1.0");
-      expect(asset.updatedAt).toBe("2026-07-25");
+      expect(asset.version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(asset.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(asset.license).toBe("MIT");
       expect(asset.stateId.trim()).not.toBe("");
       expect(asset.stableIds.nodes.length).toBeGreaterThan(0);
       expect(asset.stableIds.arrows.length).toBeGreaterThan(0);
       expect(asset.simplificationNote.trim()).not.toBe("");
     }
+
+    expect(diagramAssets.find(({ id }) => id === "llm-system")).toMatchObject({
+      chapterId: "llm-system",
+      version: "1.3.0",
+      updatedAt: "2026-07-29",
+    });
   });
 
   it("points to readable SVG and PNG files containing every declared ID", async () => {
@@ -338,6 +347,9 @@ describe("localized data accessors", () => {
     );
     expect(getAttentionMapDemo("en").title).toBe(
       "Attention And Transformers: Why can tokens directly attend to each other?",
+    );
+    expect(getLlmSystemDemo("en").title).toBe(
+      "LLM System Boundaries: Why is one model not a complete product?",
     );
     expect(getAgentLoopDemo("en").title).toBe(
       "Agents: How do large language models execute multi-step tasks?",
@@ -552,6 +564,7 @@ describe("localized data accessors", () => {
       getBayesUpdateDemo("en"),
       getDecisionBoundaryDemo("en"),
       getCnnKernelDemo("en"),
+      getLlmSystemDemo("en"),
       getSafetyEvalDemo("en"),
       getDiagramAssets("en"),
       getAiTimelineEntries("en"),
@@ -858,6 +871,20 @@ describe("getter mutation isolation", () => {
         demo.kernels[0]!.normalizationDivisor = 99;
         demo.imageGrid[0]![0] = 99;
         demo.scanSteps[0]!.x = 99;
+      },
+    );
+    expectMutationIsolation(
+      () => getLlmSystemDemo("zh-CN"),
+      llmSystemDemo,
+      (demo) => ({
+        nodeDescription: demo.nodes[0]?.description,
+        finding: demo.steps[0]?.finding,
+        scenarioStepId: demo.scenarios[0]?.stepIds[0],
+      }),
+      (demo) => {
+        demo.nodes[0]!.description = "mutated";
+        demo.steps[0]!.finding = "mutated";
+        demo.scenarios[0]!.stepIds[0] = "mutated";
       },
     );
     expectMutationIsolation(

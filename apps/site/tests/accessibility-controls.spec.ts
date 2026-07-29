@@ -92,6 +92,12 @@ test.describe("Demo control accessibility", () => {
       nextButton: "风险请求",
     },
     {
+      route: "/chapters/llm-system/",
+      groupName: "系统任务",
+      initialButton: "最新政策问答",
+      nextButton: "继续并提交任务",
+    },
+    {
       route: "/chapters/decision-boundary/",
       groupName: "边界模式",
       initialButton: "线性边界",

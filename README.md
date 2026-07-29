@@ -11,10 +11,10 @@ default language, with a complete English learning path under `/en/`.
 
 - Astro static site with MDX and Svelte islands.
 - Eleven chapter routes from overview through Safety / Evaluation.
-- Nine teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, RAG pipeline, Agent loop, and the Safety / Eval release feedback loop.
+- Ten teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, LLM system boundaries, RAG pipeline, Agent loop, and the Safety / Eval release feedback loop.
 - Complete Chinese and English routes, copy, demo state, and references.
 - Resumable local learning progress, one bilingual concept check per chapter, and previous/next navigation.
-- A 22-event, source-backed history layer linked to chapters and lineage, plus a manifest-driven library of nine downloadable SVG/PNG diagram pairs.
+- A 22-event, source-backed history layer linked to chapters and lineage, plus a manifest-driven library of ten downloadable SVG/PNG diagram pairs.
 - Public privacy pages and a reviewed learning-signal allowlist; client-side learning collection is disabled, and deployment headers reject automatic RUM injection. Cloudflare hosting-level edge metrics are not treated as learner data.
 - CI coverage for formatting, types, data contracts, static builds, unit tests, browser behavior, visual regressions, accessibility controls, and teaching correctness.
 - Contributor docs for design, motion, diagrams, demos, and templates.

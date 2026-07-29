@@ -139,6 +139,47 @@ export interface SafetyEvalDemo extends DemoMetadata {
   defaultScenarioId: string;
 }
 
+export type LlmSystemFindingTone = "gap" | "context" | "action" | "verified";
+
+export interface LlmSystemNode {
+  id: string;
+  label: string;
+  description: string;
+  x: number;
+  y: number;
+}
+
+export interface LlmSystemEdge {
+  id: string;
+  from: string;
+  to: string;
+}
+
+export interface LlmSystemStep extends DemoStep {
+  nodeId: string;
+  statusLabel: string;
+  finding: string;
+  findingTone: LlmSystemFindingTone;
+}
+
+export interface LlmSystemScenario {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  request: string;
+  requirement: string;
+  stepIds: string[];
+}
+
+export interface LlmSystemDemo extends DemoMetadata {
+  nodes: LlmSystemNode[];
+  edges: LlmSystemEdge[];
+  steps: LlmSystemStep[];
+  scenarios: LlmSystemScenario[];
+  defaultScenarioId: string;
+}
+
 export interface ExpertCondition {
   id: string;
   label: string;
