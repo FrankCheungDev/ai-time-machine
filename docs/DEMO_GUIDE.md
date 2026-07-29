@@ -4,13 +4,18 @@ Each demo is a scripted teaching model, not a real AI system. The goal is mechan
 
 ## Structure
 
-Add new demos in three places:
+Add a new demo through the canonical chapter contract:
 
+- `packages/data/src/chapters.ts` for order, route, timeline, and lineage IDs.
 - `packages/data/src/demos/<demo-id>.ts` for content and state.
 - `apps/site/src/demos/<demo-id>/<DemoName>.svelte` for interaction.
-- `apps/site/src/pages/chapters/<slug>.astro` for the chapter route.
+- `apps/site/src/pages/chapters/<slug>.astro` and its `/en/` counterpart for routes.
+- `apps/site/src/i18n/pages/demoChapters.ts` and `apps/site/src/i18n/learning.ts` for chapter and activity copy.
+- `packages/data/src/learning/concept-checks.ts` for one bilingual check.
+- `packages/data/src/overview/` for the timeline entry, source-backed events, and lineage node/edges.
+- `packages/data/src/assets/diagram-assets.ts` plus `scripts/render-diagram-assets.mjs` for the reusable diagram pair.
 
-Also export data from `packages/data/src/index.ts` and add a Playwright smoke test in `apps/site/tests/rag-pipeline.spec.ts`.
+Export data from `packages/data/src/index.ts`. Home order, progress, chapter journeys, most route matrices, and diagram cards derive from these registries; tests should fail if one of the contracts is missing. Add focused browser behavior, English, mobile, accessibility, and teaching-correctness coverage under `apps/site/tests/`.
 
 ## Content Rules
 

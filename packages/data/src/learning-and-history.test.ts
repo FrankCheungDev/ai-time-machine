@@ -11,7 +11,7 @@ describe("source-backed timeline milestones", () => {
   it("keeps a chronological, unique, source-backed event set", () => {
     const events = getAiTimelineEvents();
 
-    expect(events).toHaveLength(22);
+    expect(events).toHaveLength(25);
     expect(new Set(events.map(({ id }) => id)).size).toBe(events.length);
 
     for (const [index, event] of events.entries()) {

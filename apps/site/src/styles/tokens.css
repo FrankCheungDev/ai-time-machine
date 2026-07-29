@@ -639,6 +639,76 @@ main {
   color: var(--color-muted);
 }
 
+.causal-explorer {
+  display: grid;
+  gap: 12px;
+  margin-top: 26px;
+  padding: 20px;
+  border: 1px solid rgba(52, 105, 166, 0.28);
+  border-radius: 8px;
+  background: rgba(238, 244, 251, 0.58);
+}
+
+.causal-explorer h3,
+.causal-explorer p {
+  margin: 0;
+}
+
+.causal-explorer > p:not(.eyebrow) {
+  max-width: 76ch;
+  color: var(--color-muted);
+}
+
+.causal-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.causal-filter-grid label,
+.lineage-focus-control {
+  display: grid;
+  gap: 6px;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+  font-weight: 720;
+}
+
+.causal-filter-grid select,
+.lineage-focus-control select,
+.causal-filter-grid button {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  font: inherit;
+}
+
+.causal-filter-grid button {
+  padding-inline: 16px;
+  font-weight: 720;
+}
+
+.causal-filter-grid button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.causal-filter-status {
+  color: var(--color-blue) !important;
+  font-weight: 760;
+}
+
+.causal-filter-empty {
+  padding: 12px 14px;
+  border-left: 4px solid var(--color-amber);
+  color: var(--color-ink) !important;
+  background: rgba(184, 121, 24, 0.08);
+}
+
 .milestone-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -655,6 +725,10 @@ main {
   border-radius: 8px;
   background: var(--color-surface);
   box-shadow: var(--shadow-soft);
+}
+
+.milestone-event[hidden] {
+  display: none;
 }
 
 .milestone-event h3,
@@ -768,8 +842,15 @@ main {
 
 .lineage-view-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  align-items: end;
   margin: 24px 0 14px;
+}
+
+.lineage-focus-control {
+  min-width: min(320px, 100%);
+  margin-left: auto;
 }
 
 .lineage-view-controls button {
@@ -827,6 +908,19 @@ main {
 .lineage-panel path[id^="arrow-"] {
   stroke: #9ba9a1;
   stroke-width: 3;
+  transition:
+    opacity 180ms ease,
+    stroke 180ms ease,
+    stroke-width 180ms ease;
+}
+
+.lineage-panel path.is-causal-focus {
+  stroke: var(--color-green);
+  stroke-width: 5;
+}
+
+.lineage-panel path.is-causal-muted {
+  opacity: 0.18;
 }
 
 .lineage-panel marker path {
@@ -837,6 +931,14 @@ main {
   fill: white;
   stroke: var(--color-line);
   stroke-width: 2;
+}
+
+.lineage-node {
+  transition: opacity 180ms ease;
+}
+
+.lineage-node.is-causal-muted {
+  opacity: 0.28;
 }
 
 .lineage-node.symbolic rect {
@@ -855,6 +957,12 @@ main {
 .lineage-node.agent rect,
 .lineage-node.safety rect {
   stroke: var(--color-coral);
+}
+
+.lineage-node.is-causal-focus rect {
+  fill: rgba(44, 107, 86, 0.1);
+  stroke: var(--color-green);
+  stroke-width: 4;
 }
 
 .lineage-node-link {
@@ -878,6 +986,48 @@ main {
 .lineage-panel .edge-label {
   fill: var(--color-muted);
   font-size: 10px;
+}
+
+.lineage-focus-summary {
+  margin: 24px 0 42px;
+}
+
+.lineage-focus-summary article {
+  padding: 24px;
+  border: 1px solid rgba(44, 107, 86, 0.28);
+  border-radius: 8px;
+  background: rgba(234, 246, 239, 0.66);
+  box-shadow: var(--shadow-soft);
+}
+
+.lineage-focus-summary h2,
+.lineage-focus-summary h3,
+.lineage-focus-summary p {
+  margin-top: 0;
+}
+
+.lineage-focus-summary ul {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.lineage-focus-summary li a {
+  display: grid;
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  text-decoration: none;
+}
+
+.lineage-focus-summary li span {
+  color: var(--color-blue);
+  font-weight: 760;
 }
 
 .lineage-panel .edge-label {
@@ -1006,6 +1156,10 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .causal-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
   .timeline-entry {
     gap: 12px;
   }
@@ -1028,7 +1182,12 @@ main {
   }
 
   .lineage-view-controls button {
-    flex: 1;
+    flex: 1 1 140px;
+  }
+
+  .lineage-focus-control {
+    width: 100%;
+    margin-left: 0;
   }
 }
 

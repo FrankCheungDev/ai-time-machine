@@ -249,7 +249,7 @@ describe("P2-05 aggregate learning metrics contract", () => {
 
     expect(markdown).toContain("# P2-05 聚合学习指标分析");
     expect(markdown).toContain("| overview | 100 | 70.0% (70/100)");
-    expect(markdown).toContain("Locale：22/22 个分段达到门槛");
+    expect(markdown).toContain("Locale：24/24 个分段达到门槛");
     expect(markdown).toContain("CI / preview / smoke / developer 均已排除");
     expect(markdown).toContain("does not prove");
   });

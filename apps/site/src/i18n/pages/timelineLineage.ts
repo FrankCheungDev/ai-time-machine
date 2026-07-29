@@ -14,6 +14,16 @@ export interface TimelinePageCopy {
   eventsHeading: (count: number) => string;
   eventsLede: string;
   eventsAriaLabel: string;
+  explorerEyebrow: string;
+  explorerHeading: string;
+  explorerDescription: string;
+  chapterFilterLabel: string;
+  lineageFilterLabel: string;
+  allChapters: string;
+  allLineages: string;
+  resetFilters: string;
+  visibleEventsTemplate: string;
+  noEvents: string;
   impact: string;
   relatedChapters: string;
   relatedLineage: string;
@@ -36,6 +46,17 @@ export const timelinePageCopy = {
     eventsLede:
       "每个事件都关联章节、谱系节点和至少一份原始论文、专著、官方档案或标准。影响说明聚焦后续机制，不把单一事件写成唯一原因。",
     eventsAriaLabel: "有来源支持的 AI 历史事件",
+    explorerEyebrow: "Causal Explorer",
+    explorerHeading: "沿章节与谱系追踪因果路径",
+    explorerDescription:
+      "筛选不会改变历史事实，只会把与所选章节和范式直接关联的事件保留下来。筛选状态写入网址，便于分享和往返谱系图。",
+    chapterFilterLabel: "学习章节",
+    lineageFilterLabel: "技术谱系",
+    allChapters: "全部章节",
+    allLineages: "全部谱系节点",
+    resetFilters: "清除筛选",
+    visibleEventsTemplate: "显示 {visible} / {total} 个事件",
+    noEvents: "当前组合没有直接关联事件，请清除一个筛选条件。",
     impact: "为什么重要",
     relatedChapters: "关联章节",
     relatedLineage: "关联谱系",
@@ -56,6 +77,18 @@ export const timelinePageCopy = {
     eventsLede:
       "Every event links to chapters, lineage nodes, and at least one primary paper, book, official record, or standard. Impact notes focus on downstream mechanisms without treating one event as the sole cause.",
     eventsAriaLabel: "Source-backed AI history events",
+    explorerEyebrow: "Causal Explorer",
+    explorerHeading: "Trace Causal Paths Across Chapters And Lineage",
+    explorerDescription:
+      "Filtering does not rewrite the history. It keeps events directly linked to the selected chapter and paradigm, and stores the selection in the URL for sharing and round trips to the lineage map.",
+    chapterFilterLabel: "Learning chapter",
+    lineageFilterLabel: "Technical lineage",
+    allChapters: "All chapters",
+    allLineages: "All lineage nodes",
+    resetFilters: "Clear filters",
+    visibleEventsTemplate: "Showing {visible} of {total} events",
+    noEvents:
+      "No event is directly linked to this combination. Clear one filter to continue.",
     impact: "Why It Matters",
     relatedChapters: "Related Chapters",
     relatedLineage: "Related Lineage",
@@ -109,6 +142,27 @@ export const timelineActionLabel = {
   (chapterLabel: string, chapterTitle: string) => string
 >;
 
+export interface LineagePageCopy {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  lede: string;
+  viewControlsAriaLabel: string;
+  panelAriaLabel: string;
+  svgTitle: string;
+  focusLabel: string;
+  allNodesOption: string;
+  focusSummaryEyebrow: string;
+  relatedEvents: (count: number) => string;
+  openChapter: string;
+  openTimeline: string;
+  notesEyebrow: string;
+  notesHeading: string;
+  notesBody: string;
+  nodeAriaSeparator: string;
+}
+
 export const lineagePageCopy = {
   "zh-CN": {
     title: "AI 技术谱系图",
@@ -120,6 +174,12 @@ export const lineagePageCopy = {
     viewControlsAriaLabel: "谱系图显示模式",
     panelAriaLabel: "AI 技术谱系 SVG 图，可适配屏幕或横向滚动查看完整图解",
     svgTitle: "AI 技术谱系图",
+    focusLabel: "聚焦一个谱系节点",
+    allNodesOption: "显示完整谱系",
+    focusSummaryEyebrow: "Causal Focus",
+    relatedEvents: (count) => `${count} 个直接关联事件`,
+    openChapter: "进入对应章节",
+    openTimeline: "在时间线查看这些事件",
     notesEyebrow: "阅读方式",
     notesHeading: "先看范式，再看 demo",
     notesBody:
@@ -137,13 +197,19 @@ export const lineagePageCopy = {
     panelAriaLabel:
       "AI technical lineage SVG, which can fit the screen or scroll horizontally for the full diagram",
     svgTitle: "AI Technical Lineage",
+    focusLabel: "Focus a lineage node",
+    allNodesOption: "Show the complete lineage",
+    focusSummaryEyebrow: "Causal Focus",
+    relatedEvents: (count) => `${count} Directly Related Events`,
+    openChapter: "Open the related chapter",
+    openTimeline: "View these events on the timeline",
     notesEyebrow: "How To Read",
     notesHeading: "Start With Paradigms, Then Explore Demos",
     notesBody:
       "From left to right, AI moves from rules and search to statistical learning, then to neural networks and foundation models. RAG and agents are not isolated applications; they are systematic ways for modern models to connect knowledge, tools, and task loops.",
     nodeAriaSeparator: ": ",
   },
-} satisfies Record<Locale, Record<string, string>>;
+} satisfies Record<Locale, LineagePageCopy>;
 
 export const lineageGroupLabels = {
   "zh-CN": {

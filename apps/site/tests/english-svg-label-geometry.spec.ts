@@ -23,6 +23,13 @@ const diagrams = [
     shapeType: "circle",
   },
   {
+    name: "Foundation Model",
+    nodeCount: 9,
+    route: "/en/chapters/foundation-model/",
+    shapeSelector: 'g[id^="foundation-node-"] > rect',
+    shapeType: "rect",
+  },
+  {
     name: "Safety / Eval",
     nodeCount: 6,
     route: "/en/chapters/safety/",

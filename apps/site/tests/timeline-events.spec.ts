@@ -17,7 +17,7 @@ test("Chinese timeline renders source-backed event contracts", async ({
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "10 个阶段构成学习主线",
+      name: "11 个阶段构成学习主线",
     }),
   ).toBeVisible();
 
@@ -51,7 +51,7 @@ test("Chinese timeline renders source-backed event contracts", async ({
   ).toHaveAttribute("href", "/chapters/rag/");
   await expect(
     rag.getByRole("link", { name: "RAG", exact: true }),
-  ).toHaveAttribute("href", "/lineage/#node-rag");
+  ).toHaveAttribute("href", "/lineage/?lineage=rag#node-rag");
 
   const sourceHrefs = await events
     .locator(".milestone-sources a")
@@ -74,7 +74,7 @@ test("English timeline keeps event identity while localizing teaching copy", asy
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "10 Stages Form The Learning Path",
+      name: "11 Stages Form The Learning Path",
     }),
   ).toBeVisible();
   await expect(page.locator("[data-timeline-event]")).toHaveCount(eventCount);
@@ -92,6 +92,39 @@ test("English timeline keeps event identity while localizing teaching copy", asy
     "href",
     "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
   );
+});
+
+test("causal explorer restores, combines, and clears shareable filters", async ({
+  page,
+}) => {
+  await page.goto("/timeline/?chapter=foundation-model");
+
+  const explorer = page.locator("[data-causal-timeline]");
+  const chapterFilter = explorer.getByLabel("学习章节");
+  const lineageFilter = explorer.getByLabel("技术谱系");
+  const reset = explorer.getByRole("button", { name: "清除筛选" });
+
+  await expect(explorer).toBeVisible();
+  await expect(chapterFilter).toHaveValue("foundation-model");
+  await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(5);
+  await expect(explorer).toContainText("显示 5 / 25 个事件");
+  await expect(
+    page.locator('[data-timeline-event="flan-instruction-tuning"]'),
+  ).toBeVisible();
+  await expect(page.locator('[data-timeline-event="rag"]')).toBeHidden();
+
+  await lineageFilter.selectOption("safety");
+  await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(1);
+  await expect(
+    page.locator('[data-timeline-event="instructgpt-human-feedback"]'),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/[?&]chapter=foundation-model&lineage=safety/);
+
+  await reset.click();
+  await expect(chapterFilter).toHaveValue("");
+  await expect(lineageFilter).toHaveValue("");
+  await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(25);
+  await expect(page).not.toHaveURL(/chapter=|lineage=/);
 });
 
 test("milestone cards form one mobile column without page overflow", async ({

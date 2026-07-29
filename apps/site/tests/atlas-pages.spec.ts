@@ -130,7 +130,7 @@ test("Overview MDX chapter renders the chapter-zero narrative", async ({
       route: "/chapters/overview/",
       heading: "总览：AI 为什么不是突然变成大模型的？",
       description:
-        "沿着规则搜索、知识工程、概率统计、深度学习、Transformer、RAG 与 Agent，理解现代 AI 系统如何逐步形成。",
+        "沿着规则搜索、知识工程、概率统计、深度学习、Transformer、基础模型训练、RAG 与 Agent，理解现代 AI 系统如何逐步形成。",
       spine: "从规则到系统",
       reading: "每章看四件事",
       simplification: "这是一张学习地图，不是完整 AI 百科",
@@ -140,7 +140,7 @@ test("Overview MDX chapter renders the chapter-zero narrative", async ({
       route: "/en/chapters/overview/",
       heading: "Overview: Why did AI not suddenly become large models?",
       description:
-        "Follow rules and search, knowledge engineering, probability, deep learning, Transformers, RAG, and agents to see how modern AI systems emerged.",
+        "Follow rules and search, knowledge engineering, probability, deep learning, Transformers, foundation-model training, RAG, and agents to see how modern AI systems emerged.",
       spine: "From Rules To Systems",
       reading: "Four Things To Notice In Every Chapter",
       simplification: "This Is A Learning Map, Not A Complete AI Encyclopedia",
@@ -219,9 +219,14 @@ test("Lineage page shows the technical paradigm map", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: "AI 技术谱系图" }),
   ).toBeVisible();
-  await expect(page.getByText("符号主义", { exact: true })).toBeVisible();
-  await expect(page.getByText("经典机器学习", { exact: true })).toBeVisible();
-  await expect(page.getByText("RAG", { exact: true })).toBeVisible();
+  const lineagePanel = page.locator(".lineage-panel");
+  await expect(
+    lineagePanel.getByText("符号主义", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    lineagePanel.getByText("经典机器学习", { exact: true }),
+  ).toBeVisible();
+  await expect(lineagePanel.getByText("RAG", { exact: true })).toBeVisible();
 });
 
 test("Lineage SVG keeps paradigm nodes inside the canvas without overlap", async ({
@@ -292,14 +297,49 @@ test("Lineage SVG keeps paradigm nodes inside the canvas without overlap", async
   expect(layout.overlaps).toEqual([]);
 });
 
-test("Lineage routes Agent to Safety around LLM System", async ({ page }) => {
+test("Lineage routes Agent to Safety around the foundation-model branch", async ({
+  page,
+}) => {
   await page.goto("/lineage/");
 
   const agentSafetyPath = await page
     .locator("#arrow-agent-safety")
     .getAttribute("d");
 
-  expect(agentSafetyPath).toBe("M 1156 352 L 1156 466 L 882 466");
+  expect(agentSafetyPath).toBe("M 1336 352 L 1336 466 L 1062 466");
+});
+
+test("Lineage focus restores a deep link and exposes causal evidence", async ({
+  page,
+}) => {
+  await page.goto("/lineage/?lineage=foundation-model#node-foundation-model");
+
+  const focus = page.getByLabel("聚焦一个谱系节点");
+  const summary = page.locator("[data-lineage-focus-summary]");
+
+  await expect(focus).toHaveValue("foundation-model");
+  await expect(page.locator("#node-foundation-model")).toHaveClass(
+    /is-causal-focus/,
+  );
+  await expect(page.locator("#node-symbolic")).toHaveClass(/is-causal-muted/);
+  await expect(page.locator("#arrow-transformer-foundation-model")).toHaveClass(
+    /is-causal-focus/,
+  );
+  await expect(summary).toBeVisible();
+  await expect(summary).toContainText("5 个直接关联事件");
+  await expect(
+    summary.getByRole("link", { name: /FLAN 展示跨任务/ }),
+  ).toHaveAttribute(
+    "href",
+    "/timeline/?lineage=foundation-model#milestone-flan-instruction-tuning",
+  );
+  await expect(
+    summary.getByRole("link", { name: "进入对应章节" }),
+  ).toHaveAttribute("href", "/chapters/foundation-model/");
+
+  await focus.selectOption("rag");
+  await expect(page.locator("#node-rag")).toHaveClass(/is-causal-focus/);
+  await expect(page).toHaveURL(/lineage=rag#node-rag$/);
 });
 
 test("Lineage links the Safety / Eval node to its chapter", async ({

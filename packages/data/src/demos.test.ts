@@ -14,6 +14,7 @@ import {
   decisionBoundaryDemo,
   diagramAssets,
   expertSystemDemo,
+  foundationModelDemo,
   getAgentLoopDemo,
   getAiLineageEdges,
   getAiLineageNodes,
@@ -25,6 +26,7 @@ import {
   getDecisionBoundaryDemo,
   getDiagramAssets,
   getExpertSystemDemo,
+  getFoundationModelDemo,
   getLlmSystemConnections,
   getLlmSystemDemo,
   getLlmSystemLayers,
@@ -51,6 +53,7 @@ const demos = [
   cnnKernelDemo,
   llmSystemDemo,
   safetyEvalDemo,
+  foundationModelDemo,
 ];
 
 function canonicalize(value: unknown): unknown {
@@ -141,7 +144,7 @@ describe("diagram asset registry", () => {
       .filter(({ kind }) => kind === "demo")
       .map(({ id }) => id);
 
-    expect(diagramAssets).toHaveLength(10);
+    expect(diagramAssets).toHaveLength(11);
     expect(diagramAssets.map(({ chapterId }) => chapterId)).toEqual(
       demoChapterIds,
     );
@@ -163,6 +166,13 @@ describe("diagram asset registry", () => {
       chapterId: "llm-system",
       version: "1.3.0",
       updatedAt: "2026-07-29",
+    });
+    expect(
+      diagramAssets.find(({ id }) => id === "foundation-model"),
+    ).toMatchObject({
+      chapterId: "foundation-model",
+      version: "1.4.0",
+      updatedAt: "2026-07-30",
     });
   });
 
@@ -347,6 +357,9 @@ describe("localized data accessors", () => {
     );
     expect(getAttentionMapDemo("en").title).toBe(
       "Attention And Transformers: Why can tokens directly attend to each other?",
+    );
+    expect(getFoundationModelDemo("en").title).toBe(
+      "Foundation Model Lifecycle: How does token prediction become instruction following?",
     );
     expect(getLlmSystemDemo("en").title).toBe(
       "LLM System Boundaries: Why is one model not a complete product?",
@@ -564,6 +577,7 @@ describe("localized data accessors", () => {
       getBayesUpdateDemo("en"),
       getDecisionBoundaryDemo("en"),
       getCnnKernelDemo("en"),
+      getFoundationModelDemo("en"),
       getLlmSystemDemo("en"),
       getSafetyEvalDemo("en"),
       getDiagramAssets("en"),
@@ -585,6 +599,31 @@ describe("localized data accessors", () => {
 });
 
 describe("localized topology parity", () => {
+  it("preserves the foundation-model training and inference boundary", () => {
+    const project = (demo: ReturnType<typeof getFoundationModelDemo>) => ({
+      nodes: demo.nodes.map(({ id, x, y }) => ({ id, x, y })),
+      edges: demo.edges,
+      steps: demo.steps.map(
+        ({ id, nodeId, activeNodeIds, activeEdgeIds, findingTone }) => ({
+          id,
+          nodeId,
+          activeNodeIds,
+          activeEdgeIds,
+          findingTone,
+        }),
+      ),
+    });
+
+    const zh = getFoundationModelDemo("zh-CN");
+    expect(zh.steps).toHaveLength(6);
+    expect(zh.steps.at(-1)).toMatchObject({
+      id: "runtime-context",
+      findingTone: "boundary",
+      activeNodeIds: ["assistant-model", "runtime-context", "output"],
+    });
+    expect(project(getFoundationModelDemo("en"))).toEqual(project(zh));
+  });
+
   it("preserves RAG pipeline topology and scripted behavior", () => {
     const project = (demo: ReturnType<typeof getRagPipelineDemo>) => ({
       nodeIds: demo.nodes.map(({ id }) => id),
@@ -885,6 +924,22 @@ describe("getter mutation isolation", () => {
         demo.nodes[0]!.description = "mutated";
         demo.steps[0]!.finding = "mutated";
         demo.scenarios[0]!.stepIds[0] = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getFoundationModelDemo("zh-CN"),
+      foundationModelDemo,
+      (demo) => ({
+        nodeDescription: demo.nodes[0]?.description,
+        edgeTo: demo.edges[0]?.to,
+        finding: demo.steps[0]?.finding,
+        activeNodeId: demo.steps[0]?.activeNodeIds[0],
+      }),
+      (demo) => {
+        demo.nodes[0]!.description = "mutated";
+        demo.edges[0]!.to = "mutated";
+        demo.steps[0]!.finding = "mutated";
+        demo.steps[0]!.activeNodeIds[0] = "mutated";
       },
     );
     expectMutationIsolation(

@@ -101,6 +101,10 @@ const homeLearningPathCardCopy = {
     attention: {
       description: "点击 token，比较 Attention 直接连接和 RNN 链式传递。",
     },
+    "foundation-model": {
+      description:
+        "逐步区分预训练、指令微调、偏好反馈与运行时上下文分别改变什么。",
+    },
     "llm-system": {
       description: "理解上下文、检索、工具、记忆和评估为什么围绕大模型出现。",
     },
@@ -146,6 +150,10 @@ const homeLearningPathCardCopy = {
     attention: {
       description:
         "Select a token and compare direct Attention connections with RNN chain propagation.",
+    },
+    "foundation-model": {
+      description:
+        "Separate what pretraining, instruction tuning, preference feedback, and runtime context change.",
     },
     "llm-system": {
       description:

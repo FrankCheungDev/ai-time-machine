@@ -291,8 +291,8 @@ const timelineEventDefinitions = [
     sortYear: 2017,
     year: "2017",
     type: "paper",
-    chapterIds: ["attention", "llm-system"],
-    lineageNodeIds: ["transformer", "llm-system"],
+    chapterIds: ["attention", "foundation-model"],
+    lineageNodeIds: ["transformer", "foundation-model"],
     sources: [
       {
         label: "Attention Is All You Need",
@@ -302,12 +302,27 @@ const timelineEventDefinitions = [
     ],
   },
   {
+    id: "language-model-scaling-laws",
+    sortYear: 2020,
+    year: "2020",
+    type: "paper",
+    chapterIds: ["foundation-model"],
+    lineageNodeIds: ["foundation-model"],
+    sources: [
+      {
+        label: "Scaling Laws for Neural Language Models",
+        href: "https://arxiv.org/abs/2001.08361",
+        kind: "primary-paper",
+      },
+    ],
+  },
+  {
     id: "gpt3-few-shot",
     sortYear: 2020,
     year: "2020",
     type: "paper",
-    chapterIds: ["llm-system"],
-    lineageNodeIds: ["llm-system"],
+    chapterIds: ["foundation-model", "llm-system"],
+    lineageNodeIds: ["foundation-model", "llm-system"],
     sources: [
       {
         label: "Language Models Are Few-Shot Learners",
@@ -328,6 +343,37 @@ const timelineEventDefinitions = [
         label:
           "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
         href: "https://papers.nips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html",
+        kind: "primary-paper",
+      },
+    ],
+  },
+  {
+    id: "flan-instruction-tuning",
+    sortYear: 2021,
+    year: "2021",
+    type: "paper",
+    chapterIds: ["foundation-model"],
+    lineageNodeIds: ["foundation-model"],
+    sources: [
+      {
+        label: "Finetuned Language Models Are Zero-Shot Learners",
+        href: "https://arxiv.org/abs/2109.01652",
+        kind: "primary-paper",
+      },
+    ],
+  },
+  {
+    id: "instructgpt-human-feedback",
+    sortYear: 2022,
+    year: "2022",
+    type: "paper",
+    chapterIds: ["foundation-model", "llm-system", "safety"],
+    lineageNodeIds: ["foundation-model", "llm-system", "safety"],
+    sources: [
+      {
+        label:
+          "Training Language Models to Follow Instructions with Human Feedback",
+        href: "https://arxiv.org/abs/2203.02155",
         kind: "primary-paper",
       },
     ],
@@ -506,6 +552,13 @@ const localizedTimelineEventCopy = {
         "论文提出仅基于 attention 的序列转换架构，省去循环与卷积，并提升训练并行性。",
       impact: "token 间直接连接和并行训练成为基础模型扩展的关键结构前提。",
     },
+    "language-model-scaling-laws": {
+      title: "语言模型 Scaling Laws 量化规模与训练损失的关系",
+      summary:
+        "论文在研究范围内观察到，交叉熵损失随模型规模、数据规模和训练计算量呈现幂律变化。",
+      impact:
+        "规模化从经验性尝试变成可测量的工程方向，但较低训练损失本身不等于更可靠、更安全或更符合用户意图。",
+    },
     "gpt3-few-shot": {
       title: "GPT-3 展示规模化语言模型的文本内任务适应",
       summary:
@@ -519,6 +572,20 @@ const localizedTimelineEventCopy = {
         "RAG 用神经检索器访问 Wikipedia 稠密索引，再让生成模型依据检索段落作答。",
       impact:
         "知识更新、来源追踪和生成能力可以拆成系统部件，而不必把全部事实都固化在模型参数中。",
+    },
+    "flan-instruction-tuning": {
+      title: "FLAN 展示跨任务 Instruction Tuning 的零样本迁移",
+      summary:
+        "研究用自然语言指令描述的一组任务继续微调预训练语言模型，并评估未见任务上的零样本表现。",
+      impact:
+        "后训练开始明确塑造“理解请求并按任务格式回答”的行为，而不只是扩大预训练模型。",
+    },
+    "instructgpt-human-feedback": {
+      title: "InstructGPT 用示范、排序与人类反馈塑造助手行为",
+      summary:
+        "研究先用标注者示范监督微调，再用候选输出排序训练反馈信号并继续优化模型。",
+      impact:
+        "研究显示特定评测分布中的偏好可明显改善，同时也明确记录简单错误和未解决限制；受偏好不等于事实正确或完整安全。",
     },
     "react-agent-loop": {
       title: "ReAct 交错生成推理轨迹与环境动作",
@@ -669,6 +736,14 @@ const localizedTimelineEventCopy = {
       impact:
         "Direct token connections and parallel training became key structural preconditions for scaling foundation models.",
     },
+    "language-model-scaling-laws": {
+      title:
+        "Language-Model Scaling Laws Quantified Scale Against Training Loss",
+      summary:
+        "Within the study's scope, cross-entropy loss followed power-law relationships with model size, dataset size, and training compute.",
+      impact:
+        "Scaling became a measurable engineering direction, while lower training loss alone did not establish reliability, safety, or alignment with user intent.",
+    },
     "gpt3-few-shot": {
       title: "GPT-3 Showed In-Text Task Adaptation at Language-Model Scale",
       summary:
@@ -682,6 +757,22 @@ const localizedTimelineEventCopy = {
         "RAG used a neural retriever over a dense Wikipedia index and conditioned generation on retrieved passages.",
       impact:
         "Knowledge updates, provenance, and generation could become separate system components instead of putting every fact into model parameters.",
+    },
+    "flan-instruction-tuning": {
+      title:
+        "FLAN Showed Zero-Shot Transfer from Cross-Task Instruction Tuning",
+      summary:
+        "The study further tuned a pretrained language model on tasks described by natural-language instructions and evaluated zero-shot performance on unseen tasks.",
+      impact:
+        "Post-training began to shape behavior around recognizing requests and following task formats instead of only enlarging the pretrained model.",
+    },
+    "instructgpt-human-feedback": {
+      title:
+        "InstructGPT Used Demonstrations, Rankings, and Human Feedback to Shape Assistant Behavior",
+      summary:
+        "The study first used labeler demonstrations for supervised fine-tuning, then ranked candidate outputs to train a feedback signal and optimize the model further.",
+      impact:
+        "Preferences improved substantially on the evaluated distribution, while the paper still documented simple mistakes and unresolved limits; being preferred did not establish factuality or complete safety.",
     },
     "react-agent-loop": {
       title: "ReAct Interleaved Reasoning Traces with Environment Actions",

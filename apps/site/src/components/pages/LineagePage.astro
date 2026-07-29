@@ -1,9 +1,13 @@
 ---
-import { getAiLineageEdges, getAiLineageNodes } from "@ai-history/data";
+import {
+  getAiLineageEdges,
+  getAiLineageNodes,
+  getAiTimelineEvents,
+} from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
 import { lineageGroupLabels, lineagePageCopy } from "../../i18n/pages";
 import { getSiteCopy } from "../../i18n/siteCopy";
-import type { Locale } from "../../i18n/locales";
+import { toLocalizedPath, type Locale } from "../../i18n/locales";
 import { getLocalizedLearningChapter } from "../../i18n/learning";
 
 interface Props {
@@ -16,6 +20,17 @@ const siteCopy = getSiteCopy(locale);
 const groupLabels: Record<string, string> = lineageGroupLabels[locale];
 const lineageNodes = getAiLineageNodes(locale);
 const lineageEdges = getAiLineageEdges(locale);
+const timelineEvents = getAiTimelineEvents(locale);
+const timelineRoute = toLocalizedPath("/timeline/", locale);
+const lineageDetails = lineageNodes.map((node) => ({
+  node,
+  chapter: node.chapterId
+    ? getLocalizedLearningChapter(node.chapterId, locale)
+    : undefined,
+  events: timelineEvents.filter((event) =>
+    event.lineageNodeIds.includes(node.id),
+  ),
+}));
 const nodeById = Object.fromEntries(
   lineageNodes.map((node) => [node.id, node]),
 );
@@ -27,7 +42,8 @@ const englishEdgeLabelLines: Record<string, string[]> = {
   "statistical-neural": ["Learning", "boundaries"],
   "classical-ml-neural": ["Representation", "learning"],
   "neural-transformer": ["Sequence", "modeling"],
-  "transformer-llm-system": ["Foundation model", "applications"],
+  "transformer-foundation-model": ["Scaled", "pretraining"],
+  "foundation-model-llm-system": ["Model into", "system"],
   "llm-system-rag": ["Connecting", "external knowledge"],
   "llm-system-agent": ["Tools and", "loops"],
   "agent-safety": ["Reliability", "evaluation"],
@@ -107,6 +123,17 @@ function getLineageEdgeGeometry(
       <button type="button" data-lineage-view="detail" aria-pressed="false"
         >{siteCopy.demoCore.detailLabel}</button
       >
+      <label class="lineage-focus-control">
+        <span>{copy.focusLabel}</span>
+        <select data-lineage-focus aria-controls="lineage-focus-summary">
+          <option value="">{copy.allNodesOption}</option>
+          {
+            lineageNodes.map((node) => (
+              <option value={node.id}>{node.label}</option>
+            ))
+          }
+        </select>
+      </label>
     </div>
 
     <section
@@ -117,7 +144,7 @@ function getLineageEdgeGeometry(
       data-view="fit"
       data-mobile-scroll-scene
     >
-      <svg viewBox="0 0 1240 540" role="img" aria-labelledby="lineage-title">
+      <svg viewBox="0 0 1420 540" role="img" aria-labelledby="lineage-title">
         <title id="lineage-title">{copy.svgTitle}</title>
         <defs>
           <marker
@@ -146,6 +173,9 @@ function getLineageEdgeGeometry(
               <>
                 <path
                   id={`arrow-${edge.id}`}
+                  data-lineage-edge
+                  data-from={edge.from}
+                  data-to={edge.to}
                   d={geometry.path}
                   fill="none"
                   marker-end="url(#lineage-arrow)"
@@ -185,6 +215,7 @@ function getLineageEdgeGeometry(
                 <g
                   id={`node-${node.id}`}
                   class={`lineage-node ${node.group}`}
+                  data-lineage-node={node.id}
                   role={chapter ? undefined : "img"}
                   aria-label={chapter ? undefined : accessibleName}
                 >
@@ -236,6 +267,50 @@ function getLineageEdgeGeometry(
       </svg>
     </section>
 
+    <section
+      id="lineage-focus-summary"
+      class="lineage-focus-summary"
+      data-lineage-focus-summary
+      aria-live="polite"
+      hidden
+    >
+      {
+        lineageDetails.map(({ node, chapter, events }) => (
+          <article data-lineage-detail={node.id} hidden>
+            <p class="eyebrow">{copy.focusSummaryEyebrow}</p>
+            <h2>{node.label}</h2>
+            <p>{node.description}</p>
+            <h3>{copy.relatedEvents(events.length)}</h3>
+            <ul>
+              {events.map((event) => (
+                <li>
+                  <a
+                    href={`${timelineRoute}?lineage=${node.id}#milestone-${event.id}`}
+                  >
+                    <span>{event.year}</span>
+                    <strong>{event.title}</strong>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div class="actions">
+              {chapter && (
+                <a class="button primary" href={chapter.href}>
+                  {copy.openChapter}
+                </a>
+              )}
+              <a
+                class="button"
+                href={`${timelineRoute}?lineage=${node.id}#timeline-milestones`}
+              >
+                {copy.openTimeline}
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+
     <section class="section-band" aria-labelledby="lineage-notes">
       <p class="eyebrow">{copy.notesEyebrow}</p>
       <h2 id="lineage-notes">{copy.notesHeading}</h2>
@@ -247,6 +322,17 @@ function getLineageEdgeGeometry(
 <script>
   const lineagePanel = document.querySelector("[data-lineage-panel]");
   const lineageButtons = document.querySelectorAll("[data-lineage-view]");
+  const lineageFocus = document.querySelector("[data-lineage-focus]");
+  const lineageSummary = document.querySelector("[data-lineage-focus-summary]");
+  const lineageNodes = Array.from(
+    document.querySelectorAll<SVGGElement>("[data-lineage-node]"),
+  );
+  const lineageEdges = Array.from(
+    document.querySelectorAll<SVGPathElement>("[data-lineage-edge]"),
+  );
+  const lineageDetails = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-lineage-detail]"),
+  );
 
   function setLineageView(view: string) {
     if (!(lineagePanel instanceof HTMLElement)) {
@@ -279,4 +365,58 @@ function getLineageEdgeGeometry(
       setLineageView(button.dataset.lineageView);
     });
   });
+
+  if (
+    lineageFocus instanceof HTMLSelectElement &&
+    lineageSummary instanceof HTMLElement
+  ) {
+    const focusSelect = lineageFocus;
+    const summaryRegion = lineageSummary;
+    const validNodeIds = new Set(
+      Array.from(focusSelect.options, ({ value }) => value).filter(Boolean),
+    );
+    const initialUrl = new URL(window.location.href);
+    const initialNodeId = initialUrl.searchParams.get("lineage") ?? "";
+
+    focusSelect.value = validNodeIds.has(initialNodeId) ? initialNodeId : "";
+
+    function applyLineageFocus(updateUrl = true) {
+      const nodeId = focusSelect.value;
+
+      for (const node of lineageNodes) {
+        const isFocused = node.dataset.lineageNode === nodeId;
+        node.classList.toggle("is-causal-focus", isFocused);
+        node.classList.toggle("is-causal-muted", Boolean(nodeId) && !isFocused);
+      }
+
+      for (const edge of lineageEdges) {
+        const connected =
+          edge.dataset.from === nodeId || edge.dataset.to === nodeId;
+        edge.classList.toggle("is-causal-focus", Boolean(nodeId) && connected);
+        edge.classList.toggle("is-causal-muted", Boolean(nodeId) && !connected);
+      }
+
+      for (const detail of lineageDetails) {
+        detail.hidden = detail.dataset.lineageDetail !== nodeId;
+      }
+      summaryRegion.hidden = !nodeId;
+
+      if (updateUrl) {
+        const url = new URL(window.location.href);
+        if (nodeId) {
+          url.searchParams.set("lineage", nodeId);
+          url.hash = `node-${nodeId}`;
+        } else {
+          url.searchParams.delete("lineage");
+          if (url.hash.startsWith("#node-")) {
+            url.hash = "";
+          }
+        }
+        window.history.replaceState({}, "", url);
+      }
+    }
+
+    focusSelect.addEventListener("change", () => applyLineageFocus());
+    applyLineageFocus(false);
+  }
 </script>

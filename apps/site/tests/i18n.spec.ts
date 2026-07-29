@@ -59,6 +59,14 @@ const englishDemoChapterCases = [
       "Why is Attention better suited than an RNN for modeling long-range dependencies?",
   },
   {
+    route: localizedChapterRoute("foundation-model", "en"),
+    title:
+      "Foundation Model Lifecycle: How does token prediction become instruction following?",
+    activityTitle: "Foundation Model Lifecycle Lab",
+    evidence:
+      "What changes during pretraining, instruction tuning, preference feedback, and runtime context?",
+  },
+  {
     route: localizedChapterRoute("llm-system", "en"),
     title:
       "LLMs And Modern AI Systems: Why do large models still need external systems?",
@@ -119,6 +127,11 @@ const chineseDemoChapterCases = [
     route: localizedChapterRoute("attention"),
     title: "Attention 与 Transformer：token 为什么可以直接互相关注？",
     activityTitle: "注意力热图探索",
+  },
+  {
+    route: localizedChapterRoute("foundation-model"),
+    title: "基础模型生命周期：预测 token 如何变成按指令协作？",
+    activityTitle: "基础模型生命周期实验",
   },
   {
     route: localizedChapterRoute("llm-system"),
@@ -188,6 +201,15 @@ const englishChapterReferenceCases = [
     expectedHrefs: [
       "https://arxiv.org/abs/1706.03762",
       "https://jalammar.github.io/illustrated-transformer/",
+    ],
+  },
+  {
+    route: localizedChapterRoute("foundation-model", "en"),
+    expectedHrefs: [
+      "https://arxiv.org/abs/2001.08361",
+      "https://arxiv.org/abs/2005.14165",
+      "https://arxiv.org/abs/2109.01652",
+      "https://arxiv.org/abs/2203.02155",
     ],
   },
   {
@@ -264,6 +286,7 @@ const englishRouteLinkCases = [
       "/en/chapters/decision-boundary/",
       "/en/chapters/cnn/",
       "/en/chapters/attention/",
+      "/en/chapters/foundation-model/",
       "/en/chapters/rag/",
       "/en/chapters/agent/",
       "/en/chapters/safety/",
@@ -919,6 +942,37 @@ test("English Attention interaction changes the token and mode", async ({
       name: "An RNN can only pass information along the sequence",
     }),
   ).toBeVisible();
+});
+
+test("English foundation-model interaction preserves the training boundary", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/foundation-model/");
+
+  await expect(
+    page.getByRole("heading", {
+      level: 2,
+      name: "Foundation Model Lifecycle Lab",
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("1 / 6", { exact: true })).toBeVisible();
+
+  for (let index = 0; index < 5; index += 1) {
+    await page.getByRole("button", { name: "Next" }).click();
+  }
+
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Runtime context changes this output without retraining the weights",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.locator("[data-foundation-status='boundary']"),
+  ).toContainText("Training updates weights; inference uses fixed weights");
+  await expect(page.getByTestId("foundation-output-preview")).toContainText(
+    "weights stay fixed",
+  );
 });
 
 test("English LLM system interaction switches task-specific paths", async ({
