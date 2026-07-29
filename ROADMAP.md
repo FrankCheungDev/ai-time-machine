@@ -2,15 +2,15 @@
 
 This roadmap tracks the first version described in `docs/interactive_ai_history_codex_handoff.md`.
 
-## v1.1 Complete Surface
+## Current Surface
 
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
 - Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, LLM systems, RAG, Agent, and Safety / Eval.
-- Nine teaching demos with simplification notes, references, and Playwright smoke coverage.
+- Ten teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Complete Chinese and English routes with resumable local learning progress,
   chapter completion, and previous/next navigation.
-- Timeline, lineage map, and a manifest-driven diagram library with SVG and PNG assets for all nine demos.
+- Timeline, lineage map, and a manifest-driven diagram library with SVG and PNG assets for all ten demos.
 - Twenty-two source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
 - Public privacy documentation and a typed in-page signal allowlist with client
@@ -41,6 +41,12 @@ follows the staged process in
   plan; Draft PR #26 was closed without merging. No hosted analytics provider is
   approved or scheduled. Client collection remains disabled, and deployment
   policy continues to block browser analytics and RUM.
+- **v1.3 — In progress — Interactive LLM system boundaries:** the first slice
+  upgrades the static LLM systems chapter into a bilingual, two-scenario
+  scripted demo. Learners compare a retrieval-backed policy answer with a
+  memory-and-tool action path, while the diagram library gains its tenth asset
+  pair. See
+  [the v1.3 interaction brief](docs/V1_3_LLM_SYSTEM_INTERACTION_BRIEF.md).
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching

@@ -15,7 +15,7 @@ const expected = [
   ["decision-boundary", "/chapters/decision-boundary/", "demo"],
   ["cnn", "/chapters/cnn/", "demo"],
   ["attention", "/chapters/attention/", "demo"],
-  ["llm-system", "/chapters/llm-system/", "chapter"],
+  ["llm-system", "/chapters/llm-system/", "demo"],
   ["rag", "/chapters/rag/", "demo"],
   ["agent", "/chapters/agent/", "demo"],
   ["safety", "/chapters/safety/", "demo"],

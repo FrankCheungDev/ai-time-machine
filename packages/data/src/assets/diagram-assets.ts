@@ -45,6 +45,31 @@ const diagramAssetDefinitions = [
     arrowIds: ["arrow-model-directly", "arrow-model-context"],
   },
   {
+    id: "llm-system",
+    chapterId: "llm-system",
+    stateId: "verified-action-path",
+    nodeIds: [
+      "node-task",
+      "node-context",
+      "node-model",
+      "node-memory",
+      "node-retrieval",
+      "node-tools",
+      "node-eval",
+      "node-result",
+    ],
+    arrowIds: [
+      "arrow-task-context",
+      "arrow-memory-context",
+      "arrow-retrieval-context",
+      "arrow-context-model",
+      "arrow-model-eval",
+      "arrow-model-tools",
+      "arrow-tools-eval",
+      "arrow-eval-result",
+    ],
+  },
+  {
     id: "rag-pipeline",
     chapterId: "rag",
     stateId: "grounded-answer",
@@ -158,6 +183,12 @@ const localizedDiagramAssetCopy = {
       simplificationNote:
         "连线粗细是预设权重，只解释直接信息路径，不是模型真实 attention。",
     },
+    "llm-system": {
+      title: "LLM 系统：按任务组合外部边界",
+      stateLabel: "恢复任务状态后，经受控工具执行并由 Eval 核验结果",
+      simplificationNote:
+        "组件、状态、动作和检查结果均为预设；图解不调用真实模型、记忆、工具或评估服务。",
+    },
     "rag-pipeline": {
       title: "RAG：从查询到可追溯答案",
       stateLabel: "检索证据经过重排并进入带引用的回答",
@@ -214,6 +245,13 @@ const localizedDiagramAssetCopy = {
       stateLabel: "Selecting model reveals weights to directly and context",
       simplificationNote:
         "Line thickness uses scripted weights to explain direct information paths, not real model attention.",
+    },
+    "llm-system": {
+      title: "LLM System: Compose External Boundaries By Task",
+      stateLabel:
+        "Restored task state flows through a controlled tool and result evaluation",
+      simplificationNote:
+        "Components, state, actions, and checks are scripted; no real model, memory, tool, or evaluator is called.",
     },
     "rag-pipeline": {
       title: "RAG: From Query To Traceable Answer",
@@ -275,8 +313,8 @@ export function getDiagramAssets(
         nodes: [...asset.nodeIds],
         arrows: [...asset.arrowIds],
       },
-      version: "1.1.0",
-      updatedAt: "2026-07-25",
+      version: asset.id === "llm-system" ? "1.3.0" : "1.1.0",
+      updatedAt: asset.id === "llm-system" ? "2026-07-29" : "2026-07-25",
       license: "MIT" as const,
       simplificationNote: copy[asset.id].simplificationNote,
     })),

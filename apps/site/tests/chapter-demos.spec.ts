@@ -75,7 +75,7 @@ test("Attention chapter lets users inspect token relationships", async ({
   ).toBeVisible();
 });
 
-test("LLM system chapter bridges foundation models to RAG and Agent", async ({
+test("LLM system chapter composes task-specific external boundaries", async ({
   page,
 }) => {
   await page.goto("/chapters/llm-system/");
@@ -89,7 +89,54 @@ test("LLM system chapter bridges foundation models to RAG and Agent", async ({
   await expect(
     page.getByText("为什么大模型还需要外部知识和工具？", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Context Window", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "LLM 系统边界实验" }),
+  ).toBeVisible();
+  await waitForDemoReady(page);
+
+  const scenarioGroup = page.getByRole("group", { name: "系统任务" });
+  const policyScenario = scenarioGroup.getByRole("button", {
+    name: "最新政策问答",
+  });
+  const resumeScenario = scenarioGroup.getByRole("button", {
+    name: "继续并提交任务",
+  });
+
+  await expect(policyScenario).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("1 / 6", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "只调用模型会撞上知识边界" }),
+  ).toBeVisible();
+  await expect(page.locator("[data-llm-system-status='gap']")).toContainText(
+    "流畅生成不能替代当前、私有、可引用的来源",
+  );
+
+  await resumeScenario.click();
+  await expect(policyScenario).toHaveAttribute("aria-pressed", "false");
+  await expect(resumeScenario).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("1 / 6", { exact: true })).toBeVisible();
+
+  for (let index = 0; index < 4; index += 1) {
+    await page.getByRole("button", { name: "下一步" }).click();
+  }
+
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "模型提出动作，Tools 在边界内执行",
+    }),
+  ).toBeVisible();
+  await expect(page.locator("#arrow-model-tools")).toHaveClass(/edge-active/);
+  await expect(page.locator("#arrow-model-eval")).toHaveClass(/edge-muted/);
+  await expect(page.locator("#node-retrieval")).toHaveClass(/node-muted/);
+
+  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(
+    page.locator("[data-llm-system-status='verified']"),
+  ).toContainText("状态、生成、工具执行和结果验证共同闭环");
+  await expect(page.locator("#node-result")).toHaveClass(/node-verified/);
 });
 
 test("Agent chapter completes the full failure and retry loop", async ({

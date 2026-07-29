@@ -22,7 +22,16 @@ const sharedStyles = `
   .pill { fill: #eef4fb; stroke: #3469a6; stroke-width: 1.5; }
 `;
 
-function canvas({ id, title, subtitle, state, note, body }) {
+function canvas({
+  id,
+  title,
+  subtitle,
+  state,
+  note,
+  body,
+  version = "1.1.0",
+  updatedAt = "2026-07-25",
+}) {
   return `<svg id="diagram-${id}" data-state="${state}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title-${id} desc-${id}">
   <title id="title-${id}">${title}</title>
   <desc id="desc-${id}">${subtitle}. Representative state: ${state}. ${note}</desc>
@@ -38,7 +47,7 @@ function canvas({ id, title, subtitle, state, note, body }) {
   <rect x="44" y="478" width="952" height="48" rx="8" fill="#f7faf8" stroke="#d7ddd7" />
   <text x="62" y="499" class="tiny">STATE · ${state}</text>
   <text x="62" y="517" class="tiny">${note}</text>
-  <text x="996" y="544" text-anchor="end" class="tiny">v1.1.0 · 2026-07-25 · MIT</text>
+  <text x="996" y="544" text-anchor="end" class="tiny">v${version} · ${updatedAt} · MIT</text>
 </svg>`;
 }
 
@@ -158,6 +167,33 @@ const assets = [
       <g id="node-token-directly"><rect class="active" x="704" y="238" width="154" height="82" rx="8" /><text class="label" x="781" y="274" text-anchor="middle">directly</text><text class="small" x="781" y="298" text-anchor="middle">weight .82</text></g>
       <g id="node-token-context"><rect class="node" x="842" y="350" width="154" height="82" rx="8" /><text class="label" x="919" y="386" text-anchor="middle">context</text><text class="small" x="919" y="410" text-anchor="middle">weight .46</text></g>
       <rect class="pill" x="390" y="208" width="236" height="42" rx="21" /><text class="small" x="508" y="234" text-anchor="middle">direct information path</text>`,
+  },
+  {
+    id: "llm-system",
+    title: "LLM System · Task-Specific Boundaries",
+    subtitle:
+      "A resumed task uses memory and a controlled tool while retrieval stays optional",
+    state: "verified-action-path",
+    note: "Components and outcomes are scripted; no real model, memory, tool, or evaluator runs.",
+    version: "1.3.0",
+    updatedAt: "2026-07-29",
+    body: `
+      <path id="arrow-task-context" class="arrow-active" d="M 160 262 H 190" />
+      <path id="arrow-memory-context" class="arrow-active" d="M 256 188 V 220" />
+      <path id="arrow-retrieval-context" class="arrow" d="M 256 352 V 304" />
+      <path id="arrow-context-model" class="arrow-active" d="M 322 262 H 356" />
+      <path id="arrow-model-eval" class="arrow" d="M 488 262 H 704" />
+      <path id="arrow-model-tools" class="arrow-active" d="M 488 262 C 542 262 590 316 590 352" />
+      <path id="arrow-tools-eval" class="arrow-active" d="M 590 352 C 590 318 770 338 770 304" />
+      <path id="arrow-eval-result" class="arrow-active" d="M 836 262 H 866" />
+      <g id="node-task"><rect class="active" x="44" y="220" width="116" height="84" rx="8" /><text class="label" x="102" y="256" text-anchor="middle">Task</text><text class="small" x="102" y="280" text-anchor="middle">resume claim</text></g>
+      <g id="node-context"><rect class="active" x="190" y="220" width="132" height="84" rx="8" /><text class="label" x="256" y="256" text-anchor="middle">Context</text><text class="small" x="256" y="280" text-anchor="middle">current input</text></g>
+      <g id="node-model"><rect class="active" x="356" y="220" width="132" height="84" rx="8" /><text class="label" x="422" y="256" text-anchor="middle">Base Model</text><text class="small" x="422" y="280" text-anchor="middle">propose action</text></g>
+      <g id="node-memory"><rect class="active" x="190" y="104" width="132" height="84" rx="8" /><text class="label" x="256" y="140" text-anchor="middle">Memory</text><text class="small" x="256" y="164" text-anchor="middle">restore state</text></g>
+      <g id="node-retrieval"><rect class="node" x="190" y="352" width="132" height="84" rx="8" /><text class="label" x="256" y="388" text-anchor="middle">Retrieval</text><text class="small" x="256" y="412" text-anchor="middle">not needed</text></g>
+      <g id="node-tools"><rect class="active" x="524" y="352" width="132" height="84" rx="8" /><text class="label" x="590" y="388" text-anchor="middle">Tools</text><text class="small" x="590" y="412" text-anchor="middle">submit claim</text></g>
+      <g id="node-eval"><rect class="active" x="704" y="220" width="132" height="84" rx="8" /><text class="label" x="770" y="256" text-anchor="middle">Eval</text><text class="small" x="770" y="280" text-anchor="middle">check receipt</text></g>
+      <g id="node-result"><rect class="active" x="866" y="220" width="130" height="84" rx="8" /><text class="label" x="931" y="256" text-anchor="middle">Result</text><text class="small" x="931" y="280" text-anchor="middle">verified</text></g>`,
   },
   {
     id: "rag-pipeline",

@@ -30,3 +30,15 @@ Recreate them against the same local preview:
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:p2-evidence
 ```
+
+## LLM System Boundary Lab v1.3
+
+- `llm-system-policy-gap-desktop.png`: the current-policy scenario at the model-only evidence gap.
+- `llm-system-action-english-mobile.png`: the English resume-and-submit scenario at the verified end of its controlled action path on a 390px viewport.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:llm-system-evidence
+```

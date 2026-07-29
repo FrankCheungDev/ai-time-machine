@@ -59,6 +59,14 @@ const englishDemoChapterCases = [
       "Why is Attention better suited than an RNN for modeling long-range dependencies?",
   },
   {
+    route: localizedChapterRoute("llm-system", "en"),
+    title:
+      "LLMs And Modern AI Systems: Why do large models still need external systems?",
+    activityTitle: "LLM System Boundary Lab",
+    evidence:
+      "Why does the same base model need different external system paths for different tasks?",
+  },
+  {
     route: localizedChapterRoute("rag", "en"),
     title: "RAG: How do large language models connect to external knowledge?",
     activityTitle: "RAG Pipeline Walkthrough",
@@ -113,6 +121,11 @@ const chineseDemoChapterCases = [
     activityTitle: "注意力热图探索",
   },
   {
+    route: localizedChapterRoute("llm-system"),
+    title: "LLM 与现代 AI 系统：为什么大模型还需要外部系统？",
+    activityTitle: "LLM 系统边界实验",
+  },
+  {
     route: localizedChapterRoute("rag"),
     title: "RAG：大模型如何连接外部知识？",
     activityTitle: "RAG 流程演示",
@@ -133,13 +146,6 @@ const demoActivityTitleCases = [
   ...chineseDemoChapterCases,
   ...englishDemoChapterCases,
 ] as const;
-
-const englishLlmSystemChapter = {
-  route: localizedChapterRoute("llm-system", "en"),
-  title:
-    "LLMs And Modern AI Systems: Why do large models still need external systems?",
-  evidence: "Context Window",
-} as const;
 
 const englishChapterReferenceCases = [
   {
@@ -182,6 +188,15 @@ const englishChapterReferenceCases = [
     expectedHrefs: [
       "https://arxiv.org/abs/1706.03762",
       "https://jalammar.github.io/illustrated-transformer/",
+    ],
+  },
+  {
+    route: localizedChapterRoute("llm-system", "en"),
+    expectedHrefs: [
+      "https://arxiv.org/abs/2005.14165",
+      "https://arxiv.org/abs/2005.11401",
+      "https://arxiv.org/abs/2210.03629",
+      "https://doi.org/10.6028/NIST.AI.600-1",
     ],
   },
   {
@@ -703,9 +718,7 @@ test("English RAG SVG accessibility label uses English punctuation", async ({
   );
 });
 
-test("English demo and LLM-system chapters are fully localized", async ({
-  page,
-}) => {
+test("English demo chapters are fully localized", async ({ page }) => {
   for (const chapter of englishDemoChapterCases) {
     await page.goto(chapter.route);
 
@@ -747,23 +760,6 @@ test("English demo and LLM-system chapters are fully localized", async ({
       `${chapter.route} aria-label/title attributes`,
     ).not.toMatch(/\p{Script=Han}/u);
   }
-
-  await page.goto(englishLlmSystemChapter.route);
-  await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: englishLlmSystemChapter.title,
-    }),
-  ).toBeVisible();
-  await expect(
-    page.getByText(englishLlmSystemChapter.evidence, { exact: true }),
-  ).toBeVisible();
-
-  const mainText = await page.locator("main").innerText();
-  expect(mainText, englishLlmSystemChapter.route).not.toMatch(
-    /\p{Script=Han}/u,
-  );
 });
 
 test("demo activity titles stay concise while chapter questions remain H1", async ({
@@ -922,6 +918,33 @@ test("English Attention interaction changes the token and mode", async ({
       level: 3,
       name: "An RNN can only pass information along the sequence",
     }),
+  ).toBeVisible();
+});
+
+test("English LLM system interaction switches task-specific paths", async ({
+  page,
+}) => {
+  await openReadyEnglishDemo(page, "/en/chapters/llm-system/");
+
+  const scenarioGroup = page.getByRole("group", { name: "System task" });
+  await scenarioGroup
+    .getByRole("button", { name: "Resume and submit" })
+    .click();
+
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Memory restores authorized task state",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Memory is selectable, updateable, deletable external state, not private memory hidden in model weights.",
+      { exact: true },
+    ),
   ).toBeVisible();
 });
 

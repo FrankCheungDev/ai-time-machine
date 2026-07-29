@@ -11,6 +11,7 @@ const svgSceneChapterIds = [
   "search",
   "decision-boundary",
   "attention",
+  "llm-system",
   "rag",
   "agent",
 ] satisfies readonly ChapterId[];
@@ -18,9 +19,9 @@ const svgSceneRoutes = svgSceneChapterIds.map((id) =>
   localizedChapterRoute(id),
 );
 const scrollSceneRoutes = [...svgSceneRoutes, "/lineage/"];
-const stepperDemoRoutes = (["rag", "agent"] satisfies readonly ChapterId[]).map(
-  (id) => localizedChapterRoute(id),
-);
+const stepperDemoRoutes = (
+  ["llm-system", "rag", "agent"] satisfies readonly ChapterId[]
+).map((id) => localizedChapterRoute(id));
 
 test("RAG step changes keep the explanation and diagram visible together", async ({
   page,
@@ -86,8 +87,7 @@ test("Demo controls keep mobile-safe touch target height", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 });
 
   const demoRoutes = chapterRoutes.filter(
-    (route) =>
-      route !== "/chapters/overview/" && route !== "/chapters/llm-system/",
+    (route) => route !== "/chapters/overview/",
   );
 
   for (const route of demoRoutes) {
