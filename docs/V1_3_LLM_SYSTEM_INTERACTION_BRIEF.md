@@ -3,7 +3,7 @@
 - 状态：首个切片已实现，待发布
 - 评审日期：2026-07-29
 - 目标章节：Chapter 07 / LLM systems
-- 目标演示：Demo 10 / LLM System Boundary Lab
+- 目标演示：Demo 07 / LLM System Boundary Lab
 
 ## 用户问题
 

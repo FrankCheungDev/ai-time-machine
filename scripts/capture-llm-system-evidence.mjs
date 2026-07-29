@@ -5,7 +5,7 @@ import { chromium } from "@playwright/test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = path.join(root, "docs/visual-evidence");
-const baseUrl = process.env.SITE_URL ?? "http://127.0.0.1:4331";
+const baseUrl = process.env.SITE_URL ?? "http://127.0.0.1:4330";
 
 await mkdir(outputDir, { recursive: true });
 
