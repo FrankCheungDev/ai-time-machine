@@ -1,7 +1,9 @@
 # v1.3 LLM 系统边界交互方案与来源评审
 
-- 状态：首个切片已实现，待发布
+- 状态：已发布
 - 评审日期：2026-07-29
+- 发布日期：2026-07-29
+- 发布提交：`c4dea11`（PR #28）
 - 目标章节：Chapter 07 / LLM systems
 - 目标演示：Demo 07 / LLM System Boundary Lab
 
@@ -84,3 +86,10 @@
 - 数据契约验证节点、边、步骤和场景引用，浏览器测试覆盖中英文与移动端路径。
 - 图源 manifest、SVG 稳定 id、PNG 预览和两张发布截图均可重新生成。
 - `pnpm format:check`、`pnpm validate:data`、`pnpm lint`、`pnpm build` 与 `pnpm test` 全部通过。
+
+## 发布验证
+
+- GitHub Actions 的 Quality / build 与 Chromium 检查在合并提交 `c4dea11` 上通过。
+- Cloudflare Pages 生产站点已提供中英文 LLM 系统章节和第十组图源。
+- 生产移动端 smoke 已验证场景切换、证据缺口、受控工具动作和核验结果；无页面错误或失败请求。
+- 全站生产隐私 smoke 检查 29 个请求与 28 个 HTML 响应，未发现 RUM、被禁止请求或响应策略缺失。

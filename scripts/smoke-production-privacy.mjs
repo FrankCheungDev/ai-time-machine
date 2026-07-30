@@ -12,6 +12,7 @@ const chapterIds = [
   "decision-boundary",
   "cnn",
   "attention",
+  "foundation-model",
   "llm-system",
   "rag",
   "agent",
@@ -118,7 +119,7 @@ const timelineEventCounts = {
   zh: (chineseTimeline.match(/data-timeline-event=/g) ?? []).length,
   en: (englishTimeline.match(/data-timeline-event=/g) ?? []).length,
 };
-if (timelineEventCounts.zh !== 22 || timelineEventCounts.en !== 22) {
+if (timelineEventCounts.zh !== 25 || timelineEventCounts.en !== 25) {
   failures.push(
     `timeline event counts are zh=${timelineEventCounts.zh}, en=${timelineEventCounts.en}`,
   );
@@ -142,11 +143,11 @@ if (
 ) {
   failures.push("the English privacy decision is missing");
 }
-if (!chineseHome.includes("沿着 11 个章节理解 AI 如何一步步演化")) {
+if (!chineseHome.includes("沿着 12 个章节理解 AI 如何一步步演化")) {
   failures.push("the Chinese derived chapter count is missing");
 }
 if (
-  !englishHome.includes("Follow 11 chapters to see how AI evolved step by step")
+  !englishHome.includes("Follow 12 chapters to see how AI evolved step by step")
 ) {
   failures.push("the English derived chapter count is missing");
 }

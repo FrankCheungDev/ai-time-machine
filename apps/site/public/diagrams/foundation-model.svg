@@ -1,0 +1,44 @@
+<svg id="diagram-foundation-model" data-state="runtime-context-boundary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title-foundation-model desc-foundation-model">
+  <title id="title-foundation-model">Foundation Model · Training / Inference Boundary</title>
+  <desc id="desc-foundation-model">Post-training changes weights; runtime context changes one generation. Representative state: runtime-context-boundary. Scripted stages explain boundaries; no training, labeling, or inference runs.</desc>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba9a1" /></marker>
+    <marker id="arrowhead-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7d5b" /></marker>
+    <style>
+  .title { fill: #17201d; font: 800 28px system-ui, sans-serif; }
+  .subtitle { fill: #5f6864; font: 14px system-ui, sans-serif; }
+  .label { fill: #17201d; font: 750 16px system-ui, sans-serif; }
+  .small { fill: #5f6864; font: 12px system-ui, sans-serif; }
+  .tiny { fill: #5f6864; font: 11px system-ui, sans-serif; }
+  .node { fill: #ffffff; stroke: #d7ddd7; stroke-width: 2; }
+  .active { fill: #eaf6ef; stroke: #2f7d5b; stroke-width: 3; }
+  .risk { fill: #fff1ed; stroke: #c6543f; stroke-width: 3; }
+  .fixed { fill: #f6eff9; stroke: #8a5a9d; stroke-width: 3; }
+  .arrow { fill: none; stroke: #9ba9a1; stroke-width: 3; marker-end: url(#arrowhead); }
+  .arrow-active { fill: none; stroke: #2f7d5b; stroke-width: 4; marker-end: url(#arrowhead-active); }
+  .pill { fill: #eef4fb; stroke: #3469a6; stroke-width: 1.5; }
+</style>
+  </defs>
+  <rect id="background-canvas" width="1040" height="560" rx="8" fill="#fbfbf8" />
+  <text id="label-title" x="44" y="52" class="title">Foundation Model · Training / Inference Boundary</text>
+  <text id="label-subtitle" x="44" y="78" class="subtitle">Post-training changes weights; runtime context changes one generation</text>
+  <rect x="24" y="138" width="872" height="154" rx="8" fill="#f6f9fd" stroke="#c9d9ec" stroke-dasharray="8 8" />
+      <text class="tiny" x="42" y="160">WEIGHTS CAN CHANGE</text>
+      <rect x="504" y="322" width="392" height="124" rx="8" fill="#f2faf5" stroke="#c7dfd1" stroke-dasharray="8 8" />
+      <text class="tiny" x="522" y="344">WEIGHTS STAY FIXED</text>
+      <path id="arrow-corpus-pretraining" class="arrow" d="M 136 224 H 156" />
+      <path id="arrow-pretraining-base" class="arrow" d="M 260 224 H 280" />
+      <path id="arrow-base-instruction" class="arrow" d="M 384 224 H 404" />
+      <path id="arrow-instruction-model" class="arrow" d="M 508 224 H 528" />
+      <path id="arrow-instruction-preference" class="arrow" d="M 632 224 H 652" />
+      <path id="arrow-preference-assistant" class="arrow" d="M 756 224 H 776" />
+      <path id="arrow-assistant-output" class="arrow-active" d="M 828 266 V 364" />
+      <path id="arrow-context-output" class="arrow-active" d="M 678 398 H 776" />
+      <g id="node-corpus"><rect class="node" x="32" y="182" width="104" height="84" rx="8" /><text class="small" x="84" y="217" text-anchor="middle">Corpus</text><text class="tiny" x="84" y="241" text-anchor="middle">text samples</text></g><g id="node-pretraining"><rect class="node" x="156" y="182" width="104" height="84" rx="8" /><text class="small" x="208" y="217" text-anchor="middle">Pretraining</text><text class="tiny" x="208" y="241" text-anchor="middle">next token</text></g><g id="node-base-model"><rect class="node" x="280" y="182" width="104" height="84" rx="8" /><text class="small" x="332" y="217" text-anchor="middle">Base Model</text><text class="tiny" x="332" y="241" text-anchor="middle">broad patterns</text></g><g id="node-instruction-tuning"><rect class="node" x="404" y="182" width="104" height="84" rx="8" /><text class="small" x="456" y="217" text-anchor="middle">Instruction</text><text class="tiny" x="456" y="241" text-anchor="middle">task examples</text></g><g id="node-instruction-model"><rect class="node" x="528" y="182" width="104" height="84" rx="8" /><text class="small" x="580" y="217" text-anchor="middle">Instruction</text><text class="tiny" x="580" y="241" text-anchor="middle">follows format</text></g><g id="node-preference-feedback"><rect class="node" x="652" y="182" width="104" height="84" rx="8" /><text class="small" x="704" y="217" text-anchor="middle">Preference</text><text class="tiny" x="704" y="241" text-anchor="middle">rank outputs</text></g><g id="node-assistant-model"><rect class="node" x="776" y="182" width="104" height="84" rx="8" /><text class="small" x="828" y="217" text-anchor="middle">Assistant</text><text class="tiny" x="828" y="241" text-anchor="middle">post-trained</text></g>
+      <g id="node-runtime-context"><rect class="active" x="528" y="364" width="150" height="68" rx="8" /><text class="small" x="603" y="393" text-anchor="middle">Runtime Context</text><text class="tiny" x="603" y="414" text-anchor="middle">this request</text></g>
+      <g id="node-output"><rect class="active" x="776" y="364" width="104" height="68" rx="8" /><text class="small" x="828" y="393" text-anchor="middle">Output</text><text class="tiny" x="828" y="414" text-anchor="middle">one answer</text></g>
+  <rect x="44" y="478" width="952" height="48" rx="8" fill="#f7faf8" stroke="#d7ddd7" />
+  <text x="62" y="499" class="tiny">STATE · runtime-context-boundary</text>
+  <text x="62" y="517" class="tiny">Scripted stages explain boundaries; no training, labeling, or inference runs.</text>
+  <text x="996" y="544" text-anchor="end" class="tiny">v1.4.0 · 2026-07-30 · MIT</text>
+</svg>

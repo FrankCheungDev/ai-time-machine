@@ -169,6 +169,45 @@ const assets = [
       <rect class="pill" x="390" y="208" width="236" height="42" rx="21" /><text class="small" x="508" y="234" text-anchor="middle">direct information path</text>`,
   },
   {
+    id: "foundation-model",
+    title: "Foundation Model · Training / Inference Boundary",
+    subtitle:
+      "Post-training changes weights; runtime context changes one generation",
+    state: "runtime-context-boundary",
+    note: "Scripted stages explain boundaries; no training, labeling, or inference runs.",
+    version: "1.4.0",
+    updatedAt: "2026-07-30",
+    body: `
+      <rect x="24" y="138" width="872" height="154" rx="8" fill="#f6f9fd" stroke="#c9d9ec" stroke-dasharray="8 8" />
+      <text class="tiny" x="42" y="160">WEIGHTS CAN CHANGE</text>
+      <rect x="504" y="322" width="392" height="124" rx="8" fill="#f2faf5" stroke="#c7dfd1" stroke-dasharray="8 8" />
+      <text class="tiny" x="522" y="344">WEIGHTS STAY FIXED</text>
+      <path id="arrow-corpus-pretraining" class="arrow" d="M 136 224 H 156" />
+      <path id="arrow-pretraining-base" class="arrow" d="M 260 224 H 280" />
+      <path id="arrow-base-instruction" class="arrow" d="M 384 224 H 404" />
+      <path id="arrow-instruction-model" class="arrow" d="M 508 224 H 528" />
+      <path id="arrow-instruction-preference" class="arrow" d="M 632 224 H 652" />
+      <path id="arrow-preference-assistant" class="arrow" d="M 756 224 H 776" />
+      <path id="arrow-assistant-output" class="arrow-active" d="M 828 266 V 364" />
+      <path id="arrow-context-output" class="arrow-active" d="M 678 398 H 776" />
+      ${[
+        ["corpus", "Corpus", "text samples", 32],
+        ["pretraining", "Pretraining", "next token", 156],
+        ["base-model", "Base Model", "broad patterns", 280],
+        ["instruction-tuning", "Instruction", "task examples", 404],
+        ["instruction-model", "Instruction", "follows format", 528],
+        ["preference-feedback", "Preference", "rank outputs", 652],
+        ["assistant-model", "Assistant", "post-trained", 776],
+      ]
+        .map(
+          ([id, label, note, x]) =>
+            `<g id="node-${id}"><rect class="node" x="${x}" y="182" width="104" height="84" rx="8" /><text class="small" x="${Number(x) + 52}" y="217" text-anchor="middle">${label}</text><text class="tiny" x="${Number(x) + 52}" y="241" text-anchor="middle">${note}</text></g>`,
+        )
+        .join("")}
+      <g id="node-runtime-context"><rect class="active" x="528" y="364" width="150" height="68" rx="8" /><text class="small" x="603" y="393" text-anchor="middle">Runtime Context</text><text class="tiny" x="603" y="414" text-anchor="middle">this request</text></g>
+      <g id="node-output"><rect class="active" x="776" y="364" width="104" height="68" rx="8" /><text class="small" x="828" y="393" text-anchor="middle">Output</text><text class="tiny" x="828" y="414" text-anchor="middle">one answer</text></g>`,
+  },
+  {
     id: "llm-system",
     title: "LLM System · Task-Specific Boundaries",
     subtitle:

@@ -52,6 +52,11 @@ const conceptCheckDefinitions = [
     correctOptionId: "weighted-direct-links",
   },
   {
+    id: "foundation-model-runtime-boundary",
+    chapterId: "foundation-model",
+    correctOptionId: "context-only",
+  },
+  {
     id: "llm-system-boundary",
     chapterId: "llm-system",
     correctOptionId: "system-layers",
@@ -213,6 +218,25 @@ const localizedConceptCheckCopy = {
       ],
       explanation:
         "Attention 让 token 在一次层计算中聚合其他位置的信息。权重表达当前模型中的信息路径，不等于人类解释或因果证据。",
+    },
+    "foundation-model": {
+      prompt: "把新材料放进 Runtime Context 时，演示中什么会改变？",
+      options: [
+        {
+          id: "retrain-weights",
+          label: "模型权重会在每次请求时自动重训",
+        },
+        {
+          id: "context-only",
+          label: "固定权重处理本次上下文，改变当前输出",
+        },
+        {
+          id: "grant-permissions",
+          label: "模型自动获得外部工具和私有数据权限",
+        },
+      ],
+      explanation:
+        "预训练和后训练阶段可以更新模型权重；普通推理使用固定权重处理当前指令与材料。实时知识、工具和权限仍需要外部系统明确提供。",
     },
     "llm-system": {
       prompt: "为什么现代 AI 应用不能只画一个“LLM”方框？",
@@ -433,6 +457,29 @@ const localizedConceptCheckCopy = {
       ],
       explanation:
         "Attention lets a token aggregate information from other positions in one layer. Its weights describe model information paths in context, not human explanations or causal proof.",
+    },
+    "foundation-model": {
+      prompt:
+        "When new material enters Runtime Context, what changes in this demo?",
+      options: [
+        {
+          id: "retrain-weights",
+          label:
+            "The model automatically retrains its weights on every request",
+        },
+        {
+          id: "context-only",
+          label:
+            "Fixed weights process this context and change the current output",
+        },
+        {
+          id: "grant-permissions",
+          label:
+            "The model automatically gains tools and private-data permissions",
+        },
+      ],
+      explanation:
+        "Pretraining and post-training can update model weights. Ordinary inference uses fixed weights with the current instructions and material. Live knowledge, tools, and permissions still need explicit external systems.",
     },
     "llm-system": {
       prompt:

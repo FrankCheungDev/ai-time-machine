@@ -75,6 +75,64 @@ test("Attention chapter lets users inspect token relationships", async ({
   ).toBeVisible();
 });
 
+test("Foundation-model chapter separates weight updates from runtime context", async ({
+  page,
+}) => {
+  await page.goto("/chapters/foundation-model/");
+
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "基础模型生命周期：预测 token 如何变成按指令协作？",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "基础模型生命周期实验" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("预训练、指令微调、偏好反馈和运行时上下文分别改变了什么？", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await waitForDemoReady(page);
+
+  const nextButton = page.getByRole("button", { name: "下一步" });
+  await expect(page.getByText("1 / 6", { exact: true })).toBeVisible();
+  await nextButton.click();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Base Model 学会续写，却未必稳定执行指令",
+    }),
+  ).toBeVisible();
+  await expect(page.locator("#foundation-node-base-model")).toHaveClass(
+    /node-current/,
+  );
+
+  for (let index = 0; index < 4; index += 1) {
+    await nextButton.click();
+  }
+
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "运行时上下文改变本次输出，不会现场重训权重",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.locator("[data-foundation-status='boundary']"),
+  ).toContainText("训练阶段更新权重；推理阶段使用固定权重处理当前上下文");
+  await expect(page.locator("#foundation-edge-context-output")).toHaveClass(
+    /edge-active/,
+  );
+  await expect(page.locator("#foundation-node-pretraining")).toHaveClass(
+    /node-muted/,
+  );
+  await expect(page.getByTestId("foundation-output-preview")).toContainText(
+    "权重保持不变",
+  );
+});
+
 test("LLM system chapter composes task-specific external boundaries", async ({
   page,
 }) => {

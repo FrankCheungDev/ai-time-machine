@@ -4,10 +4,10 @@ export const overviewChapterCopy = {
   "zh-CN": {
     title: "总览：AI 为什么不是突然变成大模型的？",
     description:
-      "沿着规则搜索、知识工程、概率统计、深度学习、Transformer、RAG 与 Agent，理解现代 AI 系统如何逐步形成。",
+      "沿着规则搜索、知识工程、概率统计、深度学习、Transformer、基础模型训练、RAG 与 Agent，理解现代 AI 系统如何逐步形成。",
     eyebrow: "Chapter 00",
     heading: "总览：AI 为什么不是突然变成大模型的？",
-    lede: "AI 的主线不是一个模型突然出现，而是规则搜索、知识工程、概率统计、表示学习、Transformer、RAG 与 Agent 不断回应前一阶段瓶颈的结果。",
+    lede: "AI 的主线不是一个模型突然出现，而是规则搜索、知识工程、概率统计、表示学习、Transformer、预训练与后训练、RAG 与 Agent 不断回应前一阶段瓶颈的结果。",
     question: "AI 为什么不是突然变成大模型的？",
     spineEyebrow: "历史主线",
     spineHeading: "从规则到系统",
@@ -20,10 +20,10 @@ export const overviewChapterCopy = {
   en: {
     title: "Overview: Why did AI not suddenly become large models?",
     description:
-      "Follow rules and search, knowledge engineering, probability, deep learning, Transformers, RAG, and agents to see how modern AI systems emerged.",
+      "Follow rules and search, knowledge engineering, probability, deep learning, Transformers, foundation-model training, RAG, and agents to see how modern AI systems emerged.",
     eyebrow: "Chapter 00",
     heading: "Overview: Why did AI not suddenly become large models?",
-    lede: "AI's main thread is not the sudden appearance of one model. It is the result of rules and search, knowledge engineering, probability and statistics, representation learning, Transformer, RAG, and agents repeatedly addressing earlier bottlenecks.",
+    lede: "AI's main thread is not the sudden appearance of one model. It is the result of rules and search, knowledge engineering, probability and statistics, representation learning, Transformer, pretraining and post-training, RAG, and agents repeatedly addressing earlier bottlenecks.",
     question: "Why did AI not suddenly become large models?",
     spineEyebrow: "Historical Spine",
     spineHeading: "From Rules To Systems",
@@ -60,7 +60,7 @@ export const overviewSpineCards = {
       label: "基础模型与系统",
       title: "能力强，但需要外部结构",
       description:
-        "Transformer 扩展出 LLM，RAG、工具、记忆和评估把模型组织成现代 AI 系统。",
+        "Transformer 支撑规模化预训练，后训练塑造协作行为；RAG、工具、记忆和评估再把模型组织成现代 AI 系统。",
     },
   ],
   en: [
@@ -80,7 +80,7 @@ export const overviewSpineCards = {
       label: "Foundation Models And Systems",
       title: "Powerful, But In Need Of External Structure",
       description:
-        "Transformer scaled into LLMs, while RAG, tools, memory, and evaluation organize models into modern AI systems.",
+        "Transformers support scaled pretraining and post-training shapes cooperative behavior; RAG, tools, memory, and evaluation then organize models into modern AI systems.",
     },
   ],
 } satisfies Record<Locale, OverviewSpineCard[]>;

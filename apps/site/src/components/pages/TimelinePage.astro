@@ -1,5 +1,6 @@
 ---
 import {
+  chapterRegistry,
   getAiLineageNodes,
   getAiTimelineEntries,
   getAiTimelineEvents,
@@ -25,6 +26,9 @@ const timelineEvents = getAiTimelineEvents(locale);
 const lineageNodes = getAiLineageNodes(locale);
 const lineageById = new Map(lineageNodes.map((node) => [node.id, node]));
 const lineageRoute = toLocalizedPath("/lineage/", locale);
+const chapterOptions = chapterRegistry.map((chapter) =>
+  getLocalizedLearningChapter(chapter.id, locale),
+);
 const actionLabel = timelineActionLabel[locale];
 const eventTypeLabels = timelineEventTypeLabels[locale];
 const sourceKindLabels = timelineSourceKindLabels[locale];
@@ -81,7 +85,64 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
       </h2>
       <p>{copy.eventsLede}</p>
 
-      <div class="milestone-grid" aria-label={copy.eventsAriaLabel}>
+      <section
+        class="causal-explorer"
+        aria-labelledby="causal-explorer-heading"
+        data-causal-timeline
+        hidden
+      >
+        <p class="eyebrow">{copy.explorerEyebrow}</p>
+        <h3 id="causal-explorer-heading">{copy.explorerHeading}</h3>
+        <p>{copy.explorerDescription}</p>
+        <div class="causal-filter-grid">
+          <label>
+            <span>{copy.chapterFilterLabel}</span>
+            <select data-timeline-chapter-filter aria-controls="milestone-grid">
+              <option value="">{copy.allChapters}</option>
+              {
+                chapterOptions.map((chapter) => (
+                  <option value={chapter.id}>{chapter.title}</option>
+                ))
+              }
+            </select>
+          </label>
+          <label>
+            <span>{copy.lineageFilterLabel}</span>
+            <select data-timeline-lineage-filter aria-controls="milestone-grid">
+              <option value="">{copy.allLineages}</option>
+              {
+                lineageNodes.map((node) => (
+                  <option value={node.id}>{node.label}</option>
+                ))
+              }
+            </select>
+          </label>
+          <button type="button" data-timeline-filter-reset>
+            {copy.resetFilters}
+          </button>
+        </div>
+        <p
+          class="causal-filter-status"
+          data-timeline-filter-status
+          data-template={copy.visibleEventsTemplate}
+          aria-live="polite"
+        >
+          {
+            copy.visibleEventsTemplate
+              .replace("{visible}", String(timelineEvents.length))
+              .replace("{total}", String(timelineEvents.length))
+          }
+        </p>
+        <p class="causal-filter-empty" data-timeline-filter-empty hidden>
+          {copy.noEvents}
+        </p>
+      </section>
+
+      <div
+        id="milestone-grid"
+        class="milestone-grid"
+        aria-label={copy.eventsAriaLabel}
+      >
         {
           timelineEvents.map((event) => {
             const chapters = event.chapterIds.map((chapterId) =>
@@ -104,6 +165,7 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
                 id={`milestone-${event.id}`}
                 class="milestone-event"
                 data-timeline-event={event.id}
+                data-chapter-ids={event.chapterIds.join(" ")}
                 data-lineage-node-ids={event.lineageNodeIds.join(" ")}
               >
                 <div class="milestone-event-meta">
@@ -133,7 +195,9 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
                     <strong>{copy.relatedLineage}</strong>
                     <div class="milestone-chip-list">
                       {eventLineageNodes.map((node) => (
-                        <a href={`${lineageRoute}#node-${node.id}`}>
+                        <a
+                          href={`${lineageRoute}?lineage=${node.id}#node-${node.id}`}
+                        >
                           {node.label}
                         </a>
                       ))}
@@ -160,3 +224,126 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
     </section>
   </main>
 </BaseLayout>
+
+<script>
+  import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
+
+  const timelineExplorer = document.querySelector("[data-causal-timeline]");
+
+  if (timelineExplorer instanceof HTMLElement) {
+    const chapterFilter = timelineExplorer.querySelector(
+      "[data-timeline-chapter-filter]",
+    );
+    const lineageFilter = timelineExplorer.querySelector(
+      "[data-timeline-lineage-filter]",
+    );
+    const resetButton = timelineExplorer.querySelector(
+      "[data-timeline-filter-reset]",
+    );
+    const status = timelineExplorer.querySelector(
+      "[data-timeline-filter-status]",
+    );
+    const emptyState = timelineExplorer.querySelector(
+      "[data-timeline-filter-empty]",
+    );
+    const eventCards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-timeline-event]"),
+    );
+
+    if (
+      chapterFilter instanceof HTMLSelectElement &&
+      lineageFilter instanceof HTMLSelectElement &&
+      resetButton instanceof HTMLButtonElement &&
+      status instanceof HTMLElement &&
+      emptyState instanceof HTMLElement
+    ) {
+      const chapterSelect = chapterFilter;
+      const lineageSelect = lineageFilter;
+      const resetControl = resetButton;
+      const statusRegion = status;
+      const emptyRegion = emptyState;
+      const validChapterIds = new Set(
+        Array.from(chapterSelect.options, ({ value }) => value).filter(Boolean),
+      );
+      const validLineageIds = new Set(
+        Array.from(lineageSelect.options, ({ value }) => value).filter(Boolean),
+      );
+      const initialUrl = new URL(window.location.href);
+      const initialChapter = initialUrl.searchParams.get("chapter") ?? "";
+      const initialLineage = initialUrl.searchParams.get("lineage") ?? "";
+
+      chapterSelect.value = validChapterIds.has(initialChapter)
+        ? initialChapter
+        : "";
+      lineageSelect.value = validLineageIds.has(initialLineage)
+        ? initialLineage
+        : "";
+      timelineExplorer.hidden = false;
+
+      function applyFilters(updateUrl = true) {
+        const chapterId = chapterSelect.value;
+        const lineageId = lineageSelect.value;
+        let visibleCount = 0;
+
+        for (const card of eventCards) {
+          const chapterIds = new Set(
+            (card.dataset.chapterIds ?? "").split(" ").filter(Boolean),
+          );
+          const lineageIds = new Set(
+            (card.dataset.lineageNodeIds ?? "").split(" ").filter(Boolean),
+          );
+          const visible =
+            (!chapterId || chapterIds.has(chapterId)) &&
+            (!lineageId || lineageIds.has(lineageId));
+
+          card.hidden = !visible;
+          if (visible) {
+            visibleCount += 1;
+          }
+        }
+
+        const template = statusRegion.dataset.template ?? "{visible} / {total}";
+        statusRegion.textContent = template
+          .replace("{visible}", String(visibleCount))
+          .replace("{total}", String(eventCards.length));
+        emptyRegion.hidden = visibleCount !== 0;
+        resetControl.disabled = !chapterId && !lineageId;
+
+        if (updateUrl) {
+          const url = new URL(window.location.href);
+          if (chapterId) {
+            url.searchParams.set("chapter", chapterId);
+          } else {
+            url.searchParams.delete("chapter");
+          }
+          if (lineageId) {
+            url.searchParams.set("lineage", lineageId);
+          } else {
+            url.searchParams.delete("lineage");
+          }
+          const milestoneTarget = url.hash.startsWith("#milestone-")
+            ? document.getElementById(url.hash.slice(1))
+            : null;
+          if (
+            milestoneTarget instanceof HTMLElement &&
+            milestoneTarget.hidden
+          ) {
+            url.hash = "";
+          }
+          window.history.replaceState({}, "", url);
+          synchronizeLanguageSwitchUrl();
+        }
+      }
+
+      chapterSelect.addEventListener("change", () => applyFilters());
+      lineageSelect.addEventListener("change", () => applyFilters());
+      resetControl.addEventListener("click", () => {
+        chapterSelect.value = "";
+        lineageSelect.value = "";
+        applyFilters();
+      });
+
+      applyFilters(false);
+    }
+  }
+</script>

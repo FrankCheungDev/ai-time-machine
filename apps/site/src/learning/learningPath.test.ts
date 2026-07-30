@@ -15,6 +15,7 @@ const expected = [
   ["decision-boundary", "/chapters/decision-boundary/", "demo"],
   ["cnn", "/chapters/cnn/", "demo"],
   ["attention", "/chapters/attention/", "demo"],
+  ["foundation-model", "/chapters/foundation-model/", "demo"],
   ["llm-system", "/chapters/llm-system/", "demo"],
   ["rag", "/chapters/rag/", "demo"],
   ["agent", "/chapters/agent/", "demo"],
@@ -26,8 +27,8 @@ describe("learningPath", () => {
     expect(
       learningPath.map(({ id, route, kind }) => [id, route, kind]),
     ).toEqual(expected);
-    expect(new Set(learningPath.map(({ id }) => id)).size).toBe(11);
-    expect(new Set(learningPath.map(({ route }) => route)).size).toBe(11);
+    expect(new Set(learningPath.map(({ id }) => id)).size).toBe(12);
+    expect(new Set(learningPath.map(({ route }) => route)).size).toBe(12);
     expect(learningPath).toEqual(
       chapterRegistry.map(({ id, route, kind }) => ({ id, route, kind })),
     );
@@ -36,6 +37,12 @@ describe("learningPath", () => {
   it("returns bounded previous and next chapters", () => {
     expect(getLearningPathContext("overview").previous).toBeUndefined();
     expect(getLearningPathContext("overview").next?.id).toBe("search");
+    expect(getLearningPathContext("foundation-model").previous?.id).toBe(
+      "attention",
+    );
+    expect(getLearningPathContext("foundation-model").next?.id).toBe(
+      "llm-system",
+    );
     expect(getLearningPathContext("rag").previous?.id).toBe("llm-system");
     expect(getLearningPathContext("rag").next?.id).toBe("agent");
     expect(getLearningPathContext("agent").next?.id).toBe("safety");

@@ -10,11 +10,11 @@ default language, with a complete English learning path under `/en/`.
 ## Current Release
 
 - Astro static site with MDX and Svelte islands.
-- Eleven chapter routes from overview through Safety / Evaluation.
-- Ten teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, LLM system boundaries, RAG pipeline, Agent loop, and the Safety / Eval release feedback loop.
+- Twelve chapter routes from overview through Safety / Evaluation.
+- Eleven teaching demos: search tree, expert-system rules, Bayes update, decision boundary, CNN kernel, Attention map, foundation-model lifecycle, LLM system boundaries, RAG pipeline, Agent loop, and the Safety / Eval release feedback loop.
 - Complete Chinese and English routes, copy, demo state, and references.
 - Resumable local learning progress, one bilingual concept check per chapter, and previous/next navigation.
-- A 22-event, source-backed history layer linked to chapters and lineage, plus a manifest-driven library of ten downloadable SVG/PNG diagram pairs.
+- A 25-event, source-backed history layer with shareable chapter/lineage filters and focused lineage deep links, plus a manifest-driven library of eleven downloadable SVG/PNG diagram pairs.
 - Public privacy pages and a reviewed learning-signal allowlist; client-side learning collection is disabled, and deployment headers reject automatic RUM injection. Cloudflare hosting-level edge metrics are not treated as learner data.
 - CI coverage for formatting, types, data contracts, static builds, unit tests, browser behavior, visual regressions, accessibility controls, and teaching correctness.
 - Contributor docs for design, motion, diagrams, demos, and templates.
@@ -36,6 +36,7 @@ pnpm format:check
 - `/chapters/overview/`
 - `/chapters/search/`
 - `/chapters/attention/`
+- `/chapters/foundation-model/`
 - `/chapters/llm-system/`
 - `/chapters/rag/`
 - `/chapters/agent/`
@@ -53,7 +54,8 @@ Prefix any route with `/en` for its English version, for example
 Post-MVP work is sequenced in
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md).
 Release hardening, extension architecture, Safety / Evaluation, diagram assets,
-source-backed historical depth, and chapter self-checks are implemented. The
+source-backed historical depth, causal atlas navigation, a foundation-model
+lifecycle chapter, and chapter self-checks are implemented. The
 P2-05 real-usage loop is paused: the provider decision is open again, no data
 source is approved or scheduled, and automated traffic is not treated as learner
 data. The in-page event contract and aggregate analyzer remain available without

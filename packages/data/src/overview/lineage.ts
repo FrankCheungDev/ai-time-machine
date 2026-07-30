@@ -70,31 +70,38 @@ const localizedLineageChapterNodeCopy = {
       y: 190,
       description: "Attention 让 token 直接互相关注，支撑基础模型扩展。",
     },
+    "foundation-model": {
+      label: "基础模型",
+      group: "foundation",
+      x: 930,
+      y: 190,
+      description: "预训练获得通用模式，后训练进一步塑造指令跟随行为。",
+    },
     "llm-system": {
       label: "LLM 系统",
       group: "foundation",
-      x: 930,
+      x: 1110,
       y: 280,
       description: "把模型、上下文、工具、记忆和评估组合成现代 AI 应用。",
     },
     rag: {
       label: "RAG",
       group: "foundation",
-      x: 930,
+      x: 1110,
       y: 80,
       description: "把外部知识检索进上下文，提高事实性与可更新性。",
     },
     agent: {
       label: "Agent",
       group: "agent",
-      x: 1090,
+      x: 1270,
       y: 280,
       description: "把模型放进计划、工具、观察和修正循环。",
     },
     safety: {
       label: "Safety / Eval",
       group: "safety",
-      x: 750,
+      x: 930,
       y: 430,
       description: "用红队、权限、人工复核和回归评估持续约束系统风险。",
     },
@@ -148,10 +155,18 @@ const localizedLineageChapterNodeCopy = {
       description:
         "Attention lets tokens attend to each other directly, supporting the scaling of foundation models.",
     },
+    "foundation-model": {
+      label: "Foundation Model",
+      group: "foundation",
+      x: 930,
+      y: 190,
+      description:
+        "Pretraining learns broad patterns, while post-training further shapes instruction-following behavior.",
+    },
     "llm-system": {
       label: "LLM Systems",
       group: "foundation",
-      x: 930,
+      x: 1110,
       y: 280,
       description:
         "Models, context, tools, memory, and evaluation combine into modern AI applications.",
@@ -159,7 +174,7 @@ const localizedLineageChapterNodeCopy = {
     rag: {
       label: "RAG",
       group: "foundation",
-      x: 930,
+      x: 1110,
       y: 80,
       description:
         "External knowledge is retrieved into context to improve factuality and freshness.",
@@ -167,7 +182,7 @@ const localizedLineageChapterNodeCopy = {
     agent: {
       label: "Agent",
       group: "agent",
-      x: 1090,
+      x: 1270,
       y: 280,
       description:
         "The model enters a loop of planning, tools, observation, and revision.",
@@ -175,7 +190,7 @@ const localizedLineageChapterNodeCopy = {
     safety: {
       label: "Safety / Eval",
       group: "safety",
-      x: 750,
+      x: 930,
       y: 430,
       description:
         "Red teams, permissions, human review, and regression evaluation continuously constrain system risk.",
@@ -216,10 +231,16 @@ const localizedLineageEdges = {
       label: "序列建模",
     },
     {
-      id: "transformer-llm-system",
+      id: "transformer-foundation-model",
       from: "transformer",
+      to: "foundation-model",
+      label: "规模化预训练",
+    },
+    {
+      id: "foundation-model-llm-system",
+      from: "foundation-model",
       to: "llm-system",
-      label: "基础模型应用化",
+      label: "模型进入系统",
     },
     {
       id: "llm-system-rag",
@@ -272,10 +293,16 @@ const localizedLineageEdges = {
       label: "Sequence modeling",
     },
     {
-      id: "transformer-llm-system",
+      id: "transformer-foundation-model",
       from: "transformer",
+      to: "foundation-model",
+      label: "Scaled pretraining",
+    },
+    {
+      id: "foundation-model-llm-system",
+      from: "foundation-model",
       to: "llm-system",
-      label: "Foundation model applications",
+      label: "Model into system",
     },
     {
       id: "llm-system-rag",

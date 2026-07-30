@@ -6,12 +6,12 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
-- Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, LLM systems, RAG, Agent, and Safety / Eval.
-- Ten teaching demos with simplification notes, references, and Playwright smoke coverage.
+- Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, foundation-model lifecycle, LLM systems, RAG, Agent, and Safety / Eval.
+- Eleven teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Complete Chinese and English routes with resumable local learning progress,
   chapter completion, and previous/next navigation.
-- Timeline, lineage map, and a manifest-driven diagram library with SVG and PNG assets for all ten demos.
-- Twenty-two source-backed milestone events linked to the chapter and lineage models.
+- Timeline and lineage views with shareable causal filters/focus, plus a manifest-driven diagram library with SVG and PNG assets for all eleven demos.
+- Twenty-five source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
 - Public privacy documentation and a typed in-page signal allowlist with client
   collection disabled, automatic RUM blocked, and hosting-layer edge metrics
@@ -41,12 +41,17 @@ follows the staged process in
   plan; Draft PR #26 was closed without merging. No hosted analytics provider is
   approved or scheduled. Client collection remains disabled, and deployment
   policy continues to block browser analytics and RUM.
-- **v1.3 — In progress — Interactive LLM system boundaries:** the first slice
+- **v1.3 — Complete — Interactive LLM system boundaries:** the release
   upgrades the static LLM systems chapter into a bilingual, two-scenario
   scripted demo. Learners compare a retrieval-backed policy answer with a
   memory-and-tool action path, while the diagram library gains its tenth asset
   pair. See
   [the v1.3 interaction brief](docs/V1_3_LLM_SYSTEM_INTERACTION_BRIEF.md).
+- **v1.4 — In review — Causal atlas and foundation-model lifecycle:** close
+  v1.3 release evidence, add shareable timeline/lineage navigation, and teach
+  the boundary between pretraining, post-training, and runtime context with a
+  new bilingual chapter and eleventh diagram pair. See
+  [the v1.4 teaching brief](docs/V1_4_CAUSAL_ATLAS_FOUNDATION_BRIEF.md).
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching

@@ -11,6 +11,7 @@ const svgSceneChapterIds = [
   "search",
   "decision-boundary",
   "attention",
+  "foundation-model",
   "llm-system",
   "rag",
   "agent",
@@ -20,7 +21,12 @@ const svgSceneRoutes = svgSceneChapterIds.map((id) =>
 );
 const scrollSceneRoutes = [...svgSceneRoutes, "/lineage/"];
 const stepperDemoRoutes = (
-  ["llm-system", "rag", "agent"] satisfies readonly ChapterId[]
+  [
+    "foundation-model",
+    "llm-system",
+    "rag",
+    "agent",
+  ] satisfies readonly ChapterId[]
 ).map((id) => localizedChapterRoute(id));
 
 test("RAG step changes keep the explanation and diagram visible together", async ({

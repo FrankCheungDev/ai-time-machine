@@ -47,6 +47,10 @@ export {
   getDecisionBoundaryDemo,
 } from "./demos/decision-boundary";
 export { expertSystemDemo, getExpertSystemDemo } from "./demos/expert-system";
+export {
+  foundationModelDemo,
+  getFoundationModelDemo,
+} from "./demos/foundation-model";
 export { getLlmSystemDemo, llmSystemDemo } from "./demos/llm-system";
 export { getRagPipelineDemo, ragPipelineDemo } from "./demos/rag-pipeline";
 export { getSafetyEvalDemo, safetyEvalDemo } from "./demos/safety-eval";

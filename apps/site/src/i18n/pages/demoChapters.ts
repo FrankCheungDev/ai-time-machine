@@ -311,9 +311,75 @@ export const demoChapterCopy = {
       ],
     },
   },
+  "foundation-model": {
+    "zh-CN": {
+      eyebrow: "Demo 07",
+      title: "基础模型生命周期：预测 token 如何变成按指令协作？",
+      description:
+        "一个区分预训练、指令微调、偏好反馈与运行时上下文的教学型交互图解。",
+      lede: "Transformer 提供了可扩展架构，但从 Base Model 到可协作的 Assistant Model 还要经过数据、目标和后训练选择。这个章节重点解释哪些阶段会更新权重，以及哪些信息只影响当前一次推理。",
+      notesId: "foundation-model-notes",
+      notesEyebrow: "历史位置与边界",
+      notesTitle: "从可扩展架构到可协作模型，再进入完整系统",
+      notesBody:
+        "预训练从大规模语料学习条件生成模式；指令微调与偏好反馈继续更新权重并塑造行为。运行时上下文则只参与当前推理，不会现场重训模型。后训练改善指令跟随，但不会自动提供实时知识、外部权限、事实正确性或完整安全保证，因此下一章仍需要把模型放进检索、工具、记忆和评估组成的系统。",
+      references: [
+        {
+          href: "https://arxiv.org/abs/2001.08361",
+          label: "Scaling Laws for Neural Language Models",
+        },
+        {
+          href: "https://arxiv.org/abs/2005.14165",
+          label: "Language Models are Few-Shot Learners",
+        },
+        {
+          href: "https://arxiv.org/abs/2109.01652",
+          label: "Finetuned Language Models Are Zero-Shot Learners",
+        },
+        {
+          href: "https://arxiv.org/abs/2203.02155",
+          label:
+            "Training Language Models to Follow Instructions with Human Feedback",
+        },
+      ],
+    },
+    en: {
+      eyebrow: "Demo 07",
+      title:
+        "Foundation Model Lifecycle: How does token prediction become instruction following?",
+      description:
+        "A teaching diagram separating pretraining, instruction tuning, preference feedback, and runtime context.",
+      lede: "The Transformer supplied a scalable architecture, but moving from a base model to a cooperative assistant also requires choices about data, objectives, and post-training. This chapter focuses on which stages update weights and which information affects only one inference call.",
+      notesId: "foundation-model-notes",
+      notesEyebrow: "Historical Position And Boundary",
+      notesTitle:
+        "From scalable architecture to cooperative model, then into a complete system",
+      notesBody:
+        "Pretraining learns conditional-generation patterns from a large corpus. Instruction tuning and preference feedback continue updating weights and shaping behavior. Runtime context participates only in the current inference and does not retrain the model on the spot. Post-training can improve instruction following, but it does not automatically provide live knowledge, external permissions, factuality, or complete safety, so the next chapter still places the model inside retrieval, tools, memory, and evaluation.",
+      references: [
+        {
+          href: "https://arxiv.org/abs/2001.08361",
+          label: "Scaling Laws for Neural Language Models",
+        },
+        {
+          href: "https://arxiv.org/abs/2005.14165",
+          label: "Language Models are Few-Shot Learners",
+        },
+        {
+          href: "https://arxiv.org/abs/2109.01652",
+          label: "Finetuned Language Models Are Zero-Shot Learners",
+        },
+        {
+          href: "https://arxiv.org/abs/2203.02155",
+          label:
+            "Training Language Models to Follow Instructions with Human Feedback",
+        },
+      ],
+    },
+  },
   rag: {
     "zh-CN": {
-      eyebrow: "Demo 08",
+      eyebrow: "Demo 09",
       title: "RAG：大模型如何连接外部知识？",
       description: "一个静态、教学型 RAG Pipeline 交互图解。",
       lede: "为什么只靠模型参数回答问题不够？这个 demo 用分步 SVG 流程解释检索、重排、拼接上下文和生成回答之间的关系。",
@@ -336,7 +402,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 08",
+      eyebrow: "Demo 09",
       title: "RAG: How do large language models connect to external knowledge?",
       description: "A static teaching diagram for the RAG pipeline.",
       lede: "Why are model parameters alone not enough for answering questions? This demo explains retrieval, reranking, context assembly, and answer generation as a step-by-step SVG flow.",
@@ -362,7 +428,7 @@ export const demoChapterCopy = {
   },
   agent: {
     "zh-CN": {
-      eyebrow: "Demo 09",
+      eyebrow: "Demo 10",
       title: "Agent：大模型如何执行多步任务？",
       description: "一个静态、教学型 Agent Loop 交互图解。",
       lede: "为什么 Agent 不是一次回答，而是一个循环控制系统？这个章节把 Agent 放在 LLM 和 RAG 之后，解释计划、工具、观察和修正如何构成多步任务执行。",
@@ -384,7 +450,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 09",
+      eyebrow: "Demo 10",
       title: "Agents: How do large language models execute multi-step tasks?",
       description: "A static teaching diagram for the agent loop.",
       lede: "Why is an agent a looped control system rather than a one-shot answer? This chapter places agents after LLMs and RAG, explaining how planning, tools, observation, and revision form multi-step task execution.",
@@ -409,7 +475,7 @@ export const demoChapterCopy = {
   },
   safety: {
     "zh-CN": {
-      eyebrow: "Demo 10",
+      eyebrow: "Demo 11",
       title: "Safety / Eval：系统如何发现、阻断并修复风险？",
       description: "一个静态、教学型 Safety / Eval 反馈回路图解。",
       lede: "当 RAG 和 Agent 能读取外部知识、调用工具并产生外部影响时，系统必须把风险变成可复现测试。这个章节展示红队样本、输入护栏、最小权限、人工复核、回归评估和发布门如何形成持续反馈回路。",
@@ -438,7 +504,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 10",
+      eyebrow: "Demo 11",
       title: "Safety / Eval: How do systems find, block, and fix risk?",
       description:
         "A static teaching diagram for the Safety / Eval feedback loop.",

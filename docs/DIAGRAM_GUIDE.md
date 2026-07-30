@@ -41,7 +41,7 @@ representative state, SVG/PNG paths, stable node and arrow IDs, version, update
 date, license, and teaching simplification. The diagrams page renders from this
 manifest, and data tests verify every file and declared ID.
 
-Regenerate all ten source/preview pairs after changing the generator:
+Regenerate all eleven source/preview pairs after changing the generator:
 
 ```sh
 pnpm render:diagrams

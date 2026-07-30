@@ -64,6 +64,38 @@ export interface AttentionMapDemo extends DemoMetadata {
   links: AttentionLink[];
 }
 
+export type FoundationModelFindingTone =
+  "data" | "base" | "instruction" | "preference" | "boundary";
+
+export interface FoundationModelNode {
+  id: string;
+  label: string;
+  description: string;
+  x: number;
+  y: number;
+}
+
+export interface FoundationModelEdge {
+  id: string;
+  from: string;
+  to: string;
+}
+
+export interface FoundationModelStep extends DemoStep {
+  nodeId: string;
+  statusLabel: string;
+  finding: string;
+  findingTone: FoundationModelFindingTone;
+  outputTitle: string;
+  outputPreview: string;
+}
+
+export interface FoundationModelDemo extends DemoMetadata {
+  nodes: FoundationModelNode[];
+  edges: FoundationModelEdge[];
+  steps: FoundationModelStep[];
+}
+
 export interface AgentLoopNode {
   id: string;
   label: string;

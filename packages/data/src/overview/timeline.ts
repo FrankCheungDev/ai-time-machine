@@ -62,6 +62,13 @@ const localizedTimelineEntryCopy = {
       summary:
         "Attention 让 token 之间建立直接连接，成为大规模语言模型和多模态模型的关键架构。",
     },
+    "foundation-model": {
+      era: "基础模型",
+      year: "2020s",
+      title: "预训练与后训练",
+      summary:
+        "规模化预训练形成通用 Base Model，指令微调与偏好反馈继续塑造面向用户的交互行为。",
+    },
     "llm-system": {
       era: "现代 AI 系统",
       year: "2020s",
@@ -133,6 +140,13 @@ const localizedTimelineEntryCopy = {
       title: "Transformer",
       summary:
         "Attention creates direct connections between tokens and became a key architecture for large language and multimodal models.",
+    },
+    "foundation-model": {
+      era: "Foundation Models",
+      year: "2020s",
+      title: "Pretraining And Post-Training",
+      summary:
+        "Scaled pretraining produces a general base model, while instruction tuning and preference feedback further shape user-facing behavior.",
     },
     "llm-system": {
       era: "Modern AI Systems",

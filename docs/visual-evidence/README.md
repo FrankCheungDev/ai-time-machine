@@ -42,3 +42,16 @@ Recreate them against the same local preview:
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:llm-system-evidence
 ```
+
+## Causal Atlas And Foundation Model Lifecycle v1.4
+
+- `v1-4-foundation-runtime-desktop.png`: the Chinese lifecycle at the runtime-context / fixed-weight boundary.
+- `v1-4-foundation-preference-english-mobile.png`: the English preference-feedback step at 390px.
+- `v1-4-lineage-foundation-focus-desktop.png`: the lineage deep link focused on the new foundation-model node and its adjacent causal edges.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:v1.4-evidence
+```

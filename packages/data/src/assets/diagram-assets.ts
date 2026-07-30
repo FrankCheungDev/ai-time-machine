@@ -45,6 +45,32 @@ const diagramAssetDefinitions = [
     arrowIds: ["arrow-model-directly", "arrow-model-context"],
   },
   {
+    id: "foundation-model",
+    chapterId: "foundation-model",
+    stateId: "runtime-context-boundary",
+    nodeIds: [
+      "node-corpus",
+      "node-pretraining",
+      "node-base-model",
+      "node-instruction-tuning",
+      "node-instruction-model",
+      "node-preference-feedback",
+      "node-assistant-model",
+      "node-runtime-context",
+      "node-output",
+    ],
+    arrowIds: [
+      "arrow-corpus-pretraining",
+      "arrow-pretraining-base",
+      "arrow-base-instruction",
+      "arrow-instruction-model",
+      "arrow-instruction-preference",
+      "arrow-preference-assistant",
+      "arrow-assistant-output",
+      "arrow-context-output",
+    ],
+  },
+  {
     id: "llm-system",
     chapterId: "llm-system",
     stateId: "verified-action-path",
@@ -183,6 +209,12 @@ const localizedDiagramAssetCopy = {
       simplificationNote:
         "连线粗细是预设权重，只解释直接信息路径，不是模型真实 attention。",
     },
+    "foundation-model": {
+      title: "基础模型：训练与运行时上下文边界",
+      stateLabel: "Assistant Model 与当前上下文生成一次回答，权重保持不变",
+      simplificationNote:
+        "训练阶段与输出均为脚本化教学状态；图解不运行真实训练、偏好标注或模型推理。",
+    },
     "llm-system": {
       title: "LLM 系统：按任务组合外部边界",
       stateLabel: "恢复任务状态后，经受控工具执行并由 Eval 核验结果",
@@ -245,6 +277,13 @@ const localizedDiagramAssetCopy = {
       stateLabel: "Selecting model reveals weights to directly and context",
       simplificationNote:
         "Line thickness uses scripted weights to explain direct information paths, not real model attention.",
+    },
+    "foundation-model": {
+      title: "Foundation Model: Training Versus Runtime Context",
+      stateLabel:
+        "The assistant model and current context produce one answer while weights stay fixed",
+      simplificationNote:
+        "Training stages and outputs are scripted for teaching; no real training, preference labeling, or model inference runs.",
     },
     "llm-system": {
       title: "LLM System: Compose External Boundaries By Task",
@@ -313,8 +352,18 @@ export function getDiagramAssets(
         nodes: [...asset.nodeIds],
         arrows: [...asset.arrowIds],
       },
-      version: asset.id === "llm-system" ? "1.3.0" : "1.1.0",
-      updatedAt: asset.id === "llm-system" ? "2026-07-29" : "2026-07-25",
+      version:
+        asset.id === "foundation-model"
+          ? "1.4.0"
+          : asset.id === "llm-system"
+            ? "1.3.0"
+            : "1.1.0",
+      updatedAt:
+        asset.id === "foundation-model"
+          ? "2026-07-30"
+          : asset.id === "llm-system"
+            ? "2026-07-29"
+            : "2026-07-25",
       license: "MIT" as const,
       simplificationNote: copy[asset.id].simplificationNote,
     })),

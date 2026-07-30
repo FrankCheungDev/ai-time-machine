@@ -55,6 +55,10 @@ Do not merge while any required check is pending or failing.
 4. Smoke-test:
    - [Chinese home](https://atlas.z-ai.cc/)
    - [English home](https://atlas.z-ai.cc/en/)
+   - [Foundation model chapter](https://atlas.z-ai.cc/chapters/foundation-model/)
+   - [English foundation model chapter](https://atlas.z-ai.cc/en/chapters/foundation-model/)
+   - [LLM system chapter](https://atlas.z-ai.cc/chapters/llm-system/)
+   - [English LLM system chapter](https://atlas.z-ai.cc/en/chapters/llm-system/)
    - [RAG chapter](https://atlas.z-ai.cc/chapters/rag/)
    - [English RAG chapter](https://atlas.z-ai.cc/en/chapters/rag/)
    - [Safety / Eval chapter](https://atlas.z-ai.cc/chapters/safety/)
@@ -73,7 +77,7 @@ Do not merge while any required check is pending or failing.
 7. In a real browser, complete one concept check and continue to the next
    chapter. Confirm the interaction hydrates and that no request targets
    `static.cloudflareinsights.com` or `/cdn-cgi/rum`.
-   Run `pnpm smoke:production:privacy` to cover this check together with all 22
+   Run `pnpm smoke:production:privacy` to cover this check together with all 24
    chapter routes, both timelines, both privacy routes, and the sitemap.
 8. Record any teaching simplification, source change, or deployment-layer
    privacy correction in the merged PR.
