@@ -61,6 +61,21 @@ function persistLocale(locale: Locale): void {
   document.cookie = `${languageStorageKey}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
+export function synchronizeLanguageSwitchUrl(): void {
+  const languageSwitch = document.querySelector<HTMLAnchorElement>(
+    "[data-language-switch]",
+  );
+
+  if (!languageSwitch) {
+    return;
+  }
+
+  const switchUrl = new URL(languageSwitch.href, location.href);
+  switchUrl.search = location.search;
+  switchUrl.hash = location.hash;
+  languageSwitch.href = `${switchUrl.pathname}${switchUrl.search}${switchUrl.hash}`;
+}
+
 export function initializeLanguagePreference(): void {
   if (location.pathname === "/") {
     const locale =
@@ -70,6 +85,8 @@ export function initializeLanguagePreference(): void {
       location.replace("/en/");
     }
   }
+
+  synchronizeLanguageSwitchUrl();
 
   document
     .querySelector("[data-language-switch]")

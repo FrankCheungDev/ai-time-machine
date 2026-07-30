@@ -94,10 +94,12 @@ test("English timeline keeps event identity while localizing teaching copy", asy
   );
 });
 
-test("causal explorer restores, combines, and clears shareable filters", async ({
+test("causal explorer preserves valid shareable state across filters and locales", async ({
   page,
 }) => {
-  await page.goto("/timeline/?chapter=foundation-model");
+  await page.goto(
+    "/timeline/?chapter=foundation-model#milestone-flan-instruction-tuning",
+  );
 
   const explorer = page.locator("[data-causal-timeline]");
   const chapterFilter = explorer.getByLabel("学习章节");
@@ -112,6 +114,10 @@ test("causal explorer restores, combines, and clears shareable filters", async (
     page.locator('[data-timeline-event="flan-instruction-tuning"]'),
   ).toBeVisible();
   await expect(page.locator('[data-timeline-event="rag"]')).toBeHidden();
+  await expect(page.locator("[data-language-switch]")).toHaveAttribute(
+    "href",
+    "/en/timeline/?chapter=foundation-model#milestone-flan-instruction-tuning",
+  );
 
   await lineageFilter.selectOption("safety");
   await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(1);
@@ -119,6 +125,11 @@ test("causal explorer restores, combines, and clears shareable filters", async (
     page.locator('[data-timeline-event="instructgpt-human-feedback"]'),
   ).toBeVisible();
   await expect(page).toHaveURL(/[?&]chapter=foundation-model&lineage=safety/);
+  await expect(page).not.toHaveURL(/#milestone-/);
+  await expect(page.locator("[data-language-switch]")).toHaveAttribute(
+    "href",
+    "/en/timeline/?chapter=foundation-model&lineage=safety",
+  );
 
   await reset.click();
   await expect(chapterFilter).toHaveValue("");

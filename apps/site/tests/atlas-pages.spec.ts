@@ -346,6 +346,10 @@ test("Lineage focus restores a deep link and exposes causal evidence", async ({
   await expect(
     summary.getByRole("link", { name: "进入对应章节" }),
   ).toHaveAttribute("href", "/chapters/foundation-model/");
+  await expect(page.locator("[data-language-switch]")).toHaveAttribute(
+    "href",
+    "/en/lineage/?lineage=foundation-model#node-foundation-model",
+  );
 
   await focus.selectOption("rag");
   await expect(page.locator("#node-rag")).toHaveClass(/is-causal-focus/);

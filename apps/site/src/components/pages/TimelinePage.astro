@@ -226,6 +226,8 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
 </BaseLayout>
 
 <script>
+  import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
+
   const timelineExplorer = document.querySelector("[data-causal-timeline]");
 
   if (timelineExplorer instanceof HTMLElement) {
@@ -319,7 +321,14 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
           } else {
             url.searchParams.delete("lineage");
           }
+          const milestoneTarget = url.hash.startsWith("#milestone-")
+            ? document.getElementById(url.hash.slice(1))
+            : null;
+          if (milestoneTarget instanceof HTMLElement && milestoneTarget.hidden) {
+            url.hash = "";
+          }
           window.history.replaceState({}, "", url);
+          synchronizeLanguageSwitchUrl();
         }
       }
 

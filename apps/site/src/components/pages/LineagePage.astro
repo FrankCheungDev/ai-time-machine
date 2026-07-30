@@ -323,6 +323,8 @@ function getLineageEdgeGeometry(
 </BaseLayout>
 
 <script>
+  import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
+
   const lineagePanel = document.querySelector("[data-lineage-panel]");
   const lineageButtons = document.querySelectorAll("[data-lineage-view]");
   const lineageFocus = document.querySelector("[data-lineage-focus]");
@@ -426,6 +428,7 @@ function getLineageEdgeGeometry(
           }
         }
         window.history.replaceState({}, "", url);
+        synchronizeLanguageSwitchUrl();
       }
     }
 
