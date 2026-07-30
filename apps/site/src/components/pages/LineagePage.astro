@@ -408,7 +408,10 @@ function getLineageEdgeGeometry(
         const connected =
           label.dataset.from === nodeId || label.dataset.to === nodeId;
         label.classList.toggle("is-causal-focus", Boolean(nodeId) && connected);
-        label.classList.toggle("is-causal-muted", Boolean(nodeId) && !connected);
+        label.classList.toggle(
+          "is-causal-muted",
+          Boolean(nodeId) && !connected,
+        );
       }
 
       for (const detail of lineageDetails) {

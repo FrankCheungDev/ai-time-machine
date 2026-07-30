@@ -324,7 +324,10 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
           const milestoneTarget = url.hash.startsWith("#milestone-")
             ? document.getElementById(url.hash.slice(1))
             : null;
-          if (milestoneTarget instanceof HTMLElement && milestoneTarget.hidden) {
+          if (
+            milestoneTarget instanceof HTMLElement &&
+            milestoneTarget.hidden
+          ) {
             url.hash = "";
           }
           window.history.replaceState({}, "", url);
