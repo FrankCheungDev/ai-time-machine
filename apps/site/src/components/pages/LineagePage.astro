@@ -182,6 +182,9 @@ function getLineageEdgeGeometry(
                 />
                 <text
                   class="edge-label"
+                  data-lineage-edge-label
+                  data-from={edge.from}
+                  data-to={edge.to}
                   x={geometry.labelX}
                   y={geometry.labelY}
                   text-anchor="middle"
@@ -330,6 +333,9 @@ function getLineageEdgeGeometry(
   const lineageEdges = Array.from(
     document.querySelectorAll<SVGPathElement>("[data-lineage-edge]"),
   );
+  const lineageEdgeLabels = Array.from(
+    document.querySelectorAll<SVGTextElement>("[data-lineage-edge-label]"),
+  );
   const lineageDetails = Array.from(
     document.querySelectorAll<HTMLElement>("[data-lineage-detail]"),
   );
@@ -394,6 +400,13 @@ function getLineageEdgeGeometry(
           edge.dataset.from === nodeId || edge.dataset.to === nodeId;
         edge.classList.toggle("is-causal-focus", Boolean(nodeId) && connected);
         edge.classList.toggle("is-causal-muted", Boolean(nodeId) && !connected);
+      }
+
+      for (const label of lineageEdgeLabels) {
+        const connected =
+          label.dataset.from === nodeId || label.dataset.to === nodeId;
+        label.classList.toggle("is-causal-focus", Boolean(nodeId) && connected);
+        label.classList.toggle("is-causal-muted", Boolean(nodeId) && !connected);
       }
 
       for (const detail of lineageDetails) {

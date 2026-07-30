@@ -325,6 +325,16 @@ test("Lineage focus restores a deep link and exposes causal evidence", async ({
   await expect(page.locator("#arrow-transformer-foundation-model")).toHaveClass(
     /is-causal-focus/,
   );
+  await expect(
+    page.locator(
+      '[data-lineage-edge-label][data-from="transformer"][data-to="foundation-model"]',
+    ),
+  ).toHaveClass(/is-causal-focus/);
+  await expect(
+    page.locator(
+      '[data-lineage-edge-label][data-from="symbolic"][data-to="statistical"]',
+    ),
+  ).toHaveClass(/is-causal-muted/);
   await expect(summary).toBeVisible();
   await expect(summary).toContainText("5 个直接关联事件");
   await expect(

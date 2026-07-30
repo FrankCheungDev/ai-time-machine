@@ -1035,6 +1035,17 @@ main {
   stroke: var(--color-surface);
   stroke-linejoin: round;
   stroke-width: 5px;
+  transition:
+    fill 180ms ease,
+    opacity 180ms ease;
+}
+
+.lineage-panel .edge-label.is-causal-focus {
+  fill: var(--color-green);
+}
+
+.lineage-panel .edge-label.is-causal-muted {
+  opacity: 0.18;
 }
 
 .chapter-question {
