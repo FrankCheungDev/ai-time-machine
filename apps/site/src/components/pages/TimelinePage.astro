@@ -4,9 +4,11 @@ import {
   getAiLineageNodes,
   getAiTimelineEntries,
   getAiTimelineEvents,
+  getCausalStories,
 } from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
 import {
+  causalStoryExplorerCopy,
   timelineActionLabel,
   timelineEventTypeLabels,
   timelinePageCopy,
@@ -24,6 +26,8 @@ const copy = timelinePageCopy[locale];
 const timelineEntries = getAiTimelineEntries(locale);
 const timelineEvents = getAiTimelineEvents(locale);
 const lineageNodes = getAiLineageNodes(locale);
+const causalStories = getCausalStories(locale);
+const storyCopy = causalStoryExplorerCopy[locale];
 const lineageById = new Map(lineageNodes.map((node) => [node.id, node]));
 const lineageRoute = toLocalizedPath("/lineage/", locale);
 const chapterOptions = chapterRegistry.map((chapter) =>
@@ -32,6 +36,22 @@ const chapterOptions = chapterRegistry.map((chapter) =>
 const actionLabel = timelineActionLabel[locale];
 const eventTypeLabels = timelineEventTypeLabels[locale];
 const sourceKindLabels = timelineSourceKindLabels[locale];
+const storyMembershipByEventId = new Map<
+  string,
+  Array<{ storyId: string; position: number; total: number }>
+>();
+
+for (const story of causalStories) {
+  story.steps.forEach((step, index) => {
+    const memberships = storyMembershipByEventId.get(step.eventId) ?? [];
+    memberships.push({
+      storyId: story.id,
+      position: index + 1,
+      total: story.steps.length,
+    });
+    storyMembershipByEventId.set(step.eventId, memberships);
+  });
+}
 ---
 
 <BaseLayout title={copy.title} description={copy.description} locale={locale}>
@@ -117,6 +137,17 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
               }
             </select>
           </label>
+          <label>
+            <span>{copy.storyFilterLabel}</span>
+            <select data-timeline-story-filter aria-controls="milestone-grid">
+              <option value="">{copy.allStories}</option>
+              {
+                causalStories.map((story) => (
+                  <option value={story.id}>{story.title}</option>
+                ))
+              }
+            </select>
+          </label>
           <button type="button" data-timeline-filter-reset>
             {copy.resetFilters}
           </button>
@@ -125,6 +156,7 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
           class="causal-filter-status"
           data-timeline-filter-status
           data-template={copy.visibleEventsTemplate}
+          data-story-template={copy.storyEventsTemplate}
           aria-live="polite"
         >
           {
@@ -136,6 +168,114 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
         <p class="causal-filter-empty" data-timeline-filter-empty hidden>
           {copy.noEvents}
         </p>
+
+        <div
+          class="causal-story-region"
+          data-timeline-story-region
+          aria-live="polite"
+          hidden
+        >
+          {
+            causalStories.map((story) => (
+              <article
+                id={`story-${story.id}`}
+                class="causal-story-detail"
+                data-causal-story-detail={story.id}
+                hidden
+              >
+                <header class="causal-story-header">
+                  <div>
+                    <p class="eyebrow">{storyCopy.eyebrow}</p>
+                    <h4>{story.title}</h4>
+                  </div>
+                  <a
+                    class="button"
+                    href={`${lineageRoute}?story=${story.id}#story-${story.id}`}
+                  >
+                    {story.returnLinks.lineage.label}
+                  </a>
+                </header>
+                <dl class="causal-story-context">
+                  <div>
+                    <dt>{storyCopy.coreQuestion}</dt>
+                    <dd>{story.coreQuestion}</dd>
+                  </div>
+                  <div>
+                    <dt>{storyCopy.simplificationNote}</dt>
+                    <dd>{story.simplificationNote}</dd>
+                  </div>
+                </dl>
+                <div class="causal-story-actions">
+                  {story.actions.map((action, index) => {
+                    const chapter = action.chapterId
+                      ? getLocalizedLearningChapter(action.chapterId, locale)
+                      : undefined;
+
+                    return (
+                      <a
+                        class={`button${index === 0 ? " primary" : ""}`}
+                        href={chapter?.href ?? action.href}
+                      >
+                        {action.label}
+                      </a>
+                    );
+                  })}
+                </div>
+                <ol class="causal-story-steps">
+                  {story.steps.map((step, index) => {
+                    const event = timelineEvents.find(
+                      (candidate) => candidate.id === step.eventId,
+                    );
+                    if (!event) {
+                      throw new Error(
+                        `Unknown event for causal story ${story.id}: ${step.eventId}`,
+                      );
+                    }
+                    const chapters = step.chapterIds.map((chapterId) =>
+                      getLocalizedLearningChapter(chapterId, locale),
+                    );
+
+                    return (
+                      <li
+                        data-story-event-id={step.eventId}
+                        data-story-node-ids={step.lineageNodeIds.join(" ")}
+                      >
+                        <p class="causal-story-step-count">
+                          {storyCopy.stepCounter(index + 1, story.steps.length)}
+                        </p>
+                        <h5>{step.title}</h5>
+                        <dl>
+                          <div>
+                            <dt>{storyCopy.inherited}</dt>
+                            <dd>{step.inherited}</dd>
+                          </div>
+                          <div>
+                            <dt>{storyCopy.solved}</dt>
+                            <dd>{step.solved}</dd>
+                          </div>
+                          <div>
+                            <dt>{storyCopy.missing}</dt>
+                            <dd>{step.missing}</dd>
+                          </div>
+                        </dl>
+                        <div class="causal-story-step-actions">
+                          <a href={`#milestone-${step.eventId}`}>
+                            {storyCopy.openEvent}: {event.title}
+                          </a>
+                          {chapters.map((chapter) => (
+                            <a href={chapter.href}>
+                              {storyCopy.openChapter}: {chapter.title}
+                            </a>
+                          ))}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </article>
+            ))
+          }
+        </div>
       </section>
 
       <div
@@ -173,6 +313,20 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
                   <span class="milestone-type">
                     {eventTypeLabels[event.type]}
                   </span>
+                  {(storyMembershipByEventId.get(event.id) ?? []).map(
+                    (membership) => (
+                      <span
+                        class="causal-story-order"
+                        data-story-order={membership.storyId}
+                        hidden
+                      >
+                        {storyCopy.stepCounter(
+                          membership.position,
+                          membership.total,
+                        )}
+                      </span>
+                    ),
+                  )}
                 </div>
                 <h3>{event.title}</h3>
                 <p>{event.summary}</p>
@@ -237,6 +391,9 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
     const lineageFilter = timelineExplorer.querySelector(
       "[data-timeline-lineage-filter]",
     );
+    const storyFilter = timelineExplorer.querySelector(
+      "[data-timeline-story-filter]",
+    );
     const resetButton = timelineExplorer.querySelector(
       "[data-timeline-filter-reset]",
     );
@@ -249,40 +406,80 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
     const eventCards = Array.from(
       document.querySelectorAll<HTMLElement>("[data-timeline-event]"),
     );
+    const storyRegion = timelineExplorer.querySelector(
+      "[data-timeline-story-region]",
+    );
+    const storyDetails = Array.from(
+      timelineExplorer.querySelectorAll<HTMLElement>(
+        "[data-causal-story-detail]",
+      ),
+    );
+    const storyOrderBadges = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-story-order]"),
+    );
 
     if (
       chapterFilter instanceof HTMLSelectElement &&
       lineageFilter instanceof HTMLSelectElement &&
+      storyFilter instanceof HTMLSelectElement &&
       resetButton instanceof HTMLButtonElement &&
       status instanceof HTMLElement &&
-      emptyState instanceof HTMLElement
+      emptyState instanceof HTMLElement &&
+      storyRegion instanceof HTMLElement
     ) {
       const chapterSelect = chapterFilter;
       const lineageSelect = lineageFilter;
+      const storySelect = storyFilter;
       const resetControl = resetButton;
       const statusRegion = status;
       const emptyRegion = emptyState;
+      const storySummaryRegion = storyRegion;
       const validChapterIds = new Set(
         Array.from(chapterSelect.options, ({ value }) => value).filter(Boolean),
       );
       const validLineageIds = new Set(
         Array.from(lineageSelect.options, ({ value }) => value).filter(Boolean),
       );
+      const validStoryIds = new Set(
+        Array.from(storySelect.options, ({ value }) => value).filter(Boolean),
+      );
       const initialUrl = new URL(window.location.href);
       const initialChapter = initialUrl.searchParams.get("chapter") ?? "";
       const initialLineage = initialUrl.searchParams.get("lineage") ?? "";
+      const initialStory = initialUrl.searchParams.get("story") ?? "";
+      const hasValidInitialStory = validStoryIds.has(initialStory);
 
-      chapterSelect.value = validChapterIds.has(initialChapter)
-        ? initialChapter
-        : "";
-      lineageSelect.value = validLineageIds.has(initialLineage)
-        ? initialLineage
-        : "";
+      storySelect.value = hasValidInitialStory ? initialStory : "";
+      chapterSelect.value =
+        !hasValidInitialStory && validChapterIds.has(initialChapter)
+          ? initialChapter
+          : "";
+      lineageSelect.value =
+        !hasValidInitialStory && validLineageIds.has(initialLineage)
+          ? initialLineage
+          : "";
       timelineExplorer.hidden = false;
 
-      function applyFilters(updateUrl = true) {
+      function applyExplorerState(
+        updateUrl = true,
+        source: "initial" | "filter" | "story" | "reset" = "initial",
+      ) {
         const chapterId = chapterSelect.value;
         const lineageId = lineageSelect.value;
+        const storyId = storySelect.value;
+        const activeStory = storyDetails.find(
+          (detail) => detail.dataset.causalStoryDetail === storyId,
+        );
+        const storyEventIds = new Set(
+          activeStory
+            ? Array.from(
+                activeStory.querySelectorAll<HTMLElement>(
+                  "[data-story-event-id]",
+                ),
+                (step) => step.dataset.storyEventId ?? "",
+              ).filter(Boolean)
+            : [],
+        );
         let visibleCount = 0;
 
         for (const card of eventCards) {
@@ -292,34 +489,70 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
           const lineageIds = new Set(
             (card.dataset.lineageNodeIds ?? "").split(" ").filter(Boolean),
           );
-          const visible =
+          const matchesFilters =
             (!chapterId || chapterIds.has(chapterId)) &&
             (!lineageId || lineageIds.has(lineageId));
+          const isStoryEvent = storyEventIds.has(
+            card.dataset.timelineEvent ?? "",
+          );
+          const visible = storyId ? true : matchesFilters;
 
           card.hidden = !visible;
+          card.classList.toggle(
+            "is-story-focus",
+            Boolean(storyId) && isStoryEvent,
+          );
+          card.classList.toggle(
+            "is-story-muted",
+            Boolean(storyId) && !isStoryEvent,
+          );
           if (visible) {
             visibleCount += 1;
           }
         }
 
-        const template = statusRegion.dataset.template ?? "{visible} / {total}";
+        for (const detail of storyDetails) {
+          detail.hidden = detail !== activeStory;
+        }
+        storySummaryRegion.hidden = !activeStory;
+
+        for (const badge of storyOrderBadges) {
+          badge.hidden = badge.dataset.storyOrder !== storyId;
+        }
+
+        const focusedCount = storyId ? storyEventIds.size : visibleCount;
+        const template = storyId
+          ? (statusRegion.dataset.storyTemplate ?? "{visible} / {total}")
+          : (statusRegion.dataset.template ?? "{visible} / {total}");
         statusRegion.textContent = template
-          .replace("{visible}", String(visibleCount))
+          .replace("{visible}", String(focusedCount))
           .replace("{total}", String(eventCards.length));
-        emptyRegion.hidden = visibleCount !== 0;
-        resetControl.disabled = !chapterId && !lineageId;
+        emptyRegion.hidden = Boolean(storyId) || visibleCount !== 0;
+        resetControl.disabled = !chapterId && !lineageId && !storyId;
 
         if (updateUrl) {
           const url = new URL(window.location.href);
-          if (chapterId) {
+          if (storyId) {
+            url.searchParams.set("story", storyId);
+            url.searchParams.delete("chapter");
+            url.searchParams.delete("lineage");
+          } else {
+            url.searchParams.delete("story");
+          }
+          if (!storyId && chapterId) {
             url.searchParams.set("chapter", chapterId);
           } else {
             url.searchParams.delete("chapter");
           }
-          if (lineageId) {
+          if (!storyId && lineageId) {
             url.searchParams.set("lineage", lineageId);
           } else {
             url.searchParams.delete("lineage");
+          }
+          if (source === "story") {
+            url.hash = storyId ? `story-${storyId}` : "";
+          } else if (!storyId && url.hash.startsWith("#story-")) {
+            url.hash = "";
           }
           const milestoneTarget = url.hash.startsWith("#milestone-")
             ? document.getElementById(url.hash.slice(1))
@@ -335,15 +568,43 @@ const sourceKindLabels = timelineSourceKindLabels[locale];
         }
       }
 
-      chapterSelect.addEventListener("change", () => applyFilters());
-      lineageSelect.addEventListener("change", () => applyFilters());
+      chapterSelect.addEventListener("change", () => {
+        storySelect.value = "";
+        applyExplorerState(true, "filter");
+      });
+      lineageSelect.addEventListener("change", () => {
+        storySelect.value = "";
+        applyExplorerState(true, "filter");
+      });
+      storySelect.addEventListener("change", () => {
+        chapterSelect.value = "";
+        lineageSelect.value = "";
+        applyExplorerState(true, "story");
+      });
       resetControl.addEventListener("click", () => {
         chapterSelect.value = "";
         lineageSelect.value = "";
-        applyFilters();
+        storySelect.value = "";
+        applyExplorerState(true, "reset");
       });
 
-      applyFilters(false);
+      const shouldNormalizeInitialUrl =
+        (Boolean(initialStory) && !hasValidInitialStory) ||
+        (hasValidInitialStory &&
+          (initialUrl.searchParams.has("chapter") ||
+            initialUrl.searchParams.has("lineage")));
+      applyExplorerState(shouldNormalizeInitialUrl, "initial");
+
+      if (
+        hasValidInitialStory &&
+        initialUrl.hash === `#story-${initialStory}`
+      ) {
+        window.requestAnimationFrame(() => {
+          document.getElementById(`story-${initialStory}`)?.scrollIntoView();
+        });
+      }
+
+      window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);
     }
   }
 </script>

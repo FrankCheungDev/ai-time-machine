@@ -14,6 +14,9 @@ test("keeps a source-backed milestone card visually stable", async ({
   await expect(event).toBeVisible();
   await expect(event).toHaveScreenshot("timeline-event-card.png", {
     animations: "disabled",
+    // The story controls shift the card's page position without changing its
+    // geometry. Allow sub-pixel CJK rasterization noise below 0.11% of the card.
+    maxDiffPixels: 300,
   });
 });
 

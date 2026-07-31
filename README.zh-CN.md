@@ -5,14 +5,17 @@
 线上站点：[atlas.z-ai.cc](https://atlas.z-ai.cc)。中文为默认语言，`/en/`
 下提供完整英文学习路径。
 
-## 当前版本
+## 当前实现候选
+
+v1.5 已在本分支完成研发，正在等待 PR、预览环境与生产发布验证；正式站点在评审合并前
+仍保持 v1.4。
 
 - 基于 Astro、MDX 与 Svelte islands 的纯静态站点。
-- 从总览到 Safety / Eval 的 12 个章节。
-- 搜索树、专家系统、Bayes、决策边界、CNN、Attention、基础模型生命周期、LLM 系统边界、RAG、Agent、Safety / Eval 共 11 个教学 demo。
+- 从总览到 Safety / Eval 的 13 个章节，其中反馈学习位于 CNN 与 Attention 之间。
+- 搜索树、专家系统、Bayes、决策边界、CNN、反馈学习、Attention、基础模型生命周期、LLM 系统边界、RAG、Agent、Safety / Eval 共 12 个教学 demo。
 - 完整的中英文路由、文案、交互状态与参考资料。
 - 可续学的本地进度、每章一个双语概念自测，以及前后章导航。
-- 与章节和谱系关联的 25 个来源支持历史事件、可分享的时间线筛选与谱系聚焦深链，以及由资产清单生成的 11 组可下载 SVG/PNG 图源页面。
+- 与章节和谱系关联的 27 个来源支持历史事件、可分享的时间线筛选、谱系聚焦深链和一条策展式反馈学习故事，以及由资产清单生成的 12 组可下载 SVG/PNG 图源页面。
 - 公开隐私说明和经过评审的学习信号白名单；客户端学习数据收集保持禁用，部署响应头拒绝自动注入 RUM。Cloudflare 托管层的边缘流量统计不作为学习者数据。
 - 覆盖格式、类型、数据契约、静态构建、单元测试、浏览器行为、视觉回归、可访问性控件和教学正确性的 CI。
 - 设计、动效、图源、demo 与模板贡献指南。
@@ -37,6 +40,7 @@ pnpm format:check
 - `/chapters/bayes/`
 - `/chapters/decision-boundary/`
 - `/chapters/cnn/`
+- `/chapters/reinforcement-learning/`
 - `/chapters/attention/`
 - `/chapters/foundation-model/`
 - `/chapters/llm-system/`
@@ -56,9 +60,11 @@ pnpm format:check
 Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md)。
 发布收口、章节扩展架构、Safety / Eval、图源资产库、事件级历史、因果图谱导航、
-基础模型生命周期章节和章节自测已经实现。P2-05 真实使用闭环当前暂停：provider 决策重新开放，没有获批或排期
+基础模型生命周期章节、章节自测与 v1.5 反馈学习切片已经实现。v1.5 正在等待评审与
+发布验证，尚未记为“完成并发布”。P2-05 真实使用闭环当前暂停：provider 决策重新开放，没有获批或排期
 中的数据来源，自动化流量不会被当作学习者数据。页面内事件契约与聚合分析器
-继续保留，但不会因此启用网络采集。
+继续保留，但不会因此启用网络采集。教学合同与发布门禁见
+[`v1.5 反馈学习与引导式因果路径`](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)。
 
 ## 部署
 

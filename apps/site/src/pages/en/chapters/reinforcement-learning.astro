@@ -1,0 +1,8 @@
+---
+import StandardDemoChapter from "../../../components/pages/StandardDemoChapter.astro";
+import FeedbackLearningDemo from "../../../demos/feedback-learning/FeedbackLearningDemo.svelte";
+---
+
+<StandardDemoChapter locale="en" chapterId="reinforcement-learning">
+  <FeedbackLearningDemo slot="demo" client:load locale="en" />
+</StandardDemoChapter>

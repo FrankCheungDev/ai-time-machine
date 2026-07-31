@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { getAiTimelineEvents } from "@ai-history/data";
+import { getAiTimelineEntries, getAiTimelineEvents } from "@ai-history/data";
 
 const eventCount = getAiTimelineEvents().length;
+const timelineEntryCount = getAiTimelineEntries().length;
 
 test("Chinese timeline renders source-backed event contracts", async ({
   page,
@@ -17,7 +18,7 @@ test("Chinese timeline renders source-backed event contracts", async ({
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "11 个阶段构成学习主线",
+      name: `${timelineEntryCount} 个阶段构成学习主线`,
     }),
   ).toBeVisible();
 
@@ -74,7 +75,7 @@ test("English timeline keeps event identity while localizing teaching copy", asy
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "11 Stages Form The Learning Path",
+      name: `${timelineEntryCount} Stages Form The Learning Path`,
     }),
   ).toBeVisible();
   await expect(page.locator("[data-timeline-event]")).toHaveCount(eventCount);
@@ -109,7 +110,7 @@ test("causal explorer preserves valid shareable state across filters and locales
   await expect(explorer).toBeVisible();
   await expect(chapterFilter).toHaveValue("foundation-model");
   await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(5);
-  await expect(explorer).toContainText("显示 5 / 25 个事件");
+  await expect(explorer).toContainText(`显示 5 / ${eventCount} 个事件`);
   await expect(
     page.locator('[data-timeline-event="flan-instruction-tuning"]'),
   ).toBeVisible();
@@ -134,7 +135,9 @@ test("causal explorer preserves valid shareable state across filters and locales
   await reset.click();
   await expect(chapterFilter).toHaveValue("");
   await expect(lineageFilter).toHaveValue("");
-  await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(25);
+  await expect(page.locator("[data-timeline-event]:visible")).toHaveCount(
+    eventCount,
+  );
   await expect(page).not.toHaveURL(/chapter=|lineage=/);
 });
 

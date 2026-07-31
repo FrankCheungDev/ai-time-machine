@@ -93,8 +93,8 @@ const timelineEventDefinitions = [
     sortYear: 1959,
     year: "1959",
     type: "system",
-    chapterIds: ["search", "decision-boundary"],
-    lineageNodeIds: ["symbolic", "statistical"],
+    chapterIds: ["search", "decision-boundary", "reinforcement-learning"],
+    lineageNodeIds: ["symbolic", "statistical", "reinforcement-learning"],
     sources: [
       {
         label: "Some Studies in Machine Learning Using the Game of Checkers",
@@ -195,6 +195,21 @@ const timelineEventDefinitions = [
     ],
   },
   {
+    id: "q-learning",
+    sortYear: 1992,
+    year: "1992",
+    type: "paper",
+    chapterIds: ["reinforcement-learning"],
+    lineageNodeIds: ["statistical", "reinforcement-learning"],
+    sources: [
+      {
+        label: "Q-learning",
+        href: "https://doi.org/10.1007/BF00992698",
+        kind: "primary-paper",
+      },
+    ],
+  },
+  {
     id: "support-vector-networks",
     sortYear: 1995,
     year: "1995",
@@ -271,12 +286,27 @@ const timelineEventDefinitions = [
     ],
   },
   {
+    id: "dqn-atari",
+    sortYear: 2015,
+    year: "2015",
+    type: "paper",
+    chapterIds: ["cnn", "reinforcement-learning"],
+    lineageNodeIds: ["neural", "reinforcement-learning"],
+    sources: [
+      {
+        label: "Human-level Control Through Deep Reinforcement Learning",
+        href: "https://doi.org/10.1038/nature14236",
+        kind: "primary-paper",
+      },
+    ],
+  },
+  {
     id: "alphago",
     sortYear: 2016,
     year: "2016",
     type: "system",
-    chapterIds: ["search", "cnn", "agent"],
-    lineageNodeIds: ["symbolic", "neural", "agent"],
+    chapterIds: ["search", "cnn", "reinforcement-learning", "agent"],
+    lineageNodeIds: ["symbolic", "neural", "reinforcement-learning", "agent"],
     sources: [
       {
         label:
@@ -367,8 +397,18 @@ const timelineEventDefinitions = [
     sortYear: 2022,
     year: "2022",
     type: "paper",
-    chapterIds: ["foundation-model", "llm-system", "safety"],
-    lineageNodeIds: ["foundation-model", "llm-system", "safety"],
+    chapterIds: [
+      "reinforcement-learning",
+      "foundation-model",
+      "llm-system",
+      "safety",
+    ],
+    lineageNodeIds: [
+      "reinforcement-learning",
+      "foundation-model",
+      "llm-system",
+      "safety",
+    ],
     sources: [
       {
         label:
@@ -461,7 +501,7 @@ const localizedTimelineEventCopy = {
       summary:
         "Samuel 的程序把搜索、局面评估和学习结合起来，实验证明程序能超过其编写者的跳棋水平。",
       impact:
-        "“机器学习”不再只是概念：系统可以用运行经验更新评估函数，并改变后续搜索选择。",
+        "“机器学习”不再只是概念：系统可以用运行经验更新评估函数并改变后续搜索选择；这里不把这项早期组合倒推标记为后来才形成的完整强化学习范式。",
     },
     "shakey-robot": {
       title: "Shakey 把感知、规划与行动接进同一循环",
@@ -504,6 +544,13 @@ const localizedTimelineEventCopy = {
       impact:
         "概率更新从单个公式扩展为结构化推理框架，让知识、依赖和不确定性可以共同建模。",
     },
+    "q-learning": {
+      title: "Q-learning 给动作价值学习写出增量更新规则",
+      summary:
+        "Watkins 与 Dayan 描述一种直接学习最优动作价值的增量方法，并在论文列明的重复采样与表示条件下给出收敛结果。",
+      impact:
+        "结果反馈可以更新 state-action 价值而无需每一步的标准动作，但这项定理不代表所有强化学习方法或有限教学 Demo 都保证收敛。",
+    },
     "support-vector-networks": {
       title: "SVM 用最大间隔构造可泛化决策边界",
       summary:
@@ -539,12 +586,19 @@ const localizedTimelineEventCopy = {
       impact:
         "算法、数据和算力同时到位后，深度学习从长期研究路线转为视觉领域的主流工程方法。",
     },
+    "dqn-atari": {
+      title: "DQN 把深度视觉表示接入 Q-learning 控制",
+      summary:
+        "论文用深度卷积网络、经验回放与 Q-learning，从 Atari 像素输入学习多个游戏的控制策略。",
+      impact:
+        "深度表示让价值学习处理高维感知输入，但论文中的 Atari 结果不等于通用智能或现实世界可靠控制。",
+    },
     alphago: {
       title: "AlphaGo 把深度网络、自我对弈与树搜索组合起来",
       summary:
-        "系统用策略网络选择动作、价值网络评估局面，并与 Monte Carlo 树搜索结合。",
+        "系统组合监督学习与强化学习训练的策略网络、价值网络和 Monte Carlo 树搜索。",
       impact:
-        "它展示学习表示和经典搜索不是互相替代，而可以在闭环系统中协同解决巨大搜索空间。",
+        "它展示学习表示和经典搜索不是互相替代；强化学习也不是脱离监督学习与搜索单独造成结果。",
     },
     transformer: {
       title: "Transformer 用 Attention 取代序列递归主干",
@@ -583,9 +637,9 @@ const localizedTimelineEventCopy = {
     "instructgpt-human-feedback": {
       title: "InstructGPT 用示范、排序与人类反馈塑造助手行为",
       summary:
-        "研究先用标注者示范监督微调，再用候选输出排序训练反馈信号并继续优化模型。",
+        "研究先用标注者示范监督微调，再用候选输出排序训练奖励模型，并通过 PPO 继续优化策略。",
       impact:
-        "研究显示特定评测分布中的偏好可明显改善，同时也明确记录简单错误和未解决限制；受偏好不等于事实正确或完整安全。",
+        "研究显示特定任务、标注协议与评测分布中的偏好可以塑造行为，同时也记录简单错误与未解决限制；偏好不是普遍真理，RLHF 也不是全部后训练。",
     },
     "react-agent-loop": {
       title: "ReAct 交错生成推理轨迹与环境动作",
@@ -637,7 +691,7 @@ const localizedTimelineEventCopy = {
       summary:
         "Samuel combined search, position evaluation, and learning, reporting a program that could play better checkers than its author.",
       impact:
-        "Machine learning became an implemented mechanism: experience could update an evaluation function and alter later search choices.",
+        "Machine learning became an implemented mechanism: experience could update an evaluation function and alter later search choices. This atlas does not retroactively label the early combination as the complete reinforcement-learning paradigm later formalized.",
     },
     "shakey-robot": {
       title: "Shakey Connected Perception, Planning, and Action",
@@ -684,6 +738,13 @@ const localizedTimelineEventCopy = {
       impact:
         "Probability updating grew from an isolated formula into a structured framework combining knowledge, dependencies, and uncertainty.",
     },
+    "q-learning": {
+      title: "Q-learning Gave Action-Value Learning an Incremental Update Rule",
+      summary:
+        "Watkins and Dayan described an incremental method for learning optimal action values and established convergence under the repeated-sampling and representation conditions stated in the paper.",
+      impact:
+        "Outcome feedback can update state-action values without a target action at every step. The theorem does not make every reinforcement-learning method or finite teaching demo converge.",
+    },
     "support-vector-networks": {
       title: "SVMs Used Maximum Margins to Build Generalizable Boundaries",
       summary:
@@ -721,12 +782,19 @@ const localizedTimelineEventCopy = {
       impact:
         "When algorithm, data, and compute arrived together, deep learning shifted from a long-running research route to mainstream vision engineering.",
     },
+    "dqn-atari": {
+      title: "DQN Connected Deep Visual Representations to Q-learning Control",
+      summary:
+        "The paper used a deep convolutional network, experience replay, and Q-learning to learn control policies for multiple Atari games from pixel input.",
+      impact:
+        "Deep representations let value learning handle high-dimensional sensory input, while Atari results did not establish general intelligence or reliable real-world control.",
+    },
     alphago: {
       title: "AlphaGo Combined Deep Networks, Self-Play, and Tree Search",
       summary:
-        "The system used policy networks to select moves, value networks to evaluate positions, and Monte Carlo tree search to plan.",
+        "The system combined policy networks trained with supervised and reinforcement learning, value networks, and Monte Carlo tree search.",
       impact:
-        "It showed that learned representations and classical search can cooperate in a closed-loop system rather than simply replace one another.",
+        "It showed that learned representations and classical search can cooperate rather than replace one another; reinforcement learning did not produce the result in isolation from supervised learning and search.",
     },
     transformer: {
       title:
@@ -770,9 +838,9 @@ const localizedTimelineEventCopy = {
       title:
         "InstructGPT Used Demonstrations, Rankings, and Human Feedback to Shape Assistant Behavior",
       summary:
-        "The study first used labeler demonstrations for supervised fine-tuning, then ranked candidate outputs to train a feedback signal and optimize the model further.",
+        "The study first used labeler demonstrations for supervised fine-tuning, then used candidate-output rankings to train a reward model and optimized the policy further with PPO.",
       impact:
-        "Preferences improved substantially on the evaluated distribution, while the paper still documented simple mistakes and unresolved limits; being preferred did not establish factuality or complete safety.",
+        "Preferences under specific tasks, labeling instructions, and evaluation distributions shaped behavior, while the paper documented simple mistakes and unresolved limits. Preferences are not universal truth, and RLHF is not all post-training.",
     },
     "react-agent-loop": {
       title: "ReAct Interleaved Reasoning Traces with Environment Actions",

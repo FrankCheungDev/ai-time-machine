@@ -5,6 +5,20 @@ import { chapterCases } from "./fixtures/chapters";
 const learningProgressStorageKey = "ai-history-learning-progress";
 
 const totalChapters = chapterCases.length;
+const v14CompletedChapterIds = [
+  "overview",
+  "search",
+  "expert-system",
+  "bayes",
+  "decision-boundary",
+  "cnn",
+  "attention",
+  "foundation-model",
+  "llm-system",
+  "rag",
+  "agent",
+  "safety",
+] as const satisfies readonly ChapterId[];
 
 async function seedLearningProgress(
   page: Page,
@@ -56,6 +70,33 @@ test("home continues from the first gap in partial out-of-order progress", async
   await expect(
     progress.getByRole("link", { name: "继续学习：搜索树 / A*" }),
   ).toHaveAttribute("href", "/chapters/search/");
+});
+
+test("v1.4 completion records keep their IDs and resume at the inserted feedback chapter", async ({
+  page,
+}) => {
+  await seedLearningProgress(page, v14CompletedChapterIds);
+  await page.goto("/");
+
+  const progress = page.getByTestId("home-learning-progress");
+  await expect(progress).toContainText(`已完成 12 / ${totalChapters}`);
+  await expect(
+    progress.getByRole("link", { name: "继续学习：强化学习与反馈闭环" }),
+  ).toHaveAttribute("href", "/chapters/reinforcement-learning/");
+
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (key) => window.localStorage.getItem(key),
+        learningProgressStorageKey,
+      ),
+    )
+    .toBe(
+      JSON.stringify({
+        version: 1,
+        completedChapterIds: v14CompletedChapterIds,
+      }),
+    );
 });
 
 test("home shows review destinations when the whole path is complete", async ({

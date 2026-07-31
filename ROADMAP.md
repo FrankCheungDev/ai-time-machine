@@ -4,14 +4,18 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 
 ## Current Surface
 
+The v1.5 implementation described below is complete on its feature branch and
+awaits review, preview checks, merge, and production smoke before it is called
+published.
+
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
-- Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, foundation-model lifecycle, LLM systems, RAG, Agent, and Safety / Eval.
-- Eleven teaching demos with simplification notes, references, and Playwright smoke coverage.
+- Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, feedback learning, Attention, foundation-model lifecycle, LLM systems, RAG, Agent, and Safety / Eval.
+- Twelve teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Complete Chinese and English routes with resumable local learning progress,
   chapter completion, and previous/next navigation.
-- Timeline and lineage views with shareable causal filters/focus, plus a manifest-driven diagram library with SVG and PNG assets for all eleven demos.
-- Twenty-five source-backed milestone events linked to the chapter and lineage models.
+- Timeline and lineage views with shareable causal filters/focus and one curated feedback-learning story, plus a manifest-driven diagram library with SVG and PNG assets for all twelve demos.
+- Twenty-seven source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
 - Public privacy documentation and a typed in-page signal allowlist with client
   collection disabled, automatic RUM blocked, and hosting-layer edge metrics
@@ -47,11 +51,16 @@ follows the staged process in
   memory-and-tool action path, while the diagram library gains its tenth asset
   pair. See
   [the v1.3 interaction brief](docs/V1_3_LLM_SYSTEM_INTERACTION_BRIEF.md).
-- **v1.4 — In review — Causal atlas and foundation-model lifecycle:** close
+- **v1.4 — Complete — Causal atlas and foundation-model lifecycle:** close
   v1.3 release evidence, add shareable timeline/lineage navigation, and teach
   the boundary between pretraining, post-training, and runtime context with a
   new bilingual chapter and eleventh diagram pair. See
   [the v1.4 teaching brief](docs/V1_4_CAUSAL_ATLAS_FOUNDATION_BRIEF.md).
+- **v1.5 — Implementation complete; awaiting review and release — Feedback learning and a guided causal path:** adds a
+  bilingual reinforcement-learning chapter that separates supervised targets,
+  rewards, preference feedback, and runtime observations, then connects the
+  existing history through one curated, shareable feedback-learning story. See
+  [the v1.5 teaching brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching
@@ -59,13 +68,14 @@ correctness gates defined in the process document.
 
 ## Real-Usage Evidence Gate
 
-The next adjustment cycle must use an approved observation window and genuine
-aggregate learner traffic. CI, Playwright, preview checks, production smoke, and
-developer interactions are excluded from product metrics; Cloudflare Web
-Analytics and simulated exports are not substitutes. The provider-neutral
-analyzer and typed local `CustomEvent` contract remain available without sending
-data over the network. Any future hosted-provider proposal requires a separate
-privacy, cost, implementation, and production-release approval. See
+Any future metrics-driven adjustment cycle must use an approved observation
+window and genuine aggregate learner traffic. CI, Playwright, preview checks,
+production smoke, and developer interactions are excluded from product metrics;
+Cloudflare Web Analytics and simulated exports are not substitutes. The
+provider-neutral analyzer and typed local `CustomEvent` contract remain
+available without sending data over the network. Any future hosted-provider
+proposal requires a separate privacy, cost, implementation, and
+production-release approval. See
 [`docs/P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](docs/P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)
 for the provider gate, event allowlist, and fact-check record.
 

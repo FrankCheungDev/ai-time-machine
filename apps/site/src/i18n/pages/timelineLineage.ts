@@ -19,10 +19,13 @@ export interface TimelinePageCopy {
   explorerDescription: string;
   chapterFilterLabel: string;
   lineageFilterLabel: string;
+  storyFilterLabel: string;
   allChapters: string;
   allLineages: string;
+  allStories: string;
   resetFilters: string;
   visibleEventsTemplate: string;
+  storyEventsTemplate: string;
   noEvents: string;
   impact: string;
   relatedChapters: string;
@@ -49,13 +52,17 @@ export const timelinePageCopy = {
     explorerEyebrow: "Causal Explorer",
     explorerHeading: "沿章节与谱系追踪因果路径",
     explorerDescription:
-      "筛选不会改变历史事实，只会把与所选章节和范式直接关联的事件保留下来。筛选状态写入网址，便于分享和往返谱系图。",
+      "可按章节或谱系筛选直接关联事件，也可跟随经过审核的引导式故事。故事只会聚焦相关事件，不会隐藏其他历史；当前状态会写入网址，便于分享和往返谱系图。",
     chapterFilterLabel: "学习章节",
     lineageFilterLabel: "技术谱系",
+    storyFilterLabel: "引导式故事",
     allChapters: "全部章节",
     allLineages: "全部谱系节点",
+    allStories: "不启用故事",
     resetFilters: "清除筛选",
     visibleEventsTemplate: "显示 {visible} / {total} 个事件",
+    storyEventsTemplate:
+      "故事按顺序聚焦 {visible} / {total} 个事件；其他事件仍完整保留。",
     noEvents: "当前组合没有直接关联事件，请清除一个筛选条件。",
     impact: "为什么重要",
     relatedChapters: "关联章节",
@@ -80,13 +87,17 @@ export const timelinePageCopy = {
     explorerEyebrow: "Causal Explorer",
     explorerHeading: "Trace Causal Paths Across Chapters And Lineage",
     explorerDescription:
-      "Filtering does not rewrite the history. It keeps events directly linked to the selected chapter and paradigm, and stores the selection in the URL for sharing and round trips to the lineage map.",
+      "Filter events directly linked to a chapter or paradigm, or follow a reviewed guided story. A story focuses related events without hiding the rest of the history, and stores the current state in the URL for sharing and round trips to the lineage map.",
     chapterFilterLabel: "Learning chapter",
     lineageFilterLabel: "Technical lineage",
+    storyFilterLabel: "Guided story",
     allChapters: "All chapters",
     allLineages: "All lineage nodes",
+    allStories: "No guided story",
     resetFilters: "Clear filters",
     visibleEventsTemplate: "Showing {visible} of {total} events",
+    storyEventsTemplate:
+      "The story focuses on {visible} of {total} events in sequence; every other event remains available.",
     noEvents:
       "No event is directly linked to this combination. Clear one filter to continue.",
     impact: "Why It Matters",
@@ -142,6 +153,49 @@ export const timelineActionLabel = {
   (chapterLabel: string, chapterTitle: string) => string
 >;
 
+export interface CausalStoryExplorerCopy {
+  eyebrow: string;
+  coreQuestion: string;
+  simplificationNote: string;
+  stepCounter: (current: number, total: number) => string;
+  inherited: string;
+  solved: string;
+  missing: string;
+  openEvent: string;
+  openChapter: string;
+  openTimeline: string;
+  openLineage: string;
+}
+
+export const causalStoryExplorerCopy = {
+  "zh-CN": {
+    eyebrow: "Guided Causal Story",
+    coreQuestion: "核心问题",
+    simplificationNote: "策展边界",
+    stepCounter: (current, total) => `第 ${current} / ${total} 步`,
+    inherited: "继承了什么",
+    solved: "解决了什么",
+    missing: "仍缺什么",
+    openEvent: "定位到时间线事件",
+    openChapter: "进入章节",
+    openTimeline: "在时间线跟随故事",
+    openLineage: "在谱系图跟随故事",
+  },
+  en: {
+    eyebrow: "Guided Causal Story",
+    coreQuestion: "Core Question",
+    simplificationNote: "Curatorial Boundary",
+    stepCounter: (current, total) => `Step ${current} of ${total}`,
+    inherited: "What It Inherited",
+    solved: "What It Solved",
+    missing: "What Was Still Missing",
+    openEvent: "Locate the timeline event",
+    openChapter: "Open chapter",
+    openTimeline: "Follow on the timeline",
+    openLineage: "Follow on the lineage map",
+  },
+} satisfies Record<Locale, CausalStoryExplorerCopy>;
+
 export interface LineagePageCopy {
   title: string;
   description: string;
@@ -153,6 +207,8 @@ export interface LineagePageCopy {
   svgTitle: string;
   focusLabel: string;
   allNodesOption: string;
+  storyFilterLabel: string;
+  allStories: string;
   focusSummaryEyebrow: string;
   relatedEvents: (count: number) => string;
   openChapter: string;
@@ -176,6 +232,8 @@ export const lineagePageCopy = {
     svgTitle: "AI 技术谱系图",
     focusLabel: "聚焦一个谱系节点",
     allNodesOption: "显示完整谱系",
+    storyFilterLabel: "引导式故事",
+    allStories: "不启用故事",
     focusSummaryEyebrow: "Causal Focus",
     relatedEvents: (count) => `${count} 个直接关联事件`,
     openChapter: "进入对应章节",
@@ -199,6 +257,8 @@ export const lineagePageCopy = {
     svgTitle: "AI Technical Lineage",
     focusLabel: "Focus a lineage node",
     allNodesOption: "Show the complete lineage",
+    storyFilterLabel: "Guided story",
+    allStories: "No guided story",
     focusSummaryEyebrow: "Causal Focus",
     relatedEvents: (count) => `${count} Directly Related Events`,
     openChapter: "Open the related chapter",

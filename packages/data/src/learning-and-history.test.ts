@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   chapterRegistry,
+  getAiLineageEdges,
   getAiLineageNodes,
   getAiTimelineEvents,
   getConceptCheck,
@@ -11,7 +12,7 @@ describe("source-backed timeline milestones", () => {
   it("keeps a chronological, unique, source-backed event set", () => {
     const events = getAiTimelineEvents();
 
-    expect(events).toHaveLength(25);
+    expect(events).toHaveLength(27);
     expect(new Set(events.map(({ id }) => id)).size).toBe(events.length);
 
     for (const [index, event] of events.entries()) {
@@ -105,6 +106,32 @@ describe("source-backed timeline milestones", () => {
     expect(bayes?.sources[0].kind).toBe("book");
   });
 
+  it("connects feedback-learning milestones without collapsing learning into search", () => {
+    const events = getAiTimelineEvents();
+    const qLearning = events.find(({ id }) => id === "q-learning");
+    const dqn = events.find(({ id }) => id === "dqn-atari");
+    const alphaGo = events.find(({ id }) => id === "alphago");
+    const instructGpt = events.find(
+      ({ id }) => id === "instructgpt-human-feedback",
+    );
+
+    expect(qLearning).toMatchObject({
+      year: "1992",
+      chapterIds: ["reinforcement-learning"],
+      lineageNodeIds: ["statistical", "reinforcement-learning"],
+    });
+    expect(dqn).toMatchObject({
+      year: "2015",
+      chapterIds: ["cnn", "reinforcement-learning"],
+      lineageNodeIds: ["neural", "reinforcement-learning"],
+    });
+    expect(alphaGo?.chapterIds).toContain("reinforcement-learning");
+    expect(alphaGo?.lineageNodeIds).toContain("reinforcement-learning");
+    expect(alphaGo?.summary).toContain("监督学习");
+    expect(instructGpt?.chapterIds).toContain("reinforcement-learning");
+    expect(instructGpt?.summary).toContain("PPO");
+  });
+
   it("returns isolated event data", () => {
     const returned = getAiTimelineEvents();
     returned[0].chapterIds.push("safety");
@@ -117,6 +144,47 @@ describe("source-backed timeline milestones", () => {
     expect(fresh[0].sources[0].label).toBe(
       "Computing Machinery and Intelligence",
     );
+  });
+});
+
+describe("reinforcement-learning lineage", () => {
+  it("uses the statistical group and only the three reviewed feedback relations", () => {
+    const node = getAiLineageNodes().find(
+      ({ id }) => id === "reinforcement-learning",
+    );
+    const relatedEdges = getAiLineageEdges().filter(
+      ({ from, to }) =>
+        from === "reinforcement-learning" || to === "reinforcement-learning",
+    );
+
+    expect(node).toMatchObject({
+      chapterId: "reinforcement-learning",
+      group: "statistical",
+    });
+    expect(relatedEdges.map(({ id, from, to }) => ({ id, from, to }))).toEqual([
+      {
+        id: "statistical-reinforcement-learning",
+        from: "statistical",
+        to: "reinforcement-learning",
+      },
+      {
+        id: "neural-reinforcement-learning",
+        from: "neural",
+        to: "reinforcement-learning",
+      },
+      {
+        id: "reinforcement-learning-agent",
+        from: "reinforcement-learning",
+        to: "agent",
+      },
+    ]);
+    expect(
+      getAiLineageEdges().some(
+        ({ from, to }) =>
+          (from === "symbolic" && to === "reinforcement-learning") ||
+          (from === "reinforcement-learning" && to === "foundation-model"),
+      ),
+    ).toBe(false);
   });
 });
 
@@ -160,6 +228,17 @@ describe("chapter concept checks", () => {
       );
       expect(en.prompt).not.toBe(zh.prompt);
     }
+  });
+
+  it("tests the runtime observation boundary in feedback learning", () => {
+    const check = getConceptCheck("reinforcement-learning");
+
+    expect(check.id).toBe("reinforcement-learning-runtime-boundary");
+    expect(check.correctOptionId).toBe("runtime-observation");
+    expect(
+      check.options.find(({ id }) => id === check.correctOptionId)?.label,
+    ).toContain("不能单独证明权重已更新");
+    expect(check.explanation).toContain("不代表模型权重发生了在线更新");
   });
 
   it("returns isolated option data", () => {

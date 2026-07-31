@@ -266,9 +266,85 @@ export const demoChapterCopy = {
       ],
     },
   },
-  attention: {
+  "reinforcement-learning": {
     "zh-CN": {
       eyebrow: "Demo 06",
+      title: "强化学习与反馈闭环：结果如何改变未来策略？",
+      description:
+        "一个区分监督信号、奖励回报、偏好比较与运行时观察的脚本化反馈学习交互图解。",
+      lede: "当系统无法为每一步拿到唯一标准答案时，行动后的结果可以成为学习信号。本章用两个固定 episode 展示即时小奖励与延迟高回报如何影响下一次策略，并明确区分训练更新与 Agent 在一次运行中根据 observation 改计划。",
+      notesId: "reinforcement-learning-notes",
+      notesEyebrow: "历史位置与证据边界",
+      notesTitle: "反馈可以塑造未来策略，但不是所有反馈都会更新权重",
+      notesBody:
+        "强化学习是一类问题设定与方法族，不等于某个单一算法。Q-learning 给出了在文中条件下学习最优动作价值的更新规则；DQN 把深度网络、经验回放与 Q-learning 用于 Atari；AlphaGo 同时组合监督学习、强化学习、策略网络、价值网络与树搜索。语言模型的偏好比较既可进入 InstructGPT 所用的奖励模型与 PPO 流程，也可进入 DPO 这样的直接偏好目标。人类偏好受任务、标注协议和样本分布限制，而运行时 observation 改变当前任务下一步，本身不能证明模型权重已在线更新。",
+      references: [
+        {
+          href: "https://doi.org/10.1007/BF00992698",
+          label: "Q-learning",
+        },
+        {
+          href: "https://doi.org/10.1038/nature14236",
+          label: "Human-level control through deep reinforcement learning",
+        },
+        {
+          href: "https://doi.org/10.1038/nature16961",
+          label:
+            "Mastering the game of Go with deep neural networks and tree search",
+        },
+        {
+          href: "https://arxiv.org/abs/2203.02155",
+          label:
+            "Training Language Models to Follow Instructions with Human Feedback",
+        },
+        {
+          href: "https://arxiv.org/abs/2305.18290",
+          label: "Direct Preference Optimization",
+        },
+      ],
+    },
+    en: {
+      eyebrow: "Demo 06",
+      title:
+        "Reinforcement Learning And Feedback Loops: How do outcomes change a future policy?",
+      description:
+        "A scripted feedback-learning diagram separating target labels, reward and return, preference comparisons, and runtime observations.",
+      lede: "When a system cannot receive one uniquely correct answer for every step, the outcome after an action can become a learning signal. Two fixed episodes show how an immediate small reward and a delayed higher return can influence the next policy, while separating a training update from an agent revising its plan after an observation during one run.",
+      notesId: "reinforcement-learning-notes",
+      notesEyebrow: "Historical Position And Evidence Boundary",
+      notesTitle:
+        "Feedback can shape a future policy, but not every feedback loop updates weights",
+      notesBody:
+        "Reinforcement learning is a family of problem settings and methods, not one algorithm. Q-learning gives an update rule that learns optimal action values under the paper's conditions; DQN combines deep networks, experience replay, and Q-learning for Atari; and AlphaGo combines supervised learning, reinforcement learning, policy and value networks, and tree search. Language-model preference comparisons can enter a reward-model-plus-PPO pipeline, as in InstructGPT, or a direct preference objective such as DPO. Human preferences remain bounded by the task, annotation protocol, and sample distribution. A runtime observation can change the next action in the current task without proving that model weights were updated online.",
+      references: [
+        {
+          href: "https://doi.org/10.1007/BF00992698",
+          label: "Q-learning",
+        },
+        {
+          href: "https://doi.org/10.1038/nature14236",
+          label: "Human-level control through deep reinforcement learning",
+        },
+        {
+          href: "https://doi.org/10.1038/nature16961",
+          label:
+            "Mastering the game of Go with deep neural networks and tree search",
+        },
+        {
+          href: "https://arxiv.org/abs/2203.02155",
+          label:
+            "Training Language Models to Follow Instructions with Human Feedback",
+        },
+        {
+          href: "https://arxiv.org/abs/2305.18290",
+          label: "Direct Preference Optimization",
+        },
+      ],
+    },
+  },
+  attention: {
+    "zh-CN": {
+      eyebrow: "Demo 07",
       title: "Attention 与 Transformer：token 为什么可以直接互相关注？",
       description: "一个静态、教学型 Attention Map 交互图解。",
       lede: "为什么 Attention 比 RNN 更适合建模长距离依赖？这个章节把历史位置放在 RNN 之后、Transformer 之前，帮助用户看到“直接连接”为什么改变 NLP。",
@@ -289,7 +365,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 06",
+      eyebrow: "Demo 07",
       title:
         "Attention And Transformers: Why can tokens directly attend to each other?",
       description: "A static teaching diagram for an Attention map.",
@@ -313,7 +389,7 @@ export const demoChapterCopy = {
   },
   "foundation-model": {
     "zh-CN": {
-      eyebrow: "Demo 07",
+      eyebrow: "Demo 08",
       title: "基础模型生命周期：预测 token 如何变成按指令协作？",
       description:
         "一个区分预训练、指令微调、偏好反馈与运行时上下文的教学型交互图解。",
@@ -344,7 +420,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 07",
+      eyebrow: "Demo 08",
       title:
         "Foundation Model Lifecycle: How does token prediction become instruction following?",
       description:
@@ -379,7 +455,7 @@ export const demoChapterCopy = {
   },
   rag: {
     "zh-CN": {
-      eyebrow: "Demo 09",
+      eyebrow: "Demo 10",
       title: "RAG：大模型如何连接外部知识？",
       description: "一个静态、教学型 RAG Pipeline 交互图解。",
       lede: "为什么只靠模型参数回答问题不够？这个 demo 用分步 SVG 流程解释检索、重排、拼接上下文和生成回答之间的关系。",
@@ -402,7 +478,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 09",
+      eyebrow: "Demo 10",
       title: "RAG: How do large language models connect to external knowledge?",
       description: "A static teaching diagram for the RAG pipeline.",
       lede: "Why are model parameters alone not enough for answering questions? This demo explains retrieval, reranking, context assembly, and answer generation as a step-by-step SVG flow.",
@@ -428,7 +504,7 @@ export const demoChapterCopy = {
   },
   agent: {
     "zh-CN": {
-      eyebrow: "Demo 10",
+      eyebrow: "Demo 11",
       title: "Agent：大模型如何执行多步任务？",
       description: "一个静态、教学型 Agent Loop 交互图解。",
       lede: "为什么 Agent 不是一次回答，而是一个循环控制系统？这个章节把 Agent 放在 LLM 和 RAG 之后，解释计划、工具、观察和修正如何构成多步任务执行。",
@@ -450,7 +526,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 10",
+      eyebrow: "Demo 11",
       title: "Agents: How do large language models execute multi-step tasks?",
       description: "A static teaching diagram for the agent loop.",
       lede: "Why is an agent a looped control system rather than a one-shot answer? This chapter places agents after LLMs and RAG, explaining how planning, tools, observation, and revision form multi-step task execution.",
@@ -475,7 +551,7 @@ export const demoChapterCopy = {
   },
   safety: {
     "zh-CN": {
-      eyebrow: "Demo 11",
+      eyebrow: "Demo 12",
       title: "Safety / Eval：系统如何发现、阻断并修复风险？",
       description: "一个静态、教学型 Safety / Eval 反馈回路图解。",
       lede: "当 RAG 和 Agent 能读取外部知识、调用工具并产生外部影响时，系统必须把风险变成可复现测试。这个章节展示红队样本、输入护栏、最小权限、人工复核、回归评估和发布门如何形成持续反馈回路。",
@@ -504,7 +580,7 @@ export const demoChapterCopy = {
       ],
     },
     en: {
-      eyebrow: "Demo 11",
+      eyebrow: "Demo 12",
       title: "Safety / Eval: How do systems find, block, and fix risk?",
       description:
         "A static teaching diagram for the Safety / Eval feedback loop.",

@@ -47,6 +47,11 @@ const conceptCheckDefinitions = [
     correctOptionId: "reuse-weights",
   },
   {
+    id: "reinforcement-learning-runtime-boundary",
+    chapterId: "reinforcement-learning",
+    correctOptionId: "runtime-observation",
+  },
+  {
     id: "attention-direct-links",
     chapterId: "attention",
     correctOptionId: "weighted-direct-links",
@@ -199,6 +204,27 @@ const localizedConceptCheckCopy = {
       ],
       explanation:
         "局部感受野让卷积核查看小窗口，参数共享让同一特征探测器可以在不同位置复用，而不是为每个位置学习独立权重。",
+    },
+    "reinforcement-learning": {
+      prompt:
+        "Agent 调用工具失败后，根据错误回执修改参数并重试。这一事实本身说明了什么？",
+      options: [
+        {
+          id: "automatic-gradient",
+          label: "失败回执自动变成梯度，并在线更新了模型权重",
+        },
+        {
+          id: "runtime-observation",
+          label:
+            "当前运行中的 observation 改变了下一步动作，但不能单独证明权重已更新",
+        },
+        {
+          id: "reward-means-rl",
+          label: "只要界面出现 reward 文案，就一定正在运行强化学习",
+        },
+      ],
+      explanation:
+        "运行时 observation 可以让 Agent 在当前任务中修正计划或工具参数。除非系统另有明确的训练数据、目标和更新管线，这个重试本身不代表模型权重发生了在线更新。",
     },
     attention: {
       prompt: "Attention 相比链式 RNN 路径，如何连接相距较远的 token？",
@@ -436,6 +462,29 @@ const localizedConceptCheckCopy = {
       ],
       explanation:
         "Local receptive fields inspect small windows, while parameter sharing lets the same feature detector work at different positions instead of learning unrelated weights everywhere.",
+    },
+    "reinforcement-learning": {
+      prompt:
+        "An agent changes tool parameters and retries after reading an error response. What does this fact establish by itself?",
+      options: [
+        {
+          id: "automatic-gradient",
+          label:
+            "The error response automatically became a gradient and updated model weights online",
+        },
+        {
+          id: "runtime-observation",
+          label:
+            "A runtime observation changed the next action, but does not by itself prove that weights updated",
+        },
+        {
+          id: "reward-means-rl",
+          label:
+            "Any interface that mentions a reward must be running reinforcement learning",
+        },
+      ],
+      explanation:
+        "A runtime observation can make an agent revise its plan or tool parameters in the current task. Unless the system has an explicit training dataset, objective, and update pipeline, the retry alone does not mean that model weights changed online.",
     },
     attention: {
       prompt:

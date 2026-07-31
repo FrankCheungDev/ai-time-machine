@@ -14,6 +14,7 @@ const expected = [
   ["bayes", "/chapters/bayes/", "demo"],
   ["decision-boundary", "/chapters/decision-boundary/", "demo"],
   ["cnn", "/chapters/cnn/", "demo"],
+  ["reinforcement-learning", "/chapters/reinforcement-learning/", "demo"],
   ["attention", "/chapters/attention/", "demo"],
   ["foundation-model", "/chapters/foundation-model/", "demo"],
   ["llm-system", "/chapters/llm-system/", "demo"],
@@ -27,8 +28,8 @@ describe("learningPath", () => {
     expect(
       learningPath.map(({ id, route, kind }) => [id, route, kind]),
     ).toEqual(expected);
-    expect(new Set(learningPath.map(({ id }) => id)).size).toBe(12);
-    expect(new Set(learningPath.map(({ route }) => route)).size).toBe(12);
+    expect(new Set(learningPath.map(({ id }) => id)).size).toBe(13);
+    expect(new Set(learningPath.map(({ route }) => route)).size).toBe(13);
     expect(learningPath).toEqual(
       chapterRegistry.map(({ id, route, kind }) => ({ id, route, kind })),
     );
@@ -37,6 +38,12 @@ describe("learningPath", () => {
   it("returns bounded previous and next chapters", () => {
     expect(getLearningPathContext("overview").previous).toBeUndefined();
     expect(getLearningPathContext("overview").next?.id).toBe("search");
+    expect(getLearningPathContext("reinforcement-learning").previous?.id).toBe(
+      "cnn",
+    );
+    expect(getLearningPathContext("reinforcement-learning").next?.id).toBe(
+      "attention",
+    );
     expect(getLearningPathContext("foundation-model").previous?.id).toBe(
       "attention",
     );
@@ -58,6 +65,27 @@ describe("learningPath", () => {
     expect(
       getFirstIncompleteChapter(learningPath.map(({ id }) => id)),
     ).toBeUndefined();
+  });
+
+  it("keeps v1.4 IDs complete while surfacing the inserted chapter as the first gap", () => {
+    const completedBeforeV15 = [
+      "overview",
+      "search",
+      "expert-system",
+      "bayes",
+      "decision-boundary",
+      "cnn",
+      "attention",
+      "foundation-model",
+      "llm-system",
+      "rag",
+      "agent",
+      "safety",
+    ] as const;
+
+    expect(getFirstIncompleteChapter(completedBeforeV15)?.id).toBe(
+      "reinforcement-learning",
+    );
   });
 
   it("validates only known IDs", () => {

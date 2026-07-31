@@ -98,6 +98,9 @@ const homeLearningPathCardCopy = {
     cnn: {
       description: "选择 kernel 并推进窗口，观察 feature map 如何生成。",
     },
+    "reinforcement-learning": {
+      description: "比较即时与延迟奖励，区分训练更新和运行时 observation。",
+    },
     attention: {
       description: "点击 token，比较 Attention 直接连接和 RNN 链式传递。",
     },
@@ -146,6 +149,10 @@ const homeLearningPathCardCopy = {
     cnn: {
       description:
         "Choose a kernel and advance the window to see how a feature map is produced.",
+    },
+    "reinforcement-learning": {
+      description:
+        "Compare immediate and delayed rewards, then separate training updates from runtime observations.",
     },
     attention: {
       description:

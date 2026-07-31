@@ -38,6 +38,28 @@ const diagramAssetDefinitions = [
     arrowIds: ["arrow-image-kernel", "arrow-kernel-feature"],
   },
   {
+    id: "feedback-learning",
+    chapterId: "reinforcement-learning",
+    stateId: "updated-policy-boundary",
+    nodeIds: [
+      "node-state",
+      "node-policy",
+      "node-action",
+      "node-environment",
+      "node-observation-reward",
+      "node-return-update",
+      "node-updated-policy",
+    ],
+    arrowIds: [
+      "arrow-state-policy",
+      "arrow-policy-action",
+      "arrow-action-environment",
+      "arrow-environment-observation-reward",
+      "arrow-observation-reward-return-update",
+      "arrow-return-update-updated-policy",
+    ],
+  },
+  {
     id: "attention-map",
     chapterId: "attention",
     stateId: "selected-token-links",
@@ -203,6 +225,13 @@ const localizedDiagramAssetCopy = {
       simplificationNote:
         "使用单通道 5×5 网格和一个固定卷积核，省略训练、偏置与多层组合。",
     },
+    "feedback-learning": {
+      title: "反馈学习：高 return 路径改变后续策略",
+      stateLabel:
+        "两个固定 episode 比较后，右侧路径从 30% 上升到 60%；运行时 observation 不自动更新权重",
+      simplificationNote:
+        "概率、动作与 reward 均为脚本化教学状态；图解不进行随机采样、真实强化学习优化或模型在线训练。",
+    },
     "attention-map": {
       title: "Attention：token 直接连接",
       stateLabel: "选中 model，显示它对 directly 与 context 的权重",
@@ -271,6 +300,13 @@ const localizedDiagramAssetCopy = {
       stateLabel: "A 3×3 edge kernel scans the center window",
       simplificationNote:
         "A single-channel 5×5 grid and fixed kernel omit training, bias, and deeper layers.",
+    },
+    "feedback-learning": {
+      title: "Feedback Learning: Higher Return Changes Later Policy",
+      stateLabel:
+        "After two fixed episodes, the right path rises from 30% to 60%; a runtime observation does not update weights automatically",
+      simplificationNote:
+        "Probabilities, actions, and rewards are scripted teaching states. The diagram performs no random sampling, real reinforcement-learning optimization, or online model training.",
     },
     "attention-map": {
       title: "Attention: Direct Token Connections",
@@ -353,17 +389,21 @@ export function getDiagramAssets(
         arrows: [...asset.arrowIds],
       },
       version:
-        asset.id === "foundation-model"
-          ? "1.4.0"
-          : asset.id === "llm-system"
-            ? "1.3.0"
-            : "1.1.0",
+        asset.id === "feedback-learning"
+          ? "1.5.0"
+          : asset.id === "foundation-model"
+            ? "1.4.0"
+            : asset.id === "llm-system"
+              ? "1.3.0"
+              : "1.1.0",
       updatedAt:
-        asset.id === "foundation-model"
-          ? "2026-07-30"
-          : asset.id === "llm-system"
-            ? "2026-07-29"
-            : "2026-07-25",
+        asset.id === "feedback-learning"
+          ? "2026-07-31"
+          : asset.id === "foundation-model"
+            ? "2026-07-30"
+            : asset.id === "llm-system"
+              ? "2026-07-29"
+              : "2026-07-25",
       license: "MIT" as const,
       simplificationNote: copy[asset.id].simplificationNote,
     })),
