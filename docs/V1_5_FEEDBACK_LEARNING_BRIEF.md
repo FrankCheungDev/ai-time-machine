@@ -1,6 +1,6 @@
 # v1.5 Feedback Learning And Guided Causal Path Brief
 
-- 状态：研发完成，等待 PR 评审、预览验证与生产发布
+- 状态：研发完成，等待 PR 评审、合并与生产发布
 - 日期：2026-07-31
 - 基线：`main` @ `3c879ae`（v1.4）
 - 实现分支：`codex/v1-5-feedback-learning`
@@ -256,8 +256,10 @@ v1.4 的章节与谱系筛选可以回答“与某个对象直接相关的事件
   Chromium 170 项浏览器回归；
 - `pnpm render:diagrams` 成功生成 12 组 SVG / PNG 图源，`git diff --check` 通过；
 - 已留存中文桌面策略更新、英文移动端运行时边界和桌面故事聚焦三张视觉证据；
-- GitHub CI、Cloudflare Pages 预览与生产 smoke 仍须在 PR / 合并部署阶段完成，因此
-  本文档状态继续保持“等待 PR 评审、预览验证与生产发布”。
+- PR #31 的 GitHub Quality and build、Chromium 集成 / 视觉测试与 Cloudflare
+  Pages 预览均已通过；
+- PR 评审、合并与生产 smoke 仍待完成，因此本文档状态继续保持“等待 PR 评审、
+  合并与生产发布”。
 
 ## 9. 风险与控制
 
@@ -297,7 +299,7 @@ v1.5 的研发内容已经在独立实现分支完成，包含强化学习章节
 交互、训练时与运行时边界、Q-learning 与 DQN 事件、新谱系节点、一条
 `feedback-learning` 策展路径、双语 URL 状态、概念自测、第十二组图源及专用回归测试。
 
-当前状态只表示“实现候选完成”，不表示已经发布。只有 PR 合并、GitHub 与 Cloudflare
-检查完成，并对正式站点执行 production smoke 后，才会补充 PR、合并提交、CI、部署和
-生产证据，并把本节状态改为“完成并发布”。P2-05 仍保持暂停，客户端采集与 CSP 没有
-改变。
+PR #31 的 GitHub 与 Cloudflare 预览检查已经通过；当前状态仍只表示“实现候选完成”，
+不表示已经发布。只有 PR 合并并对正式站点执行 production smoke 后，才会补充合并
+提交、正式部署和生产证据，并把本节状态改为“完成并发布”。P2-05 仍保持暂停，客户端
+采集与 CSP 没有改变。
