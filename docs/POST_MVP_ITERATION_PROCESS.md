@@ -1,10 +1,10 @@
 # Post-MVP 迭代过程文档
 
-- 状态：执行中（P0、P1、P2-01 至 P2-04、v1.3 与 v1.4 已发布；所有者于 2026-07-28 因付费要求决定不采用 Plausible，PR #26 已关闭且未合并，`main` 从未启用该 provider；客户端学习采集继续保持 `disabled`。P2-05 的 provider-neutral 事件契约与聚合证据分析器已发布，但 provider 决策重新开放，P2-05A、P2-05B、P2-05C 均未完成，真实指标闭环暂停。v1.5 反馈学习教学切片已进入方案阶段，尚未实施）
+- 状态：执行中（P0、P1、P2-01 至 P2-04、v1.3 与 v1.4 已发布；所有者于 2026-07-28 因付费要求决定不采用 Plausible，PR #26 已关闭且未合并，`main` 从未启用该 provider；客户端学习采集继续保持 `disabled`。P2-05 的 provider-neutral 事件契约与聚合证据分析器已发布，但 provider 决策重新开放，P2-05A、P2-05B、P2-05C 均未完成，真实指标闭环暂停。v1.5 反馈学习教学切片已完成研发，等待 PR 评审、预览验证与生产发布）
 - 基线日期：2026-07-25
 - 基线提交：1a574a4
 - 目标版本：v1.0.1 → v1.1 → v1.2
-- 后续扩展：v1.3 → v1.4 → v1.5（方案阶段）
+- 后续扩展：v1.3 → v1.4 → v1.5（研发完成，等待发布）
 
 ## 1. 文档目的
 
@@ -382,24 +382,24 @@
 
 本节记录方案实际落地状态。任务只有合并、远程门禁通过并完成生产 smoke 后才从“候选”改为“完成”。
 
-| 范围                    | 状态               | 交付证据                                                                                                                                         |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 过程基线                | 完成               | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                                           |
-| P0-01 / P0-04           | 完成并发布         | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                                  |
-| P0-02 / P0-03           | 完成并发布         | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                                         |
-| P0-05 / P0-06           | 完成并发布         | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                               |
-| P1-01 → P1-05           | 完成并发布         | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                                 |
-| P2-01 / P2-02           | 完成并发布         | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                                        |
-| P2-03                   | 完成并发布         | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                                  |
-| P2-04                   | 完成并发布         | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 完成生产隐私加固；PR #22 固化 CI、Pages 与生产浏览器 smoke 证据              |
-| P2-05 provider 比较     | 已发布，决策重开   | [PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 完成条件式比较；2026-07-28 所有者因付费要求决定不采用 Plausible              |
-| P2-05 证据分析          | 前置已发布         | [PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加严格的 aggregate-only 证据契约、验证器、分析 CLI 与单元测试              |
-| P2-05A provider 启用    | 未完成，已撤回     | Draft [PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26) 已关闭且未合并；`main` 从未启用 Plausible                              |
-| P2-05B 真实观察         | 未完成，未开始     | 没有获批 provider、可读取的真实聚合数据或有效观察窗口                                                                                            |
-| P2-05C 产品调整         | 未完成，未开始     | 没有达到样本门槛的真实证据；明确排除 CI、Playwright、preview、smoke、开发者流量、Cloudflare Web Analytics 与模拟数据                             |
-| v1.3 LLM 系统边界       | 完成并发布         | [PR #28](https://github.com/FrankCheungDev/ai-time-machine/pull/28)：双语双场景交互、第十组图源、完整本地与远端门禁，以及生产交互和隐私 smoke    |
-| v1.4 因果图谱与基础模型 | 完成并发布         | [PR #29](https://github.com/FrankCheungDev/ai-time-machine/pull/29) 合并为 `3c879ae`；远端双 Job、Cloudflare Pages 与 31 请求生产隐私 smoke 通过 |
-| v1.5 反馈学习与因果路径 | 方案已定义，未实施 | [`V1_5_FEEDBACK_LEARNING_BRIEF.md`](V1_5_FEEDBACK_LEARNING_BRIEF.md)：强化学习与反馈边界章节、一个引导式因果故事及分批发布门禁                   |
+| 范围                    | 状态                     | 交付证据                                                                                                                                                                      |
+| ----------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 过程基线                | 完成                     | PR #15：建立本文档与 P0 → P1 → P2 顺序                                                                                                                                        |
+| P0-01 / P0-04           | 完成并发布               | PR #16：README / ROADMAP 对齐，页面文案按域拆分                                                                                                                               |
+| P0-02 / P0-03           | 完成并发布               | PR #17：正式 URL、双语 SEO、sitemap、404、部署与回滚文档                                                                                                                      |
+| P0-05 / P0-06           | 完成并发布               | PR #18：注册表派生契约、测试矩阵与 Playwright 分域                                                                                                                            |
+| P1-01 → P1-05           | 完成并发布               | PR #19：Safety / Eval、全链路测试、九组 SVG/PNG 图源与生产 smoke                                                                                                              |
+| P2-01 / P2-02           | 完成并发布               | PR #20：22 个类型化事件、中英文影响、章节 / 谱系关联与原始来源 fact-check                                                                                                     |
+| P2-03                   | 完成并发布               | PR #20：11 章各一个双语概念自测，反馈解释、本地记录、重试与清除                                                                                                               |
+| P2-04                   | 完成并发布               | [PR #21](https://github.com/FrankCheungDev/ai-time-machine/pull/21) 完成生产隐私加固；PR #22 固化 CI、Pages 与生产浏览器 smoke 证据                                           |
+| P2-05 provider 比较     | 已发布，决策重开         | [PR #23](https://github.com/FrankCheungDev/ai-time-machine/pull/23) 完成条件式比较；2026-07-28 所有者因付费要求决定不采用 Plausible                                           |
+| P2-05 证据分析          | 前置已发布               | [PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加严格的 aggregate-only 证据契约、验证器、分析 CLI 与单元测试                                           |
+| P2-05A provider 启用    | 未完成，已撤回           | Draft [PR #26](https://github.com/FrankCheungDev/ai-time-machine/pull/26) 已关闭且未合并；`main` 从未启用 Plausible                                                           |
+| P2-05B 真实观察         | 未完成，未开始           | 没有获批 provider、可读取的真实聚合数据或有效观察窗口                                                                                                                         |
+| P2-05C 产品调整         | 未完成，未开始           | 没有达到样本门槛的真实证据；明确排除 CI、Playwright、preview、smoke、开发者流量、Cloudflare Web Analytics 与模拟数据                                                          |
+| v1.3 LLM 系统边界       | 完成并发布               | [PR #28](https://github.com/FrankCheungDev/ai-time-machine/pull/28)：双语双场景交互、第十组图源、完整本地与远端门禁，以及生产交互和隐私 smoke                                 |
+| v1.4 因果图谱与基础模型 | 完成并发布               | [PR #29](https://github.com/FrankCheungDev/ai-time-machine/pull/29) 合并为 `3c879ae`；远端双 Job、Cloudflare Pages 与 31 请求生产隐私 smoke 通过                              |
+| v1.5 反馈学习与因果路径 | 研发完成，等待评审与发布 | [`V1_5_FEEDBACK_LEARNING_BRIEF.md`](V1_5_FEEDBACK_LEARNING_BRIEF.md)：13 章、12 个 Demo、27 个事件、第十二组图源，以及一个引导式因果故事；合并、远端门禁和生产 smoke 尚待完成 |
 
 P2 的历史声明、教学契约、隐私结论与真实数据门详见
 [`P2_HISTORY_LEARNING_PRIVACY_BRIEF.md`](P2_HISTORY_LEARNING_PRIVACY_BRIEF.md)。
@@ -420,7 +420,7 @@ P2-05 不随 P2-04 自动完成。`main` 上的 `learningSignalCollectionMode` �
 
 仓库状态本身不能证明仓库外对象已经删除，因此本次又在 Plausible 控制台独立完成清理：`atlas.z-ai.cc` 已从站点列表消失，页面明确提示站点与 page views 删除流程已启动。该操作只移除本项目站点，不删除用户的整个 Plausible 账户；控制台提示描述的是后台删除流程已经启动，不把物理清除时间误写成即时完成。无论后台处理进度如何，`main` 的零采集事实不变。
 
-[PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加 provider-neutral 的聚合证据分析器，并以 merge commit [`c23cb68`](https://github.com/FrankCheungDev/ai-time-machine/commit/c23cb684b86149ffa6fc5413e92429b587b9dc44) 进入 `main`。分析器随章节注册表扩展，当前 `pnpm analyze:learning-metrics -- <aggregate-export.json>` 只接受 12 章 × 7 个规范分段的 84 行聚合导出，拒绝不足 14 天、未确认真实学习者流量、未排除自动化和开发者、包含原始事件或个人数据、出现未知字段或非法漏斗计数的输入；它不联网、不读取 API key、不启用 provider，也不自行决定产品改动。拒绝 Plausible 不删除或降级该分析器，但分析器本身不能证明外部 attestation，也不能把 P2-05 标记为完成。
+[PR #24](https://github.com/FrankCheungDev/ai-time-machine/pull/24) 增加 provider-neutral 的聚合证据分析器，并以 merge commit [`c23cb68`](https://github.com/FrankCheungDev/ai-time-machine/commit/c23cb684b86149ffa6fc5413e92429b587b9dc44) 进入 `main`。分析器随章节注册表扩展，当前 `pnpm analyze:learning-metrics -- <aggregate-export.json>` 只接受 13 章 × 7 个规范分段的 91 行聚合导出，拒绝不足 14 天、未确认真实学习者流量、未排除自动化和开发者、包含原始事件或个人数据、出现未知字段或非法漏斗计数的输入；它不联网、不读取 API key、不启用 provider，也不自行决定产品改动。拒绝 Plausible 不删除或降级该分析器，但分析器本身不能证明外部 attestation，也不能把 P2-05 标记为完成。
 
 该分析器当前仍是预备性的证据验证器，而不是已经可用的观察闭环：现有 `ChapterJourney` 会在一次“完成并继续”动作中连续派发核心完成与续学事件，尚不能把两者解释成独立选择。未来若重开 P2-05A，必须先重审交互、事件语义、查询定义和证据 schema，并在真实观察开始前完成版本化测试。
 

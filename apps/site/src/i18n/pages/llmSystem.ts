@@ -28,7 +28,7 @@ export const llmSystemChapterCopy = {
     title: "LLM 与现代 AI 系统：为什么大模型还需要外部系统？",
     description:
       "解释大模型、上下文窗口、检索、工具、记忆和评估如何组成现代 AI 系统。",
-    eyebrow: "Chapter 08",
+    eyebrow: "Chapter 09",
     lede: "Transformer 让模型能在大规模文本中学习通用模式，但真实产品不是只有一个模型调用。现代 AI 系统会把模型放进上下文、检索、工具、记忆和评估构成的外部结构里。",
     question: "为什么大模型还需要外部知识和工具？",
     notesEyebrow: "历史位置",
@@ -80,7 +80,7 @@ export const llmSystemChapterCopy = {
       "LLMs And Modern AI Systems: Why do large models still need external systems?",
     description:
       "Explains how large models, context windows, retrieval, tools, memory, and evaluation form modern AI systems.",
-    eyebrow: "Chapter 08",
+    eyebrow: "Chapter 09",
     lede: "Transformers let models learn general patterns from large-scale text, but real products are more than a single model call. Modern AI systems place the model inside an external structure of context, retrieval, tools, memory, and evaluation.",
     question: "Why do large models still need external knowledge and tools?",
     notesEyebrow: "Historical position",

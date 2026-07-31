@@ -55,3 +55,16 @@ Recreate them against the same local preview:
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:v1.4-evidence
 ```
+
+## Feedback Learning And Guided Causal Path v1.5
+
+- `v1-5-feedback-policy-update-desktop.png`: the Chinese scripted training episode at the illustrative policy-update boundary.
+- `v1-5-feedback-runtime-english-mobile.png`: the English 390px comparison where a runtime observation changes the next action while weights remain fixed.
+- `v1-5-feedback-story-focus-desktop.png`: the curated story's ordered step badge on Samuel Checkers alongside unrelated history that remains visible with reduced surface emphasis.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:v1.5-evidence
+```

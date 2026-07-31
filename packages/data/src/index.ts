@@ -51,6 +51,10 @@ export {
   foundationModelDemo,
   getFoundationModelDemo,
 } from "./demos/foundation-model";
+export {
+  feedbackLearningDemo,
+  getFeedbackLearningDemo,
+} from "./demos/feedback-learning";
 export { getLlmSystemDemo, llmSystemDemo } from "./demos/llm-system";
 export { getRagPipelineDemo, ragPipelineDemo } from "./demos/rag-pipeline";
 export { getSafetyEvalDemo, safetyEvalDemo } from "./demos/safety-eval";
@@ -69,6 +73,12 @@ export {
   getAiLineageEdges,
   getAiLineageNodes,
 } from "./overview/lineage";
+export {
+  causalStories,
+  getCausalStories,
+  getCausalStory,
+  isCausalStoryId,
+} from "./overview/causal-stories";
 export { aiTimelineEntries, getAiTimelineEntries } from "./overview/timeline";
 export {
   aiTimelineEvents,
@@ -79,6 +89,13 @@ export type {
   LlmSystemLayer,
 } from "./overview/llm-system";
 export type { LineageEdge, LineageNode } from "./overview/lineage";
+export type {
+  CausalStory,
+  CausalStoryId,
+  CausalStoryLink,
+  CausalStoryLinkKind,
+  CausalStoryStep,
+} from "./overview/causal-stories";
 export type { TimelineEntry } from "./overview/timeline";
 export type {
   TimelineEventId,

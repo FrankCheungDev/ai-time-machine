@@ -55,6 +55,13 @@ const localizedTimelineEntryCopy = {
       summary:
         "卷积网络通过局部感受野和参数共享，从边缘、纹理到形状逐层组合视觉特征。",
     },
+    "reinforcement-learning": {
+      era: "反馈学习",
+      year: "1950s-2010s",
+      title: "强化学习与行动反馈",
+      summary:
+        "系统根据动作后的 observation、reward 与 return 改变价值估计或策略，并与搜索和深度表示形成多种组合。",
+    },
     attention: {
       era: "基础模型前夜",
       year: "2017",
@@ -133,6 +140,13 @@ const localizedTimelineEntryCopy = {
       title: "CNNs And Deep Vision",
       summary:
         "Convolutional networks combine visual features layer by layer, from edges and textures to shapes, using local receptive fields and shared parameters.",
+    },
+    "reinforcement-learning": {
+      era: "Feedback Learning",
+      year: "1950s-2010s",
+      title: "Reinforcement Learning And Action Feedback",
+      summary:
+        "Systems use observations, rewards, and returns after actions to change value estimates or policies, often in combination with search and deep representations.",
     },
     attention: {
       era: "Before Foundation Models",

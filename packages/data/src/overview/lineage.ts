@@ -63,6 +63,14 @@ const localizedLineageChapterNodeCopy = {
       y: 300,
       description: "用可学习表示和多层组合处理感知任务。",
     },
+    "reinforcement-learning": {
+      label: "强化学习",
+      group: "statistical",
+      x: 750,
+      y: 390,
+      description:
+        "用动作后的结果反馈改变价值估计或策略，并明确区分训练更新与运行时响应。",
+    },
     attention: {
       label: "Transformer",
       group: "foundation",
@@ -147,6 +155,14 @@ const localizedLineageChapterNodeCopy = {
       description:
         "Learned representations and layered composition handle perception tasks.",
     },
+    "reinforcement-learning": {
+      label: "Reinforcement Learning",
+      group: "statistical",
+      x: 750,
+      y: 390,
+      description:
+        "Outcome feedback after actions changes value estimates or policies, with an explicit boundary between training updates and runtime responses.",
+    },
     attention: {
       label: "Transformer",
       group: "foundation",
@@ -225,6 +241,18 @@ const localizedLineageEdges = {
       label: "表示学习",
     },
     {
+      id: "statistical-reinforcement-learning",
+      from: "statistical",
+      to: "reinforcement-learning",
+      label: "结果反馈",
+    },
+    {
+      id: "neural-reinforcement-learning",
+      from: "neural",
+      to: "reinforcement-learning",
+      label: "深度表示",
+    },
+    {
       id: "neural-transformer",
       from: "neural",
       to: "transformer",
@@ -253,6 +281,12 @@ const localizedLineageEdges = {
       from: "llm-system",
       to: "agent",
       label: "工具与循环",
+    },
+    {
+      id: "reinforcement-learning-agent",
+      from: "reinforcement-learning",
+      to: "agent",
+      label: "行动反馈",
     },
     {
       id: "agent-safety",
@@ -287,6 +321,18 @@ const localizedLineageEdges = {
       label: "Representation learning",
     },
     {
+      id: "statistical-reinforcement-learning",
+      from: "statistical",
+      to: "reinforcement-learning",
+      label: "Outcome feedback",
+    },
+    {
+      id: "neural-reinforcement-learning",
+      from: "neural",
+      to: "reinforcement-learning",
+      label: "Deep representations",
+    },
+    {
       id: "neural-transformer",
       from: "neural",
       to: "transformer",
@@ -315,6 +361,12 @@ const localizedLineageEdges = {
       from: "llm-system",
       to: "agent",
       label: "Tools and loops",
+    },
+    {
+      id: "reinforcement-learning-agent",
+      from: "reinforcement-learning",
+      to: "agent",
+      label: "Action feedback",
     },
     {
       id: "agent-safety",

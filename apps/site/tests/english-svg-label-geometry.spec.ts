@@ -30,6 +30,13 @@ const diagrams = [
     shapeType: "rect",
   },
   {
+    name: "Feedback Learning",
+    nodeCount: 7,
+    route: "/en/chapters/reinforcement-learning/",
+    shapeSelector: 'g[id^="feedback-node-"] > rect',
+    shapeType: "rect",
+  },
+  {
     name: "Safety / Eval",
     nodeCount: 6,
     route: "/en/chapters/safety/",

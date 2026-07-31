@@ -14,6 +14,7 @@ import {
   decisionBoundaryDemo,
   diagramAssets,
   expertSystemDemo,
+  feedbackLearningDemo,
   foundationModelDemo,
   getAgentLoopDemo,
   getAiLineageEdges,
@@ -26,6 +27,7 @@ import {
   getDecisionBoundaryDemo,
   getDiagramAssets,
   getExpertSystemDemo,
+  getFeedbackLearningDemo,
   getFoundationModelDemo,
   getLlmSystemConnections,
   getLlmSystemDemo,
@@ -51,6 +53,7 @@ const demos = [
   bayesUpdateDemo,
   decisionBoundaryDemo,
   cnnKernelDemo,
+  feedbackLearningDemo,
   llmSystemDemo,
   safetyEvalDemo,
   foundationModelDemo,
@@ -144,7 +147,7 @@ describe("diagram asset registry", () => {
       .filter(({ kind }) => kind === "demo")
       .map(({ id }) => id);
 
-    expect(diagramAssets).toHaveLength(11);
+    expect(diagramAssets).toHaveLength(12);
     expect(diagramAssets.map(({ chapterId }) => chapterId)).toEqual(
       demoChapterIds,
     );
@@ -173,6 +176,14 @@ describe("diagram asset registry", () => {
       chapterId: "foundation-model",
       version: "1.4.0",
       updatedAt: "2026-07-30",
+    });
+    expect(
+      diagramAssets.find(({ id }) => id === "feedback-learning"),
+    ).toMatchObject({
+      chapterId: "reinforcement-learning",
+      stateId: "updated-policy-boundary",
+      version: "1.5.0",
+      updatedAt: "2026-07-31",
     });
   });
 
@@ -354,6 +365,9 @@ describe("localized data accessors", () => {
     );
     expect(getCnnKernelDemo("en").title).toBe(
       "Deep Learning And CNNs: How do machines learn local visual features?",
+    );
+    expect(getFeedbackLearningDemo("en").title).toBe(
+      "Feedback Learning Loop: How do outcomes change later policy?",
     );
     expect(getAttentionMapDemo("en").title).toBe(
       "Attention And Transformers: Why can tokens directly attend to each other?",
@@ -577,6 +591,7 @@ describe("localized data accessors", () => {
       getBayesUpdateDemo("en"),
       getDecisionBoundaryDemo("en"),
       getCnnKernelDemo("en"),
+      getFeedbackLearningDemo("en"),
       getFoundationModelDemo("en"),
       getLlmSystemDemo("en"),
       getSafetyEvalDemo("en"),
@@ -622,6 +637,83 @@ describe("localized topology parity", () => {
       activeNodeIds: ["assistant-model", "runtime-context", "output"],
     });
     expect(project(getFoundationModelDemo("en"))).toEqual(project(zh));
+  });
+
+  it("preserves feedback-learning episodes and training boundaries", () => {
+    const project = (demo: ReturnType<typeof getFeedbackLearningDemo>) => ({
+      nodes: demo.nodes.map(({ id, x, y }) => ({ id, x, y })),
+      edges: demo.edges,
+      steps: demo.steps.map(
+        ({
+          id,
+          nodeId,
+          stage,
+          activeNodeIds,
+          activeEdgeIds,
+          episodeId,
+          policySnapshotId,
+          findingTone,
+        }) => ({
+          id,
+          nodeId,
+          stage,
+          activeNodeIds,
+          activeEdgeIds,
+          episodeId,
+          policySnapshotId,
+          findingTone,
+        }),
+      ),
+      transitions: demo.transitions.map(
+        ({ id, episodeId, fromStateId, actionId, toStateId, reward }) => ({
+          id,
+          episodeId,
+          fromStateId,
+          actionId,
+          toStateId,
+          reward,
+        }),
+      ),
+      episodes: demo.episodes.map(
+        ({ id, transitionIds, actionIds, rewards, returnValue }) => ({
+          id,
+          transitionIds,
+          actionIds,
+          rewards,
+          returnValue,
+        }),
+      ),
+      policySnapshots: demo.policySnapshots.map(
+        ({ id, leftProbability, rightProbability }) => ({
+          id,
+          leftProbability,
+          rightProbability,
+        }),
+      ),
+      boundaryViews: demo.boundaryViews.map(
+        ({ id, activeNodeIds, activeEdgeIds }) => ({
+          id,
+          activeNodeIds,
+          activeEdgeIds,
+        }),
+      ),
+      signalIds: demo.signalComparisons.map(({ id }) => id),
+      defaultBoundaryViewId: demo.defaultBoundaryViewId,
+    });
+
+    const zh = getFeedbackLearningDemo("zh-CN");
+    expect(zh.steps).toHaveLength(6);
+    expect(
+      zh.episodes.map(({ id, rewards, returnValue }) => ({
+        id,
+        rewards,
+        returnValue,
+      })),
+    ).toEqual([
+      { id: "baseline", rewards: [1], returnValue: 1 },
+      { id: "exploration", rewards: [0, 3], returnValue: 3 },
+    ]);
+    expect(project(getFeedbackLearningDemo("en"))).toEqual(project(zh));
   });
 
   it("preserves RAG pipeline topology and scripted behavior", () => {
@@ -940,6 +1032,28 @@ describe("getter mutation isolation", () => {
         demo.edges[0]!.to = "mutated";
         demo.steps[0]!.finding = "mutated";
         demo.steps[0]!.activeNodeIds[0] = "mutated";
+      },
+    );
+    expectMutationIsolation(
+      () => getFeedbackLearningDemo("zh-CN"),
+      feedbackLearningDemo,
+      (demo) => ({
+        nodeDescription: demo.nodes[0]?.description,
+        finding: demo.steps[0]?.finding,
+        reward: demo.transitions[0]?.reward,
+        transitionId: demo.episodes[0]?.transitionIds[0],
+        leftProbability: demo.policySnapshots[0]?.leftProbability,
+        boundaryNodeId: demo.boundaryViews[0]?.activeNodeIds[0],
+        signalBoundary: demo.signalComparisons[0]?.boundary,
+      }),
+      (demo) => {
+        demo.nodes[0]!.description = "mutated";
+        demo.steps[0]!.finding = "mutated";
+        demo.transitions[0]!.reward = 99;
+        demo.episodes[0]!.transitionIds[0] = "mutated";
+        demo.policySnapshots[0]!.leftProbability = 99;
+        demo.boundaryViews[0]!.activeNodeIds[0] = "mutated";
+        demo.signalComparisons[0]!.boundary = "mutated";
       },
     );
     expectMutationIsolation(

@@ -11,6 +11,7 @@ const chapterIds = [
   "bayes",
   "decision-boundary",
   "cnn",
+  "reinforcement-learning",
   "attention",
   "foundation-model",
   "llm-system",
@@ -119,10 +120,25 @@ const timelineEventCounts = {
   zh: (chineseTimeline.match(/data-timeline-event=/g) ?? []).length,
   en: (englishTimeline.match(/data-timeline-event=/g) ?? []).length,
 };
-if (timelineEventCounts.zh !== 25 || timelineEventCounts.en !== 25) {
+if (timelineEventCounts.zh !== 27 || timelineEventCounts.en !== 27) {
   failures.push(
     `timeline event counts are zh=${timelineEventCounts.zh}, en=${timelineEventCounts.en}`,
   );
+}
+for (const body of [chineseTimeline, englishTimeline]) {
+  if (!body.includes('data-causal-story-detail="feedback-learning"')) {
+    failures.push(
+      "one or both timelines are missing the feedback-learning story",
+    );
+    break;
+  }
+  if (
+    !body.includes('data-timeline-event="q-learning"') ||
+    !body.includes('data-timeline-event="dqn-atari"')
+  ) {
+    failures.push("one or both timelines are missing the v1.5 source events");
+    break;
+  }
 }
 
 const lighthillSource =
@@ -143,15 +159,15 @@ if (
 ) {
   failures.push("the English privacy decision is missing");
 }
-if (!chineseHome.includes("沿着 12 个章节理解 AI 如何一步步演化")) {
+if (!chineseHome.includes("沿着 13 个章节理解 AI 如何一步步演化")) {
   failures.push("the Chinese derived chapter count is missing");
 }
 if (
-  !englishHome.includes("Follow 12 chapters to see how AI evolved step by step")
+  !englishHome.includes("Follow 13 chapters to see how AI evolved step by step")
 ) {
   failures.push("the English derived chapter count is missing");
 }
-for (const path of ["/privacy/", "/en/privacy/"]) {
+for (const path of [...chapterRoutes, "/privacy/", "/en/privacy/"]) {
   const expectedLocation = `<loc>${new URL(path, canonicalBaseUrl)}</loc>`;
   if (!sitemap.includes(expectedLocation)) {
     failures.push(`the sitemap is missing ${path}`);
@@ -238,6 +254,75 @@ try {
     failures.push("the 390px production chapter overflows horizontally");
   }
 
+  await page.goto(new URL("/chapters/reinforcement-learning/", baseUrl).href, {
+    waitUntil: "networkidle",
+  });
+  const feedbackDemo = page.locator(".demo-shell[data-demo-ready='true']");
+  await feedbackDemo.waitFor();
+  const nextFeedbackStep = feedbackDemo.getByRole("button", {
+    name: "下一步",
+    exact: true,
+  });
+  for (let index = 0; index < 5; index += 1) {
+    await nextFeedbackStep.click();
+  }
+  const feedbackPolicyState = await feedbackDemo
+    .getByTestId("feedback-policy")
+    .getAttribute("data-policy-snapshot");
+  const feedbackBoundaryText =
+    (await feedbackDemo
+      .locator('[data-feedback-boundary="runtime"]')
+      .textContent()) ?? "";
+  if (feedbackPolicyState !== "updated") {
+    failures.push(
+      "the feedback-learning demo did not reach the updated policy",
+    );
+  }
+  if (!feedbackBoundaryText.includes("模型权重保持不变")) {
+    failures.push(
+      "the feedback-learning demo did not preserve the runtime boundary",
+    );
+  }
+
+  await page.goto(
+    new URL(
+      "/timeline/?story=feedback-learning#story-feedback-learning",
+      baseUrl,
+    ).href,
+    { waitUntil: "networkidle" },
+  );
+  const storySelect = page.locator("[data-timeline-story-filter]");
+  await storySelect.waitFor();
+  const storyState = {
+    id: await storySelect.inputValue(),
+    visibleEvents: await page.locator("[data-timeline-event]:visible").count(),
+    focusedEvents: await page
+      .locator(".milestone-event.is-story-focus")
+      .count(),
+    mutedEvents: await page.locator(".milestone-event.is-story-muted").count(),
+    languageHref: await page
+      .locator("[data-language-switch]")
+      .getAttribute("href"),
+  };
+  if (storyState.id !== "feedback-learning") {
+    failures.push("the production timeline did not restore the guided story");
+  }
+  if (
+    storyState.visibleEvents !== 27 ||
+    storyState.focusedEvents !== 6 ||
+    storyState.mutedEvents !== 21
+  ) {
+    failures.push(
+      `the guided story rendered visible=${storyState.visibleEvents}, focused=${storyState.focusedEvents}, muted=${storyState.mutedEvents}`,
+    );
+  }
+  if (
+    storyState.languageHref !==
+    "/en/timeline/?story=feedback-learning#story-feedback-learning"
+  ) {
+    failures.push("the guided story language link lost its URL state");
+  }
+
   if (forbiddenRequests.length > 0) {
     failures.push(
       `the browser made forbidden requests: ${[...new Set(forbiddenRequests)].join(", ")}`,
@@ -257,7 +342,13 @@ try {
           missingNoConnectPolicy: headerFailures.noConnectPolicy.length,
           invalidScriptPolicy: headerFailures.scriptPolicy.length,
         },
-        browserInteraction: "concept check, explanation, continuation",
+        browserInteraction:
+          "concept check, continuation, feedback update/runtime boundary, guided story",
+        feedbackLearning: {
+          policyState: feedbackPolicyState,
+          runtimeBoundary: feedbackBoundaryText.trim(),
+        },
+        storyState,
         observedSignalNames: signalNames,
         forbiddenRequests: [...new Set(forbiddenRequests)],
         failures,

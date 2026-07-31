@@ -4,14 +4,18 @@ This roadmap tracks the first version described in `docs/interactive_ai_history_
 
 ## Current Surface
 
+The v1.5 implementation described below is complete on its feature branch and
+awaits review, preview checks, merge, and production smoke before it is called
+published.
+
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
-- Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, Attention, foundation-model lifecycle, LLM systems, RAG, Agent, and Safety / Eval.
-- Eleven teaching demos with simplification notes, references, and Playwright smoke coverage.
+- Chapter spine: overview, search, expert systems, Bayes, decision boundary, CNN, feedback learning, Attention, foundation-model lifecycle, LLM systems, RAG, Agent, and Safety / Eval.
+- Twelve teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Complete Chinese and English routes with resumable local learning progress,
   chapter completion, and previous/next navigation.
-- Timeline and lineage views with shareable causal filters/focus, plus a manifest-driven diagram library with SVG and PNG assets for all eleven demos.
-- Twenty-five source-backed milestone events linked to the chapter and lineage models.
+- Timeline and lineage views with shareable causal filters/focus and one curated feedback-learning story, plus a manifest-driven diagram library with SVG and PNG assets for all twelve demos.
+- Twenty-seven source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
 - Public privacy documentation and a typed in-page signal allowlist with client
   collection disabled, automatic RUM blocked, and hosting-layer edge metrics
@@ -52,9 +56,9 @@ follows the staged process in
   the boundary between pretraining, post-training, and runtime context with a
   new bilingual chapter and eleventh diagram pair. See
   [the v1.4 teaching brief](docs/V1_4_CAUSAL_ATLAS_FOUNDATION_BRIEF.md).
-- **v1.5 — Planned — Feedback learning and a guided causal path:** add a
+- **v1.5 — Implementation complete; awaiting review and release — Feedback learning and a guided causal path:** adds a
   bilingual reinforcement-learning chapter that separates supervised targets,
-  rewards, preference feedback, and runtime observations, then connect the
+  rewards, preference feedback, and runtime observations, then connects the
   existing history through one curated, shareable feedback-learning story. See
   [the v1.5 teaching brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
 

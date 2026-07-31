@@ -3,9 +3,14 @@ import {
   getAiLineageEdges,
   getAiLineageNodes,
   getAiTimelineEvents,
+  getCausalStories,
 } from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
-import { lineageGroupLabels, lineagePageCopy } from "../../i18n/pages";
+import {
+  causalStoryExplorerCopy,
+  lineageGroupLabels,
+  lineagePageCopy,
+} from "../../i18n/pages";
 import { getSiteCopy } from "../../i18n/siteCopy";
 import { toLocalizedPath, type Locale } from "../../i18n/locales";
 import { getLocalizedLearningChapter } from "../../i18n/learning";
@@ -21,6 +26,8 @@ const groupLabels: Record<string, string> = lineageGroupLabels[locale];
 const lineageNodes = getAiLineageNodes(locale);
 const lineageEdges = getAiLineageEdges(locale);
 const timelineEvents = getAiTimelineEvents(locale);
+const causalStories = getCausalStories(locale);
+const storyCopy = causalStoryExplorerCopy[locale];
 const timelineRoute = toLocalizedPath("/timeline/", locale);
 const lineageDetails = lineageNodes.map((node) => ({
   node,
@@ -41,12 +48,18 @@ const englishEdgeLabelLines: Record<string, string[]> = {
   "symbolic-expert": ["Knowledge", "engineering"],
   "statistical-neural": ["Learning", "boundaries"],
   "classical-ml-neural": ["Representation", "learning"],
+  "statistical-reinforcement-learning": ["Outcome", "feedback"],
+  "neural-reinforcement-learning": ["Deep", "representations"],
   "neural-transformer": ["Sequence", "modeling"],
   "transformer-foundation-model": ["Scaled", "pretraining"],
   "foundation-model-llm-system": ["Model into", "system"],
   "llm-system-rag": ["Connecting", "external knowledge"],
   "llm-system-agent": ["Tools and", "loops"],
+  "reinforcement-learning-agent": ["Action", "feedback"],
   "agent-safety": ["Reliability", "evaluation"],
+};
+const englishNodeLabelLines: Record<string, string[]> = {
+  "reinforcement-learning": ["Reinforcement", "Learning"],
 };
 type LineageNode = (typeof lineageNodes)[number];
 
@@ -77,6 +90,49 @@ function getLineageEdgeGeometry(
       path: `M ${x1} ${y1} L ${x1} ${y2} L ${x2} ${y2}`,
       labelX: (x1 + x2) / 2,
       labelY: y2 - 10,
+    };
+  }
+
+  if (edgeId === "statistical-reinforcement-learning") {
+    const x1 = fromCenterX;
+    const y1 = from.y + lineageNodeHeight;
+    const x2 = to.x;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${x1} ${y2} L ${x2} ${y2}`,
+      labelX: (x1 + x2) / 2,
+      labelY: y2 - 12,
+    };
+  }
+
+  if (edgeId === "neural-reinforcement-learning") {
+    const x1 = from.x + lineageNodeWidth;
+    const y1 = fromCenterY;
+    const elbowX = x1 + 24;
+    const x2 = to.x;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${elbowX} ${y1} L ${elbowX} ${y2} L ${x2} ${y2}`,
+      labelX: elbowX - 26,
+      labelY: (y1 + y2) / 2 + 22,
+    };
+  }
+
+  if (edgeId === "reinforcement-learning-agent") {
+    const x1 = from.x + lineageNodeWidth;
+    const y1 = fromCenterY;
+    const firstElbowX = x1 + 18;
+    const routeY = 400;
+    const secondElbowX = to.x - 20;
+    const x2 = to.x;
+    const y2 = toCenterY;
+
+    return {
+      path: `M ${x1} ${y1} L ${firstElbowX} ${y1} L ${firstElbowX} ${routeY} L ${secondElbowX} ${routeY} L ${secondElbowX} ${y2} L ${x2} ${y2}`,
+      labelX: (firstElbowX + secondElbowX) / 2,
+      labelY: routeY - 12,
     };
   }
 
@@ -134,9 +190,24 @@ function getLineageEdgeGeometry(
           }
         </select>
       </label>
+      <label class="lineage-story-control">
+        <span>{copy.storyFilterLabel}</span>
+        <select
+          data-lineage-story
+          aria-controls="lineage-panel lineage-story-summary"
+        >
+          <option value="">{copy.allStories}</option>
+          {
+            causalStories.map((story) => (
+              <option value={story.id}>{story.title}</option>
+            ))
+          }
+        </select>
+      </label>
     </div>
 
     <section
+      id="lineage-panel"
       class="lineage-panel"
       aria-label={copy.panelAriaLabel}
       tabindex="0"
@@ -212,6 +283,13 @@ function getLineageEdgeGeometry(
             const chapter = node.chapterId
               ? getLocalizedLearningChapter(node.chapterId, locale)
               : undefined;
+            const labelLines =
+              locale === "en"
+                ? (englishNodeLabelLines[node.id] ?? [node.label])
+                : [node.label];
+            const labelLineHeight = 13;
+            const labelStartY = node.y + (labelLines.length > 1 ? 23 : 32);
+            const captionY = node.y + (labelLines.length > 1 ? 58 : 52);
 
             return (
               <>
@@ -231,20 +309,35 @@ function getLineageEdgeGeometry(
                   />
                   <text
                     x={node.x + lineageNodeWidth / 2}
-                    y={node.y + 32}
+                    y={labelStartY}
                     text-anchor="middle"
                     style={
-                      locale === "en" && node.label.length > 16
-                        ? "font-size: 13px"
+                      locale === "en"
+                        ? labelLines.length > 1
+                          ? "font-size: 12px"
+                          : node.label.length > 20
+                            ? "font-size: 11px"
+                            : node.label.length > 16
+                              ? "font-size: 13px"
+                              : undefined
                         : undefined
                     }
                   >
-                    {node.label}
+                    {labelLines.length === 1
+                      ? node.label
+                      : labelLines.map((line, index) => (
+                          <tspan
+                            x={node.x + lineageNodeWidth / 2}
+                            y={labelStartY + index * labelLineHeight}
+                          >
+                            {line}
+                          </tspan>
+                        ))}
                   </text>
                   <text
                     class="node-caption"
                     x={node.x + lineageNodeWidth / 2}
-                    y={node.y + 52}
+                    y={captionY}
                     text-anchor="middle"
                   >
                     {groupLabels[node.group] ?? node.group}
@@ -268,6 +361,129 @@ function getLineageEdgeGeometry(
           })
         }
       </svg>
+    </section>
+
+    <section
+      id="lineage-story-summary"
+      class="causal-story-region lineage-story-region"
+      data-lineage-story-region
+      aria-live="polite"
+      hidden
+    >
+      {
+        causalStories.map((story) => (
+          <article
+            id={`story-${story.id}`}
+            class="causal-story-detail"
+            data-causal-story-detail={story.id}
+            hidden
+          >
+            <header class="causal-story-header">
+              <div>
+                <p class="eyebrow">{storyCopy.eyebrow}</p>
+                <h2>{story.title}</h2>
+              </div>
+              <a
+                class="button"
+                href={`${timelineRoute}?story=${story.id}#story-${story.id}`}
+              >
+                {story.returnLinks.timeline.label}
+              </a>
+            </header>
+            <dl class="causal-story-context">
+              <div>
+                <dt>{storyCopy.coreQuestion}</dt>
+                <dd>{story.coreQuestion}</dd>
+              </div>
+              <div>
+                <dt>{storyCopy.simplificationNote}</dt>
+                <dd>{story.simplificationNote}</dd>
+              </div>
+            </dl>
+            <div class="causal-story-actions">
+              {story.actions.map((action, index) => {
+                const chapter = action.chapterId
+                  ? getLocalizedLearningChapter(action.chapterId, locale)
+                  : undefined;
+
+                return (
+                  <a
+                    class={`button${index === 0 ? " primary" : ""}`}
+                    href={chapter?.href ?? action.href}
+                  >
+                    {action.label}
+                  </a>
+                );
+              })}
+            </div>
+            <ol class="causal-story-steps">
+              {story.steps.map((step, index) => {
+                const event = timelineEvents.find(
+                  (candidate) => candidate.id === step.eventId,
+                );
+                if (!event) {
+                  throw new Error(
+                    `Unknown event for causal story ${story.id}: ${step.eventId}`,
+                  );
+                }
+                const chapters = step.chapterIds.map((chapterId) =>
+                  getLocalizedLearningChapter(chapterId, locale),
+                );
+                const nodes = step.lineageNodeIds.map((nodeId) => {
+                  const node = nodeById[nodeId];
+                  if (!node) {
+                    throw new Error(
+                      `Unknown lineage node for causal story ${story.id}: ${nodeId}`,
+                    );
+                  }
+                  return node;
+                });
+
+                return (
+                  <li
+                    data-story-event-id={step.eventId}
+                    data-story-node-ids={step.lineageNodeIds.join(" ")}
+                  >
+                    <p class="causal-story-step-count">
+                      {storyCopy.stepCounter(index + 1, story.steps.length)}
+                    </p>
+                    <h3>{step.title}</h3>
+                    <dl>
+                      <div>
+                        <dt>{storyCopy.inherited}</dt>
+                        <dd>{step.inherited}</dd>
+                      </div>
+                      <div>
+                        <dt>{storyCopy.solved}</dt>
+                        <dd>{step.solved}</dd>
+                      </div>
+                      <div>
+                        <dt>{storyCopy.missing}</dt>
+                        <dd>{step.missing}</dd>
+                      </div>
+                    </dl>
+                    <div class="causal-story-step-actions">
+                      <a
+                        href={`${timelineRoute}?story=${story.id}#milestone-${step.eventId}`}
+                      >
+                        {storyCopy.openEvent}: {event.title}
+                      </a>
+                      {nodes.map((node) => (
+                        <a href={`#node-${node.id}`}>{node.label}</a>
+                      ))}
+                      {chapters.map((chapter) => (
+                        <a href={chapter.href}>
+                          {storyCopy.openChapter}: {chapter.title}
+                        </a>
+                      ))}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </article>
+        ))
+      }
     </section>
 
     <section
@@ -328,7 +544,11 @@ function getLineageEdgeGeometry(
   const lineagePanel = document.querySelector("[data-lineage-panel]");
   const lineageButtons = document.querySelectorAll("[data-lineage-view]");
   const lineageFocus = document.querySelector("[data-lineage-focus]");
+  const lineageStory = document.querySelector("[data-lineage-story]");
   const lineageSummary = document.querySelector("[data-lineage-focus-summary]");
+  const lineageStoryRegion = document.querySelector(
+    "[data-lineage-story-region]",
+  );
   const lineageNodes = Array.from(
     document.querySelectorAll<SVGGElement>("[data-lineage-node]"),
   );
@@ -340,6 +560,9 @@ function getLineageEdgeGeometry(
   );
   const lineageDetails = Array.from(
     document.querySelectorAll<HTMLElement>("[data-lineage-detail]"),
+  );
+  const lineageStoryDetails = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-causal-story-detail]"),
   );
 
   function setLineageView(view: string) {
@@ -376,66 +599,188 @@ function getLineageEdgeGeometry(
 
   if (
     lineageFocus instanceof HTMLSelectElement &&
-    lineageSummary instanceof HTMLElement
+    lineageStory instanceof HTMLSelectElement &&
+    lineageSummary instanceof HTMLElement &&
+    lineageStoryRegion instanceof HTMLElement
   ) {
     const focusSelect = lineageFocus;
+    const storySelect = lineageStory;
     const summaryRegion = lineageSummary;
+    const storySummaryRegion = lineageStoryRegion;
     const validNodeIds = new Set(
       Array.from(focusSelect.options, ({ value }) => value).filter(Boolean),
     );
+    const validStoryIds = new Set(
+      Array.from(storySelect.options, ({ value }) => value).filter(Boolean),
+    );
     const initialUrl = new URL(window.location.href);
     const initialNodeId = initialUrl.searchParams.get("lineage") ?? "";
+    const initialStoryId = initialUrl.searchParams.get("story") ?? "";
+    const hasValidInitialStory = validStoryIds.has(initialStoryId);
 
-    focusSelect.value = validNodeIds.has(initialNodeId) ? initialNodeId : "";
+    storySelect.value = hasValidInitialStory ? initialStoryId : "";
+    focusSelect.value =
+      !hasValidInitialStory && validNodeIds.has(initialNodeId)
+        ? initialNodeId
+        : "";
 
-    function applyLineageFocus(updateUrl = true) {
+    function applyLineageState(
+      updateUrl = true,
+      source: "initial" | "focus" | "story" = "initial",
+    ) {
       const nodeId = focusSelect.value;
+      const storyId = storySelect.value;
+      const activeStory = lineageStoryDetails.find(
+        (detail) => detail.dataset.causalStoryDetail === storyId,
+      );
+      const storyNodeSteps = new Map<string, number[]>();
+
+      if (activeStory) {
+        Array.from(
+          activeStory.querySelectorAll<HTMLElement>("[data-story-node-ids]"),
+        ).forEach((step, index) => {
+          for (const storyNodeId of (step.dataset.storyNodeIds ?? "")
+            .split(" ")
+            .filter(Boolean)) {
+            const positions = storyNodeSteps.get(storyNodeId) ?? [];
+            positions.push(index + 1);
+            storyNodeSteps.set(storyNodeId, positions);
+          }
+        });
+      }
 
       for (const node of lineageNodes) {
         const isFocused = node.dataset.lineageNode === nodeId;
-        node.classList.toggle("is-causal-focus", isFocused);
-        node.classList.toggle("is-causal-muted", Boolean(nodeId) && !isFocused);
+        const storySteps = storyNodeSteps.get(node.dataset.lineageNode ?? "");
+        const isStoryNode = Boolean(storySteps);
+        node.classList.toggle("is-causal-focus", !storyId && isFocused);
+        node.classList.toggle(
+          "is-causal-muted",
+          !storyId && Boolean(nodeId) && !isFocused,
+        );
+        node.classList.toggle(
+          "is-story-focus",
+          Boolean(storyId) && isStoryNode,
+        );
+        node.classList.toggle(
+          "is-story-muted",
+          Boolean(storyId) && !isStoryNode,
+        );
+        if (storySteps) {
+          node.dataset.storyStepOrder = storySteps.join(" ");
+        } else {
+          delete node.dataset.storyStepOrder;
+        }
       }
 
       for (const edge of lineageEdges) {
         const connected =
           edge.dataset.from === nodeId || edge.dataset.to === nodeId;
-        edge.classList.toggle("is-causal-focus", Boolean(nodeId) && connected);
-        edge.classList.toggle("is-causal-muted", Boolean(nodeId) && !connected);
+        const connectsStoryNodes =
+          storyNodeSteps.has(edge.dataset.from ?? "") &&
+          storyNodeSteps.has(edge.dataset.to ?? "");
+        edge.classList.toggle(
+          "is-causal-focus",
+          !storyId && Boolean(nodeId) && connected,
+        );
+        edge.classList.toggle(
+          "is-causal-muted",
+          !storyId && Boolean(nodeId) && !connected,
+        );
+        edge.classList.toggle(
+          "is-story-focus",
+          Boolean(storyId) && connectsStoryNodes,
+        );
+        edge.classList.toggle(
+          "is-story-muted",
+          Boolean(storyId) && !connectsStoryNodes,
+        );
       }
 
       for (const label of lineageEdgeLabels) {
         const connected =
           label.dataset.from === nodeId || label.dataset.to === nodeId;
-        label.classList.toggle("is-causal-focus", Boolean(nodeId) && connected);
+        const connectsStoryNodes =
+          storyNodeSteps.has(label.dataset.from ?? "") &&
+          storyNodeSteps.has(label.dataset.to ?? "");
+        label.classList.toggle(
+          "is-causal-focus",
+          !storyId && Boolean(nodeId) && connected,
+        );
         label.classList.toggle(
           "is-causal-muted",
-          Boolean(nodeId) && !connected,
+          !storyId && Boolean(nodeId) && !connected,
+        );
+        label.classList.toggle(
+          "is-story-focus",
+          Boolean(storyId) && connectsStoryNodes,
+        );
+        label.classList.toggle(
+          "is-story-muted",
+          Boolean(storyId) && !connectsStoryNodes,
         );
       }
 
       for (const detail of lineageDetails) {
         detail.hidden = detail.dataset.lineageDetail !== nodeId;
       }
-      summaryRegion.hidden = !nodeId;
+      summaryRegion.hidden = Boolean(storyId) || !nodeId;
+      for (const detail of lineageStoryDetails) {
+        detail.hidden = detail !== activeStory;
+      }
+      storySummaryRegion.hidden = !activeStory;
 
       if (updateUrl) {
         const url = new URL(window.location.href);
-        if (nodeId) {
+        if (storyId) {
+          url.searchParams.set("story", storyId);
+          url.searchParams.delete("chapter");
+          url.searchParams.delete("lineage");
+        } else {
+          url.searchParams.delete("story");
+        }
+        if (!storyId && nodeId) {
           url.searchParams.set("lineage", nodeId);
-          url.hash = `node-${nodeId}`;
         } else {
           url.searchParams.delete("lineage");
-          if (url.hash.startsWith("#node-")) {
-            url.hash = "";
-          }
+        }
+        if (source === "story") {
+          url.hash = storyId ? `story-${storyId}` : "";
+        } else if (source === "focus") {
+          url.hash = nodeId ? `node-${nodeId}` : "";
+        } else if (!storyId && url.hash.startsWith("#story-")) {
+          url.hash = "";
         }
         window.history.replaceState({}, "", url);
         synchronizeLanguageSwitchUrl();
       }
     }
 
-    focusSelect.addEventListener("change", () => applyLineageFocus());
-    applyLineageFocus(false);
+    focusSelect.addEventListener("change", () => {
+      storySelect.value = "";
+      applyLineageState(true, "focus");
+    });
+    storySelect.addEventListener("change", () => {
+      focusSelect.value = "";
+      applyLineageState(true, "story");
+    });
+
+    const shouldNormalizeInitialUrl =
+      (Boolean(initialStoryId) && !hasValidInitialStory) ||
+      (hasValidInitialStory &&
+        (initialUrl.searchParams.has("chapter") ||
+          initialUrl.searchParams.has("lineage")));
+    applyLineageState(shouldNormalizeInitialUrl, "initial");
+
+    if (
+      hasValidInitialStory &&
+      initialUrl.hash === `#story-${initialStoryId}`
+    ) {
+      window.requestAnimationFrame(() => {
+        document.getElementById(`story-${initialStoryId}`)?.scrollIntoView();
+      });
+    }
+
+    window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);
   }
 </script>

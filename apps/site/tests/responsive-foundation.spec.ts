@@ -10,6 +10,7 @@ import { firstDurationMs, waitForDemoReady } from "./fixtures/demo";
 const svgSceneChapterIds = [
   "search",
   "decision-boundary",
+  "reinforcement-learning",
   "attention",
   "foundation-model",
   "llm-system",

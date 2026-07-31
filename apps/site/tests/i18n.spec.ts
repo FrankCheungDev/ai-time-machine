@@ -51,6 +51,14 @@ const englishDemoChapterCases = [
     evidence: "How do machines identify local features in an image?",
   },
   {
+    route: localizedChapterRoute("reinforcement-learning", "en"),
+    title:
+      "Reinforcement Learning And Feedback Loops: How do outcomes change a future policy?",
+    activityTitle: "Feedback Learning Loop Lab",
+    evidence:
+      "When do rewards, preference comparisons, and runtime observations change the system?",
+  },
+  {
     route: localizedChapterRoute("attention", "en"),
     title:
       "Attention And Transformers: Why can tokens directly attend to each other?",
@@ -124,6 +132,11 @@ const chineseDemoChapterCases = [
     activityTitle: "CNN 卷积核实验",
   },
   {
+    route: localizedChapterRoute("reinforcement-learning"),
+    title: "强化学习与反馈闭环：结果如何改变未来策略？",
+    activityTitle: "反馈学习闭环实验",
+  },
+  {
     route: localizedChapterRoute("attention"),
     title: "Attention 与 Transformer：token 为什么可以直接互相关注？",
     activityTitle: "注意力热图探索",
@@ -194,6 +207,16 @@ const englishChapterReferenceCases = [
     expectedHrefs: [
       "https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html",
       "https://www.deeplearningbook.org/contents/convnets.html",
+    ],
+  },
+  {
+    route: localizedChapterRoute("reinforcement-learning", "en"),
+    expectedHrefs: [
+      "https://doi.org/10.1007/BF00992698",
+      "https://doi.org/10.1038/nature14236",
+      "https://doi.org/10.1038/nature16961",
+      "https://arxiv.org/abs/2203.02155",
+      "https://arxiv.org/abs/2305.18290",
     ],
   },
   {
@@ -285,6 +308,7 @@ const englishRouteLinkCases = [
       "/en/chapters/bayes/",
       "/en/chapters/decision-boundary/",
       "/en/chapters/cnn/",
+      "/en/chapters/reinforcement-learning/",
       "/en/chapters/attention/",
       "/en/chapters/foundation-model/",
       "/en/chapters/rag/",

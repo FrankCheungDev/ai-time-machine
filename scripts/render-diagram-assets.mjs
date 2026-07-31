@@ -154,6 +154,33 @@ const assets = [
         .join("")}</g>`,
   },
   {
+    id: "feedback-learning",
+    title: "Feedback Learning · Return Updates Policy",
+    subtitle:
+      "A delayed higher return changes the illustrative policy at a training boundary",
+    state: "updated-policy-boundary",
+    note: "Two fixed episodes illustrate the update; runtime observations alone do not change weights.",
+    version: "1.5.0",
+    updatedAt: "2026-07-31",
+    body: `
+      <rect x="20" y="122" width="1000" height="256" rx="8" fill="#f6f9fd" stroke="#c9d9ec" stroke-dasharray="8 8" />
+      <text class="tiny" x="38" y="145">TRAINING EPISODE · WEIGHTS CAN CHANGE AT UPDATE</text>
+      <path id="arrow-state-policy" class="arrow-active" d="M 144 228 H 174" />
+      <path id="arrow-policy-action" class="arrow-active" d="M 294 228 H 324" />
+      <path id="arrow-action-environment" class="arrow-active" d="M 444 228 H 474" />
+      <path id="arrow-environment-observation-reward" class="arrow-active" d="M 614 228 H 646" />
+      <path id="arrow-observation-reward-return-update" class="arrow-active" d="M 810 228 H 842" />
+      <path id="arrow-return-update-updated-policy" class="arrow-active" d="M 924 272 V 294" />
+      <g id="node-state"><rect class="node" x="32" y="184" width="112" height="88" rx="8" /><text class="label" x="88" y="220" text-anchor="middle">State</text><text class="tiny" x="88" y="246" text-anchor="middle">start</text></g>
+      <g id="node-policy"><rect class="node" x="174" y="184" width="120" height="88" rx="8" /><text class="label" x="234" y="220" text-anchor="middle">Policy</text><text class="tiny" x="234" y="246" text-anchor="middle">left favored</text></g>
+      <g id="node-action"><rect class="node" x="324" y="184" width="120" height="88" rx="8" /><text class="label" x="384" y="220" text-anchor="middle">Action</text><text class="tiny" x="384" y="246" text-anchor="middle">explore right</text></g>
+      <g id="node-environment"><rect class="node" x="474" y="184" width="140" height="88" rx="8" /><text class="label" x="544" y="220" text-anchor="middle">Environment</text><text class="tiny" x="544" y="246" text-anchor="middle">two transitions</text></g>
+      <g id="node-observation-reward"><rect class="active" x="646" y="184" width="164" height="88" rx="8" /><text class="small" x="728" y="219" text-anchor="middle">Observation + Reward</text><text class="tiny" x="728" y="246" text-anchor="middle">0, then +3 delayed</text></g>
+      <g id="node-return-update"><rect class="active" x="842" y="184" width="164" height="88" rx="8" /><text class="label" x="924" y="220" text-anchor="middle">Return / Update</text><text class="tiny" x="924" y="246" text-anchor="middle">3 beats 1</text></g>
+      <g id="node-updated-policy"><rect class="active" x="806" y="294" width="200" height="70" rx="8" /><text class="label" x="906" y="323" text-anchor="middle">Updated Policy</text><text class="tiny" x="906" y="347" text-anchor="middle">right becomes more likely</text></g>
+      <g id="runtime-boundary"><rect x="420" y="394" width="310" height="60" rx="8" fill="#ffffff" stroke="#8a5a9d" stroke-width="2" /><text class="small" x="575" y="419" text-anchor="middle">SEPARATE RUNTIME · observation</text><text class="tiny" x="575" y="441" text-anchor="middle">changes the next action, not model weights</text></g>`,
+  },
+  {
     id: "attention-map",
     title: "Attention Map · Direct Token Links",
     subtitle:

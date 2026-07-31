@@ -96,6 +96,98 @@ export interface FoundationModelDemo extends DemoMetadata {
   steps: FoundationModelStep[];
 }
 
+export type FeedbackLearningStage = "training" | "runtime";
+
+export type FeedbackLearningFindingTone =
+  "state" | "episode" | "comparison" | "update" | "boundary";
+
+export interface FeedbackLearningNode {
+  id: string;
+  label: string;
+  description: string;
+  x: number;
+  y: number;
+}
+
+export interface FeedbackLearningEdge {
+  id: string;
+  from: string;
+  to: string;
+}
+
+export interface FeedbackLearningStep extends DemoStep {
+  nodeId: string;
+  stage: FeedbackLearningStage;
+  statusLabel: string;
+  finding: string;
+  findingTone: FeedbackLearningFindingTone;
+  episodeId?: string;
+  policySnapshotId?: string;
+}
+
+export interface FeedbackLearningTransition {
+  id: string;
+  episodeId: string;
+  fromStateId: string;
+  actionId: string;
+  toStateId: string;
+  actionLabel: string;
+  observation: string;
+  reward: number;
+}
+
+export interface FeedbackLearningEpisode {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  transitionIds: string[];
+  actionIds: string[];
+  rewards: number[];
+  returnValue: number;
+  result: string;
+}
+
+export interface FeedbackLearningPolicySnapshot {
+  id: string;
+  label: string;
+  leftProbability: number;
+  rightProbability: number;
+  explanation: string;
+}
+
+export interface FeedbackLearningBoundaryView {
+  id: FeedbackLearningStage;
+  label: string;
+  title: string;
+  description: string;
+  weightStatus: string;
+  nextActionStatus: string;
+  activeNodeIds: string[];
+  activeEdgeIds: string[];
+}
+
+export interface FeedbackLearningSignalComparison {
+  id: string;
+  label: string;
+  inputSignal: string;
+  timing: string;
+  effect: string;
+  boundary: string;
+}
+
+export interface FeedbackLearningDemo extends DemoMetadata {
+  nodes: FeedbackLearningNode[];
+  edges: FeedbackLearningEdge[];
+  steps: FeedbackLearningStep[];
+  transitions: FeedbackLearningTransition[];
+  episodes: FeedbackLearningEpisode[];
+  policySnapshots: FeedbackLearningPolicySnapshot[];
+  boundaryViews: FeedbackLearningBoundaryView[];
+  signalComparisons: FeedbackLearningSignalComparison[];
+  defaultBoundaryViewId: FeedbackLearningStage;
+}
+
 export interface AgentLoopNode {
   id: string;
   label: string;

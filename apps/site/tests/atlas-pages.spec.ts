@@ -209,7 +209,7 @@ test("Timeline page shows the AI evolution overview", async ({ page }) => {
     }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "查看 Demo 06：注意力机制" }),
+    page.getByRole("link", { name: "查看 Demo 07：注意力机制" }),
   ).toBeVisible();
 });
 
