@@ -59,7 +59,8 @@ lifecycle chapter, and chapter self-checks are implemented. The
 P2-05 real-usage loop is paused: the provider decision is open again, no data
 source is approved or scheduled, and automated traffic is not treated as learner
 data. The in-page event contract and aggregate analyzer remain available without
-enabling network collection.
+enabling network collection. The next planned teaching slice is
+[v1.5 feedback learning and a guided causal path](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
 
 ## Deployment
 

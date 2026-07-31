@@ -1,8 +1,8 @@
 # v1.4 Causal Atlas And Foundation Model Lifecycle Brief
 
-- 状态：实现与本地门禁完成，等待 Pull Request 评审
-- 分支：`codex/causal-atlas-foundation`
-- 日期：2026-07-30
+- 状态：已完成并发布
+- 发布日期：2026-07-30
+- 发布提交：`3c879ae`（PR #29）
 - 范围：P0 发布收口、P1 因果导航、P2 基础模型生命周期教学章节
 
 ## P0：v1.3 发布收口
@@ -80,4 +80,19 @@ Demo 不运行真实训练、标注、奖励模型或推理。不同模型可以
 - CI 同款 `mcr.microsoft.com/playwright:v1.61.1-noble` Linux 容器 Playwright 156 / 156 通过；
 - 已生成并人工检查 `v1-4-foundation-runtime-desktop.png`、`v1-4-foundation-preference-english-mobile.png` 与 `v1-4-lineage-foundation-focus-desktop.png`。
 
-Pull Request 继续保留来源限定、教学简化、验证命令与上述视觉证据，等待评审后合并。
+## 发布证据
+
+- [PR #29](https://github.com/FrankCheungDev/ai-time-machine/pull/29) 于
+  2026-07-30 合并为 `3c879ae`；评审发现的谱系边标签降噪、跨语言 URL
+  状态保留和失效 milestone fragment 清理均在合并前修复并增加回归测试。
+- [GitHub CI run 30512850773](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30512850773)
+  的 `Quality and build` 与 `Chromium integration and visual tests` 均成功。
+- Cloudflare Pages 生产表面随后通过 `pnpm smoke:production:privacy`：检查 31
+  个请求、24 个双语章节路由和 30 个 HTML 文档，中文与英文时间线均为 25
+  个事件；`missingNoTransform`、`missingNoConnectPolicy`、
+  `invalidScriptPolicy`、`forbiddenRequests` 与 `failures` 均为空。
+- 生产浏览器完成自测、解释展开与续学，并观察到五类站内学习信号；这些 smoke
+  和自动化结果只证明发布行为与隐私边界，不作为 P2-05 的真实学习者证据。
+
+由此，v1.4 满足合并、远端门禁、生产部署与生产 smoke 的完成定义。后续教学扩展
+转入 [`v1.5 反馈学习方案`](V1_5_FEEDBACK_LEARNING_BRIEF.md)。
