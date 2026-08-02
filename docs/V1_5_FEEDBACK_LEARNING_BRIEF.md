@@ -1,9 +1,13 @@
 # v1.5 Feedback Learning And Guided Causal Path Brief
 
-- 状态：研发完成，等待 PR 评审、合并与生产发布
-- 日期：2026-07-31
-- 基线：`main` @ `3c879ae`（v1.4）
-- 实现分支：`codex/v1-5-feedback-learning`
+- 状态：已完成并发布
+- 方案日期：2026-07-31
+- 合并日期：2026-07-31
+- 发布日期：2026-07-31
+- 发布收口日期：2026-08-02
+- 历史实现基线：`main` @ `3c879ae`（v1.4）
+- 历史实现分支：`codex/v1-5-feedback-learning`
+- 发布提交：`fc41d8b`（PR #31）
 - 范围：P0 发布记录收口、P1 反馈学习教学章节、P2 引导式因果路径
 
 ## 1. 决策摘要
@@ -48,13 +52,14 @@ P2-05 仍然暂停；不启用 provider、不改变 CSP，也不把 CI、preview
 
 ## 3. P0：v1.4 发布记录收口
 
-本方案文档所在 PR 同步完成以下记录工作，不等待 v1.5 功能实现：
+本方案文档所在 PR 在实现开始前同步完成以下历史记录工作：
 
 - 将 `ROADMAP.md` 与 v1.4 brief 从“评审中”更新为“完成并发布”；
 - 记录 PR #29、合并提交 `3c879ae`、GitHub CI run `30512850773` 与生产
   privacy smoke；
 - 保留 P2-05 的 provider、真实流量和观察窗口门槛；
-- 把 v1.5 标记为计划中的教学切片，而不是已经交付的功能。
+- 在当时把 v1.5 标记为计划中的教学切片，而不是已经交付的功能；当前发布状态以
+  8.2 节证据为准。
 
 ## 4. P1：强化学习与反馈闭环章节
 
@@ -217,11 +222,11 @@ v1.4 的章节与谱系筛选可以回答“与某个对象直接相关的事件
 - 验证故事、普通筛选、语言切换、fragment 与无 JavaScript fallback；
 - 作为第二个独立 PR 发布，不与章节实现维持长期未合并依赖。
 
-### P3-01：发布收口
+### P3-01：发布收口（已完成）
 
-- 更新 README、ROADMAP、过程记录和 production smoke 预期数量；
-- 记录 CI、Cloudflare Pages、生产交互、隐私响应头与视觉证据；
-- 只有完成生产 smoke 后才把 v1.5 从“计划中”改为“完成并发布”。
+- README、ROADMAP、过程记录和 production smoke 预期数量已对齐；
+- CI、Cloudflare Pages、生产交互、隐私响应头与视觉证据已记录；
+- 2026-08-02 production smoke 通过后，v1.5 已从“实现候选”改为“完成并发布”。
 
 ## 8. 验收门禁
 
@@ -258,8 +263,24 @@ v1.4 的章节与谱系筛选可以回答“与某个对象直接相关的事件
 - 已留存中文桌面策略更新、英文移动端运行时边界和桌面故事聚焦三张视觉证据；
 - PR #31 的 GitHub Quality and build、Chromium 集成 / 视觉测试与 Cloudflare
   Pages 预览均已通过；
-- PR 评审、合并与生产 smoke 仍待完成，因此本文档状态继续保持“等待 PR 评审、
-  合并与生产发布”。
+- PR #31 随后完成评审并于 2026-07-31 合并为 `fc41d8b`。
+
+### 8.2 发布证据（2026-08-02 收口）
+
+- [PR #31](https://github.com/FrankCheungDev/ai-time-machine/pull/31) 合并为
+  `fc41d8b`；
+- [main CI run 30619425258](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/30619425258)
+  的 `Quality and build` 与 `Chromium integration and visual tests` 均成功；
+- 同一提交的 Cloudflare Pages production check 成功；
+- `pnpm smoke:production:privacy` 检查 33 个请求、26 个双语章节路由和 32 个
+  HTML 文档，中英文时间线均为 27 个事件；
+- `missingNoTransform`、`missingNoConnectPolicy`、`invalidScriptPolicy`、
+  `forbiddenRequests` 与 `failures` 均为空；
+- 生产浏览器完成概念自测、解释展开、续学、反馈策略更新、训练时 / 运行时边界检查
+  和 `feedback-learning` 故事恢复，并观察到既有五类站内学习信号。
+
+这些 CI、部署和 smoke 结果只证明发布行为、内容数量与隐私边界，不作为 P2-05 的真实
+学习者证据。
 
 ## 9. 风险与控制
 
@@ -295,11 +316,11 @@ v1.4 的章节与谱系筛选可以回答“与某个对象直接相关的事件
 
 ## 12. 实施状态
 
-v1.5 的研发内容已经在独立实现分支完成，包含强化学习章节、固定双 episode 的六步
-交互、训练时与运行时边界、Q-learning 与 DQN 事件、新谱系节点、一条
-`feedback-learning` 策展路径、双语 URL 状态、概念自测、第十二组图源及专用回归测试。
+v1.5 已完成并发布，包含强化学习章节、固定双 episode 的六步交互、训练时与运行时
+边界、Q-learning 与 DQN 事件、新谱系节点、一条 `feedback-learning` 策展路径、
+双语 URL 状态、概念自测、第十二组图源及专用回归测试。PR #31、main CI、Cloudflare
+Pages production 与生产 smoke 均已通过。
 
-PR #31 的 GitHub 与 Cloudflare 预览检查已经通过；当前状态仍只表示“实现候选完成”，
-不表示已经发布。只有 PR 合并并对正式站点执行 production smoke 后，才会补充合并
-提交、正式部署和生产证据，并把本节状态改为“完成并发布”。P2-05 仍保持暂停，客户端
-采集与 CSP 没有改变。
+P2-05 仍保持暂停，客户端采集与 CSP 没有改变。后续策展故事的发现与扩展进入
+[`v1.6 Guided Causal Learning 方案`](V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)，该方案仍在
+评审中，尚未开始实现。

@@ -1,12 +1,14 @@
 # Roadmap
 
-This roadmap tracks the first version described in `docs/interactive_ai_history_codex_handoff.md`.
+This roadmap tracks the public release surface and the post-MVP briefs that
+extend the first version described in
+`docs/interactive_ai_history_codex_handoff.md`.
 
 ## Current Surface
 
-The v1.5 implementation described below is complete on its feature branch and
-awaits review, preview checks, merge, and production smoke before it is called
-published.
+v1.5 is complete and published from merge commit `fc41d8b` (PR #31). The main
+CI run, Cloudflare Pages production deployment, and the 2026-08-02 production
+privacy and interaction smoke all passed.
 
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
@@ -56,11 +58,17 @@ follows the staged process in
   the boundary between pretraining, post-training, and runtime context with a
   new bilingual chapter and eleventh diagram pair. See
   [the v1.4 teaching brief](docs/V1_4_CAUSAL_ATLAS_FOUNDATION_BRIEF.md).
-- **v1.5 — Implementation complete; awaiting review and release — Feedback learning and a guided causal path:** adds a
+- **v1.5 — Complete and published — Feedback learning and a guided causal path:** adds a
   bilingual reinforcement-learning chapter that separates supervised targets,
   rewards, preference feedback, and runtime observations, then connects the
   existing history through one curated, shareable feedback-learning story. See
   [the v1.5 teaching brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
+- **v1.6 — Brief under review; implementation not started — Guided causal
+  learning:** proposes a discoverable story entry on the home page,
+  chapter-to-history context links, and two additional reviewed stories built
+  only from the existing 27 events. The current production surface remains at
+  one story until a separate implementation is approved, merged, and released.
+  See [the v1.6 proposal](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md).
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching
