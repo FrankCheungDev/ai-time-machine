@@ -191,7 +191,9 @@ test("Overview MDX chapter renders the chapter-zero narrative", async ({
 
   await page.goto("/");
   await expect(
-    page.locator("#mvp").getByRole("link", { name: /Chapter 00 总览/ }),
+    page
+      .locator("#learning-path")
+      .getByRole("link", { name: /Chapter 00 总览/ }),
   ).toBeVisible();
 });
 

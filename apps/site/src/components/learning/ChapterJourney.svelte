@@ -2,6 +2,7 @@
   import { onMount, tick } from "svelte";
   import { emitLearningSignal } from "../../analytics/learningSignals";
   import {
+    getLocalizedChapterContextLinks,
     learningUiCopy,
     getLocalizedLearningChapter,
   } from "../../i18n/learning";
@@ -26,6 +27,10 @@
 
   const copy = learningUiCopy[locale];
   const context = getLearningPathContext(chapterId);
+  const chapterContextLinks = getLocalizedChapterContextLinks(
+    chapterId,
+    locale,
+  );
   const previousChapter = context.previous
     ? getLocalizedLearningChapter(context.previous.id, locale)
     : undefined;
@@ -230,6 +235,14 @@
       </button>
     {/if}
   </div>
+
+  {#if chapterContextLinks.length > 0}
+    <nav class="review-links" aria-label={copy.chapterContextNavigation}>
+      {#each chapterContextLinks as link}
+        <a href={link.href}>{link.label}</a>
+      {/each}
+    </nav>
+  {/if}
 
   {#if !nextChapter}
     <nav class="review-links" aria-label={copy.browseAllChapters}>

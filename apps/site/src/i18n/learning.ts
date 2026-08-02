@@ -59,6 +59,9 @@ export interface LearningUiCopy {
   reviewLineage: string;
   reviewDiagrams: string;
   browseAllChapters: string;
+  chapterContextNavigation: string;
+  viewChapterTimeline: string;
+  viewChapterLineage: string;
 }
 
 export const learningUiCopy = {
@@ -86,6 +89,9 @@ export const learningUiCopy = {
     reviewLineage: "回顾谱系图",
     reviewDiagrams: "回顾图源",
     browseAllChapters: "浏览全部章节",
+    chapterContextNavigation: "本章的历史与技术谱系",
+    viewChapterTimeline: "在时间线中查看本章",
+    viewChapterLineage: "在技术谱系中查看本章",
   },
   en: {
     positionLabel: (position, total) =>
@@ -113,8 +119,45 @@ export const learningUiCopy = {
     reviewLineage: "Review the lineage",
     reviewDiagrams: "Review diagram sources",
     browseAllChapters: "Browse all chapters",
+    chapterContextNavigation: "Chapter history and technology lineage",
+    viewChapterTimeline: "View this chapter in the timeline",
+    viewChapterLineage: "View this chapter in the technology lineage",
   },
 } satisfies Record<Locale, LearningUiCopy>;
+
+export interface LocalizedChapterContextLink {
+  kind: "timeline" | "lineage";
+  href: string;
+  label: string;
+}
+
+export function getLocalizedChapterContextLinks(
+  id: ChapterId,
+  locale: Locale,
+): LocalizedChapterContextLink[] {
+  const chapter = getChapterDefinition(id);
+  const copy = learningUiCopy[locale];
+  const links: LocalizedChapterContextLink[] = [];
+
+  if ("timelineId" in chapter && chapter.timelineId) {
+    links.push({
+      kind: "timeline",
+      href: `${toLocalizedPath("/timeline/", locale)}?chapter=${encodeURIComponent(chapter.id)}#timeline-milestones`,
+      label: copy.viewChapterTimeline,
+    });
+  }
+
+  if ("lineageNodeId" in chapter && chapter.lineageNodeId) {
+    const lineageNodeId = encodeURIComponent(chapter.lineageNodeId);
+    links.push({
+      kind: "lineage",
+      href: `${toLocalizedPath("/lineage/", locale)}?lineage=${lineageNodeId}#node-${lineageNodeId}`,
+      label: copy.viewChapterLineage,
+    });
+  }
+
+  return links;
+}
 
 export interface LocalizedLearningChapter {
   id: ChapterId;
