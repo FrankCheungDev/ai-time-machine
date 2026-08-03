@@ -5,10 +5,10 @@
 线上站点：[atlas.z-ai.cc](https://atlas.z-ai.cc)。中文为默认语言，`/en/`
 下提供完整英文学习路径。
 
-## 当前实现候选
+## 当前版本
 
-v1.5 已在本分支完成研发，正在等待 PR、预览环境与生产发布验证；正式站点在评审合并前
-仍保持 v1.4。
+v1.5 已由 PR #31 合并为 `fc41d8b` 并发布；main CI、Cloudflare Pages
+生产部署以及生产隐私与交互 smoke 均已通过。
 
 - 基于 Astro、MDX 与 Svelte islands 的纯静态站点。
 - 从总览到 Safety / Eval 的 13 个章节，其中反馈学习位于 CNN 与 Attention 之间。
@@ -60,11 +60,13 @@ pnpm format:check
 Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md)。
 发布收口、章节扩展架构、Safety / Eval、图源资产库、事件级历史、因果图谱导航、
-基础模型生命周期章节、章节自测与 v1.5 反馈学习切片已经实现。v1.5 正在等待评审与
-发布验证，尚未记为“完成并发布”。P2-05 真实使用闭环当前暂停：provider 决策重新开放，没有获批或排期
-中的数据来源，自动化流量不会被当作学习者数据。页面内事件契约与聚合分析器
-继续保留，但不会因此启用网络采集。教学合同与发布门禁见
-[`v1.5 反馈学习与引导式因果路径`](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)。
+基础模型生命周期章节、章节自测与 v1.5 反馈学习切片已经实现并发布。v1.6 引导式
+因果学习方案正在评审，尚未开始实现；生产站当前仍只有一条策展故事。P2-05 真实
+使用闭环继续暂停：provider 决策重新开放，没有获批或排期中的数据
+来源，自动化流量不会被当作学习者数据。页面内事件契约与聚合分析器继续保留，但不会
+因此启用网络采集。发布记录与后续方案见
+[`v1.5 反馈学习与引导式因果路径`](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)以及
+[`v1.6 引导式因果学习方案`](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)。
 
 ## 部署
 

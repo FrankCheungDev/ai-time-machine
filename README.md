@@ -7,11 +7,11 @@ The project is an explorable explanation, not a real AI training or inference pl
 Visit the public site at [atlas.z-ai.cc](https://atlas.z-ai.cc). Chinese is the
 default language, with a complete English learning path under `/en/`.
 
-## Current Implementation Candidate
+## Current Release
 
-The v1.5 implementation is complete on this branch and awaits pull-request,
-preview, and production verification. The public site remains on v1.4 until the
-implementation is reviewed and merged.
+v1.5 is published from merge commit `fc41d8b` (PR #31). The main CI,
+Cloudflare Pages production deployment, and production privacy and interaction
+smoke have passed.
 
 - Astro static site with MDX and Svelte islands.
 - Thirteen chapters from overview through Safety / Evaluation, including a feedback-learning bridge between CNN and Attention.
@@ -61,14 +61,14 @@ Post-MVP work is sequenced in
 Release hardening, extension architecture, Safety / Evaluation, diagram assets,
 source-backed historical depth, causal atlas navigation, a foundation-model
 lifecycle chapter, chapter self-checks, and the v1.5 feedback-learning slice are
-implemented. v1.5 is awaiting review and release verification; it is not yet
-recorded as published. The
-P2-05 real-usage loop is paused: the provider decision is open again, no data
-source is approved or scheduled, and automated traffic is not treated as learner
-data. The in-page event contract and aggregate analyzer remain available without
-enabling network collection. See the
-[v1.5 feedback learning and guided causal path brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)
-for the teaching contract and release gates.
+implemented and published. The v1.6 guided-causal-learning proposal is under
+review; implementation has not started, and the production site still exposes
+one curated story. The P2-05 real-usage loop is paused: the provider decision is
+open again, no data source is approved or scheduled, and automated traffic is
+not treated as learner data. The in-page event contract and aggregate analyzer
+remain available without enabling network collection. See the
+[v1.5 release brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md) and the
+[v1.6 proposal](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md).
 
 ## Deployment
 
