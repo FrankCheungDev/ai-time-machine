@@ -125,13 +125,64 @@ if (timelineEventCounts.zh !== 27 || timelineEventCounts.en !== 27) {
     `timeline event counts are zh=${timelineEventCounts.zh}, en=${timelineEventCounts.en}`,
   );
 }
+
+function extractStoryIds(body) {
+  return [
+    ...new Set(
+      Array.from(
+        body.matchAll(/data-causal-story-detail="([^"]+)"/g),
+        (match) => match[1],
+      ),
+    ),
+  ];
+}
+
+const timelineStoryIds = {
+  zh: extractStoryIds(chineseTimeline),
+  en: extractStoryIds(englishTimeline),
+};
+const expectedStoryFocusCounts = {
+  "feedback-learning": 6,
+  "rules-to-representations": 7,
+  "scaled-models-to-reliable-systems": 7,
+};
+const expectedStoryIds = Object.keys(expectedStoryFocusCounts);
+const homeStoryIds = {
+  zh: Array.from(
+    chineseHome.matchAll(/data-story-id="([^"]+)"/g),
+    (match) => match[1],
+  ),
+  en: Array.from(
+    englishHome.matchAll(/data-story-id="([^"]+)"/g),
+    (match) => match[1],
+  ),
+};
+if (timelineStoryIds.zh.length !== 3 || timelineStoryIds.en.length !== 3) {
+  failures.push(
+    `guided story counts are zh=${timelineStoryIds.zh.length}, en=${timelineStoryIds.en.length}`,
+  );
+}
+if (JSON.stringify(timelineStoryIds.zh) !== JSON.stringify(expectedStoryIds)) {
+  failures.push(
+    `guided story registry is ${timelineStoryIds.zh.join(",")}; expected ${expectedStoryIds.join(",")}`,
+  );
+}
+if (
+  JSON.stringify(timelineStoryIds.zh) !== JSON.stringify(timelineStoryIds.en)
+) {
+  failures.push(
+    `guided story topology differs by locale: zh=${timelineStoryIds.zh.join(",")}, en=${timelineStoryIds.en.join(",")}`,
+  );
+}
+if (
+  JSON.stringify(homeStoryIds.zh) !== JSON.stringify(timelineStoryIds.zh) ||
+  JSON.stringify(homeStoryIds.en) !== JSON.stringify(timelineStoryIds.en)
+) {
+  failures.push(
+    `home guided stories do not match the timeline manifest: homeZh=${homeStoryIds.zh.join(",")}, homeEn=${homeStoryIds.en.join(",")}`,
+  );
+}
 for (const body of [chineseTimeline, englishTimeline]) {
-  if (!body.includes('data-causal-story-detail="feedback-learning"')) {
-    failures.push(
-      "one or both timelines are missing the feedback-learning story",
-    );
-    break;
-  }
   if (
     !body.includes('data-timeline-event="q-learning"') ||
     !body.includes('data-timeline-event="dqn-atari"')
@@ -284,43 +335,54 @@ try {
     );
   }
 
-  await page.goto(
-    new URL(
-      "/timeline/?story=feedback-learning#story-feedback-learning",
-      baseUrl,
-    ).href,
-    { waitUntil: "networkidle" },
-  );
-  const storySelect = page.locator("[data-timeline-story-filter]");
-  await storySelect.waitFor();
-  const storyState = {
-    id: await storySelect.inputValue(),
-    visibleEvents: await page.locator("[data-timeline-event]:visible").count(),
-    focusedEvents: await page
-      .locator(".milestone-event.is-story-focus")
-      .count(),
-    mutedEvents: await page.locator(".milestone-event.is-story-muted").count(),
-    languageHref: await page
-      .locator("[data-language-switch]")
-      .getAttribute("href"),
-  };
-  if (storyState.id !== "feedback-learning") {
-    failures.push("the production timeline did not restore the guided story");
-  }
-  if (
-    storyState.visibleEvents !== 27 ||
-    storyState.focusedEvents !== 6 ||
-    storyState.mutedEvents !== 21
-  ) {
-    failures.push(
-      `the guided story rendered visible=${storyState.visibleEvents}, focused=${storyState.focusedEvents}, muted=${storyState.mutedEvents}`,
+  const storyStates = [];
+  for (const storyId of timelineStoryIds.zh) {
+    await page.goto(
+      new URL(`/timeline/?story=${storyId}#story-${storyId}`, baseUrl).href,
+      { waitUntil: "networkidle" },
     );
-  }
-  if (
-    storyState.languageHref !==
-    "/en/timeline/?story=feedback-learning#story-feedback-learning"
-  ) {
-    failures.push("the guided story language link lost its URL state");
+    const storySelect = page.locator("[data-timeline-story-filter]");
+    await storySelect.waitFor();
+    const storyState = {
+      id: await storySelect.inputValue(),
+      visibleEvents: await page
+        .locator("[data-timeline-event]:visible")
+        .count(),
+      focusedEvents: await page
+        .locator(".milestone-event.is-story-focus")
+        .count(),
+      mutedEvents: await page
+        .locator(".milestone-event.is-story-muted")
+        .count(),
+      languageHref: await page
+        .locator("[data-language-switch]")
+        .getAttribute("href"),
+    };
+    storyStates.push(storyState);
+    const expectedFocusedEvents = expectedStoryFocusCounts[storyId];
+
+    if (!expectedFocusedEvents) {
+      failures.push(`unexpected guided story ${storyId} reached the browser`);
+    } else if (storyState.id !== storyId) {
+      failures.push(
+        `the production timeline did not restore guided story ${storyId}`,
+      );
+    }
+    if (
+      storyState.visibleEvents !== 27 ||
+      storyState.focusedEvents !== expectedFocusedEvents ||
+      storyState.mutedEvents !== 27 - storyState.focusedEvents
+    ) {
+      failures.push(
+        `${storyId} rendered visible=${storyState.visibleEvents}, focused=${storyState.focusedEvents}, muted=${storyState.mutedEvents}`,
+      );
+    }
+    if (
+      storyState.languageHref !==
+      `/en/timeline/?story=${storyId}#story-${storyId}`
+    ) {
+      failures.push(`${storyId} language link lost its URL state`);
+    }
   }
 
   if (forbiddenRequests.length > 0) {
@@ -336,6 +398,7 @@ try {
         checkedRequests: checkedResponses.length,
         chapterRoutes: chapterRoutes.length,
         timelineEventCounts,
+        guidedStoryIds: timelineStoryIds,
         responsePolicy: {
           documentsChecked: checkedResponses.length - 1,
           missingNoTransform: headerFailures.noTransform.length,
@@ -343,12 +406,12 @@ try {
           invalidScriptPolicy: headerFailures.scriptPolicy.length,
         },
         browserInteraction:
-          "concept check, continuation, feedback update/runtime boundary, guided story",
+          "concept check, continuation, feedback update/runtime boundary, all guided stories",
         feedbackLearning: {
           policyState: feedbackPolicyState,
           runtimeBoundary: feedbackBoundaryText.trim(),
         },
-        storyState,
+        storyStates,
         observedSignalNames: signalNames,
         forbiddenRequests: [...new Set(forbiddenRequests)],
         failures,

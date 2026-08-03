@@ -582,7 +582,7 @@ const localizedTimelineEventCopy = {
     "alexnet-gpu-scale": {
       title: "AlexNet 把深层 CNN、ImageNet 与 GPU 规模结合",
       summary:
-        "2012 年系统在 130 万张训练图像上使用深层卷积网络和高效 GPU 实现，显著降低 ImageNet 错误率。",
+        "2012 年系统在约 120 万张训练图像上使用深层卷积网络和高效 GPU 实现，显著降低 ImageNet 错误率。",
       impact:
         "算法、数据和算力同时到位后，深度学习从长期研究路线转为视觉领域的主流工程方法。",
     },
@@ -778,7 +778,7 @@ const localizedTimelineEventCopy = {
     "alexnet-gpu-scale": {
       title: "AlexNet Combined Deep CNNs, ImageNet, and GPU Scale",
       summary:
-        "The 2012 system trained a deep convolutional network on 1.3 million images with an efficient GPU implementation and sharply reduced ImageNet error.",
+        "The 2012 system trained a deep convolutional network on about 1.2 million images with an efficient GPU implementation and sharply reduced ImageNet error.",
       impact:
         "When algorithm, data, and compute arrived together, deep learning shifted from a long-running research route to mainstream vision engineering.",
     },

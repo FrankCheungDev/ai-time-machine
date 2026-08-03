@@ -238,6 +238,76 @@ main {
   margin: 28px 0 48px;
 }
 
+.guided-stories-lede {
+  max-width: 720px;
+  color: var(--color-muted);
+}
+
+.guided-story-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.guided-story-card {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  min-width: 0;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.guided-story-card h3,
+.guided-story-card p {
+  margin: 0;
+}
+
+.guided-story-card h3 {
+  font-size: 1.08rem;
+}
+
+.guided-story-step-count {
+  color: var(--color-green);
+  font-weight: 760;
+}
+
+.guided-story-question {
+  color: var(--color-muted);
+}
+
+.guided-story-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-self: end;
+  margin-top: 8px;
+}
+
+.guided-story-actions .button {
+  flex: 1 1 150px;
+  min-width: 44px;
+  text-align: center;
+}
+
+.guided-story-actions .button:focus-visible {
+  outline: 3px solid rgba(52, 105, 166, 0.42);
+  outline-offset: 3px;
+}
+
+.legacy-learning-path-anchor,
+#learning-path {
+  scroll-margin-top: 120px;
+}
+
+.legacy-learning-path-anchor {
+  display: block;
+  height: 0;
+}
+
 .pill-grid,
 .demo-grid {
   display: grid;

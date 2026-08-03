@@ -376,6 +376,22 @@ for (const story of causalStories) {
         }
       </div>
     </section>
+
+    <noscript>
+      <style is:inline>
+        [data-causal-timeline][hidden],
+        [data-timeline-story-region][hidden],
+        [data-timeline-story-region] [data-causal-story-detail][hidden] {
+          display: grid !important;
+        }
+
+        [data-causal-timeline] .causal-filter-grid,
+        [data-causal-timeline] [data-timeline-filter-status],
+        [data-causal-timeline] [data-timeline-filter-empty] {
+          display: none !important;
+        }
+      </style>
+    </noscript>
   </main>
 </BaseLayout>
 

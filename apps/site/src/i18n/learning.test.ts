@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { learningPath } from "../learning/learningPath";
-import { getLocalizedLearningChapter, learningUiCopy } from "./learning";
+import {
+  getLocalizedChapterContextLinks,
+  getLocalizedLearningChapter,
+  learningUiCopy,
+} from "./learning";
 
 describe("learning i18n", () => {
   it("localizes every chapter without changing stable IDs", () => {
@@ -38,5 +42,33 @@ describe("learning i18n", () => {
     expect(learningUiCopy.en.continueLearning("Search Trees")).toBe(
       "Continue: Search Trees",
     );
+  });
+
+  it("localizes chapter context links from the chapter registry", () => {
+    expect(getLocalizedChapterContextLinks("overview", "zh-CN")).toEqual([]);
+    expect(getLocalizedChapterContextLinks("rag", "zh-CN")).toEqual([
+      {
+        kind: "timeline",
+        href: "/timeline/?chapter=rag#timeline-milestones",
+        label: "在时间线中查看本章",
+      },
+      {
+        kind: "lineage",
+        href: "/lineage/?lineage=rag#node-rag",
+        label: "在技术谱系中查看本章",
+      },
+    ]);
+    expect(getLocalizedChapterContextLinks("llm-system", "en")).toEqual([
+      {
+        kind: "timeline",
+        href: "/en/timeline/?chapter=llm-system#timeline-milestones",
+        label: "View this chapter in the timeline",
+      },
+      {
+        kind: "lineage",
+        href: "/en/lineage/?lineage=llm-system#node-llm-system",
+        label: "View this chapter in the technology lineage",
+      },
+    ]);
   });
 });

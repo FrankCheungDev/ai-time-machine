@@ -122,7 +122,7 @@
             {copy.continueLearning(firstIncompleteChapter.title)}
           </a>
         {/if}
-        <a class="button" href="#mvp">{copy.browseAllChapters}</a>
+        <a class="button" href="#learning-path">{copy.browseAllChapters}</a>
       </div>
     {/if}
   </div>

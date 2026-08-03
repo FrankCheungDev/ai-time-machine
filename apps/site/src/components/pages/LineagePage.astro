@@ -535,6 +535,19 @@ function getLineageEdgeGeometry(
       <h2 id="lineage-notes">{copy.notesHeading}</h2>
       <p>{copy.notesBody}</p>
     </section>
+
+    <noscript>
+      <style is:inline>
+        [data-lineage-view-controls] {
+          display: none !important;
+        }
+
+        [data-lineage-story-region][hidden],
+        [data-lineage-story-region] [data-causal-story-detail][hidden] {
+          display: grid !important;
+        }
+      </style>
+    </noscript>
   </main>
 </BaseLayout>
 

@@ -1,4 +1,5 @@
 ---
+import { getCausalStories } from "@ai-history/data";
 import BaseLayout from "../layout/BaseLayout.astro";
 import HomeLearningProgress from "../learning/HomeLearningProgress.svelte";
 import {
@@ -18,7 +19,13 @@ const copy = homePageCopy[locale];
 const mapNodes = homeMapNodes[locale];
 const learningPathCards = homeLearningPathCards[locale];
 const overviewCards = homeOverviewCards[locale];
+const causalStories = getCausalStories(locale);
 const href = (path: string) => toLocalizedPath(path, locale);
+const storyHref = (path: string) => {
+  const url = new URL(path, Astro.url);
+
+  return `${toLocalizedPath(url.pathname, locale)}${url.search}${url.hash}`;
+};
 ---
 
 <BaseLayout title={copy.title} locale={locale}>
@@ -79,9 +86,63 @@ const href = (path: string) => toLocalizedPath(path, locale);
       </div>
     </section>
 
-    <section id="mvp" class="section-band" aria-labelledby="mvp-title">
+    <section
+      class="section-band guided-stories"
+      aria-labelledby="guided-stories-title"
+      data-guided-stories
+    >
+      <p class="eyebrow">{copy.guidedStoriesEyebrow}</p>
+      <h2 id="guided-stories-title">
+        {copy.guidedStoriesTitle(causalStories.length)}
+      </h2>
+      <p class="guided-stories-lede">{copy.guidedStoriesDescription}</p>
+      <div class="guided-story-grid">
+        {
+          causalStories.map((story) => (
+            <article
+              class="guided-story-card"
+              aria-labelledby={`guided-story-${story.id}`}
+              data-guided-story-card
+              data-story-id={story.id}
+            >
+              <p class="guided-story-step-count">
+                {copy.guidedStoryStepCount(story.steps.length)}
+              </p>
+              <h3 id={`guided-story-${story.id}`}>{story.title}</h3>
+              <p class="guided-story-question">{story.coreQuestion}</p>
+              <div class="guided-story-actions">
+                <a
+                  class="button primary"
+                  href={storyHref(story.returnLinks.timeline.href)}
+                  aria-label={copy.guidedStoryTimelineActionLabel(story.title)}
+                >
+                  {copy.guidedStoryTimelineAction}
+                </a>
+                <a
+                  class="button"
+                  href={storyHref(story.returnLinks.lineage.href)}
+                  aria-label={copy.guidedStoryLineageActionLabel(story.title)}
+                >
+                  {copy.guidedStoryLineageAction}
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <span id="mvp" class="legacy-learning-path-anchor" aria-hidden="true"
+    ></span>
+    <section
+      id="learning-path"
+      class="section-band"
+      aria-labelledby="learning-path-title"
+    >
       <p class="eyebrow">{copy.pathEyebrow}</p>
-      <h2 id="mvp-title">{copy.pathTitle(learningPathCards.length)}</h2>
+      <h2 id="learning-path-title">
+        {copy.pathTitle(learningPathCards.length)}
+      </h2>
       <div class="demo-grid">
         {
           learningPathCards.map((card) => (

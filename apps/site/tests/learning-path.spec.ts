@@ -1,5 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-import type { ChapterId } from "@ai-history/data/chapters";
+import {
+  getChapterDefinition,
+  type ChapterId,
+} from "@ai-history/data/chapters";
 import { chapterCases } from "./fixtures/chapters";
 
 const learningProgressStorageKey = "ai-history-learning-progress";
@@ -56,7 +59,7 @@ test("home starts the learning path when progress is empty", async ({
   ).toHaveAttribute("href", "/chapters/overview/");
   await expect(
     progress.getByRole("link", { name: "浏览全部章节" }),
-  ).toHaveAttribute("href", "#mvp");
+  ).toHaveAttribute("href", "#learning-path");
 });
 
 test("home continues from the first gap in partial out-of-order progress", async ({
@@ -313,7 +316,7 @@ test("home start and browse links remain available without JavaScript", async ({
   ).toHaveAttribute("href", "/chapters/overview/");
   await expect(
     progress.getByRole("link", { name: "浏览全部章节" }),
-  ).toHaveAttribute("href", "#mvp");
+  ).toHaveAttribute("href", "#learning-path");
   await context.close();
 });
 
@@ -335,6 +338,54 @@ for (const [index, chapter] of chapterCases.entries()) {
     await expect(progressbar).toHaveAttribute("max", String(totalChapters));
 
     const journey = page.getByTestId("chapter-journey");
+    const chapterDefinition = getChapterDefinition(chapter.id);
+    const contextNavigation = journey.getByRole("navigation", {
+      name: "本章的历史与技术谱系",
+    });
+    const hasTimeline =
+      "timelineId" in chapterDefinition &&
+      Boolean(chapterDefinition.timelineId);
+    const hasLineage =
+      "lineageNodeId" in chapterDefinition &&
+      Boolean(chapterDefinition.lineageNodeId);
+
+    if (hasTimeline || hasLineage) {
+      await expect(contextNavigation).toBeVisible();
+
+      const contextLinks = [];
+      if (hasTimeline) {
+        const timelineLink = contextNavigation.getByRole("link", {
+          name: "在时间线中查看本章",
+        });
+        await expect(timelineLink).toHaveAttribute(
+          "href",
+          `/timeline/?chapter=${chapter.id}#timeline-milestones`,
+        );
+        contextLinks.push(timelineLink);
+      }
+
+      if (hasLineage && "lineageNodeId" in chapterDefinition) {
+        const lineageLink = contextNavigation.getByRole("link", {
+          name: "在技术谱系中查看本章",
+        });
+        await expect(lineageLink).toHaveAttribute(
+          "href",
+          `/lineage/?lineage=${chapterDefinition.lineageNodeId}#node-${chapterDefinition.lineageNodeId}`,
+        );
+        contextLinks.push(lineageLink);
+      }
+
+      for (const link of contextLinks) {
+        expect(
+          await link.evaluate(
+            (element) => element.getBoundingClientRect().height,
+          ),
+        ).toBeGreaterThanOrEqual(44);
+      }
+    } else {
+      await expect(contextNavigation).toHaveCount(0);
+    }
+
     const previousChapter = chapterCases[index - 1];
     if (previousChapter) {
       await expect(
@@ -372,19 +423,59 @@ for (const [index, chapter] of chapterCases.entries()) {
   });
 }
 
-test("keeps chapter navigation usable without JavaScript", async ({
-  browser,
-}) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
-  const page = await context.newPage();
-  await page.goto("/chapters/rag/");
-  await expect(
-    page.getByTestId("chapter-journey").getByRole("link", {
-      name: /Agent/,
-    }),
-  ).toHaveAttribute("href", "/chapters/agent/");
-  await context.close();
-});
+for (const contextCase of [
+  {
+    name: "standard Chinese chapter",
+    route: "/chapters/rag/",
+    nextName: /Agent/,
+    nextHref: "/chapters/agent/",
+    navigationLabel: "本章的历史与技术谱系",
+    timelineLabel: "在时间线中查看本章",
+    timelineHref: "/timeline/?chapter=rag#timeline-milestones",
+    lineageLabel: "在技术谱系中查看本章",
+    lineageHref: "/lineage/?lineage=rag#node-rag",
+  },
+  {
+    name: "specialized English LLM system chapter",
+    route: "/en/chapters/llm-system/",
+    nextName: /RAG Pipeline/,
+    nextHref: "/en/chapters/rag/",
+    navigationLabel: "Chapter history and technology lineage",
+    timelineLabel: "View this chapter in the timeline",
+    timelineHref: "/en/timeline/?chapter=llm-system#timeline-milestones",
+    lineageLabel: "View this chapter in the technology lineage",
+    lineageHref: "/en/lineage/?lineage=llm-system#node-llm-system",
+  },
+] as const) {
+  test(`${contextCase.name} keeps chapter context links usable without JavaScript`, async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(contextCase.route);
+
+    const journey = page.getByTestId("chapter-journey");
+    await expect(
+      journey.getByRole("link", { name: contextCase.nextName }),
+    ).toHaveAttribute("href", contextCase.nextHref);
+
+    const contextNavigation = journey.getByRole("navigation", {
+      name: contextCase.navigationLabel,
+    });
+    await expect(
+      contextNavigation.getByRole("link", {
+        name: contextCase.timelineLabel,
+      }),
+    ).toHaveAttribute("href", contextCase.timelineHref);
+    await expect(
+      contextNavigation.getByRole("link", {
+        name: contextCase.lineageLabel,
+      }),
+    ).toHaveAttribute("href", contextCase.lineageHref);
+
+    await context.close();
+  });
+}
 
 test("completed chapters continue without rewriting progress", async ({
   page,

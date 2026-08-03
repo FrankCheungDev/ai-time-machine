@@ -8,6 +8,14 @@ interface HomePageCopy {
   heroDescription: string;
   mapAriaLabel: string;
   mapTitle: string;
+  guidedStoriesEyebrow: string;
+  guidedStoriesTitle: (count: number) => string;
+  guidedStoriesDescription: string;
+  guidedStoryStepCount: (count: number) => string;
+  guidedStoryTimelineAction: string;
+  guidedStoryTimelineActionLabel: (title: string) => string;
+  guidedStoryLineageAction: string;
+  guidedStoryLineageActionLabel: (title: string) => string;
   pathEyebrow: string;
   pathTitle: (count: number) => string;
   overviewEyebrow: string;
@@ -23,6 +31,15 @@ export const homePageCopy = {
       "用可点击、可分步播放、可对比的教学型案例，解释 AI 技术从规则、统计学习、深度学习到大模型、RAG 与 Agent 的演化脉络。",
     mapAriaLabel: "AI 技术演化主线图",
     mapTitle: "AI 技术演化主线",
+    guidedStoriesEyebrow: "引导式因果故事",
+    guidedStoriesTitle: (count) => `从 ${count} 个问题进入跨时代学习路径`,
+    guidedStoriesDescription:
+      "从一个核心问题出发，沿人工审核的顺序查看技术继承了什么、解决了什么、仍缺什么。",
+    guidedStoryStepCount: (count) => `共 ${count} 步`,
+    guidedStoryTimelineAction: "进入时间线",
+    guidedStoryTimelineActionLabel: (title) => `进入“${title}”时间线`,
+    guidedStoryLineageAction: "查看聚焦谱系",
+    guidedStoryLineageActionLabel: (title) => `查看“${title}”聚焦谱系`,
     pathEyebrow: "推荐学习顺序",
     pathTitle: (count) => `沿着 ${count} 个章节理解 AI 如何一步步演化`,
     overviewEyebrow: "延伸探索",
@@ -36,6 +53,18 @@ export const homePageCopy = {
       "Explore the evolution of AI from rules and statistical learning to deep learning, large models, RAG, and agents through clickable, step-by-step teaching demos.",
     mapAriaLabel: "AI technical evolution map",
     mapTitle: "AI technical evolution",
+    guidedStoriesEyebrow: "Guided causal stories",
+    guidedStoriesTitle: (count) =>
+      `Start with ${count} question${count === 1 ? "" : "s"} across AI history`,
+    guidedStoriesDescription:
+      "Begin with a core question and follow a reviewed sequence to see what each step inherited, solved, and left open.",
+    guidedStoryStepCount: (count) =>
+      `${count} guided step${count === 1 ? "" : "s"}`,
+    guidedStoryTimelineAction: "Open timeline",
+    guidedStoryTimelineActionLabel: (title) => `Open the ${title} timeline`,
+    guidedStoryLineageAction: "View focused lineage",
+    guidedStoryLineageActionLabel: (title) =>
+      `View the ${title} focused lineage`,
     pathEyebrow: "Recommended learning path",
     pathTitle: (count) =>
       `Follow ${count} chapters to see how AI evolved step by step`,

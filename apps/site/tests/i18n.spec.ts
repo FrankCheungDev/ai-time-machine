@@ -273,7 +273,7 @@ const englishRouteLinkCases = [
   {
     label: "home learning links",
     route: "/en/",
-    selector: "#mvp a.demo-card",
+    selector: "#learning-path a.demo-card",
     expectedHrefs: englishChapterRoutes,
   },
   {
@@ -379,7 +379,7 @@ test("Chinese routes expose zh-CN document language and an English switch", asyn
   await expect(englishSwitch).toHaveAttribute("href", "/en/chapters/rag/");
 
   const chapterNavigation = page.getByRole("link", { name: "章节主线" });
-  await expect(chapterNavigation).toHaveAttribute("href", "/#mvp");
+  await expect(chapterNavigation).toHaveAttribute("href", "/#learning-path");
 });
 
 test("English browser preference redirects a root visit to /en/", async ({
