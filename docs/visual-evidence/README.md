@@ -68,3 +68,16 @@ Recreate them against the same local preview:
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:v1.5-evidence
 ```
+
+## Guided Causal Learning v1.6
+
+- `v1-6-guided-stories-desktop.png`: the Chinese home-page Guided Stories registry with all three curated learning paths.
+- `v1-6-guided-story-english-mobile.png`: the English 390px Timeline story deep link for `scaled-models-to-reliable-systems`, with the selected story visible below the sticky header; the capture script also waits for inactive story details to remain hidden.
+- `v1-6-chapter-context-english-mobile.png`: the English LLM system chapter's derived Timeline and Lineage context links at 390px.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:v1.6-evidence
+```

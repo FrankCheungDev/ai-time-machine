@@ -6,9 +6,10 @@ extend the first version described in
 
 ## Current Surface
 
-v1.5 is complete and published from merge commit `fc41d8b` (PR #31). The main
-CI run, Cloudflare Pages production deployment, and the 2026-08-02 production
-privacy and interaction smoke all passed.
+v1.6 is deployed from `main` at `adb3927` (PRs #33 and #35). The main CI,
+Cloudflare Pages check, and the 2026-08-08 production privacy and interaction
+smoke all passed. A documented real VoiceOver or NVDA Guided Story spot check
+is the only remaining release-closure gate.
 
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
@@ -16,7 +17,7 @@ privacy and interaction smoke all passed.
 - Twelve teaching demos with simplification notes, references, and Playwright smoke coverage.
 - Complete Chinese and English routes with resumable local learning progress,
   chapter completion, and previous/next navigation.
-- Timeline and lineage views with shareable causal filters/focus and one curated feedback-learning story, plus a manifest-driven diagram library with SVG and PNG assets for all twelve demos.
+- Timeline and lineage views with shareable causal filters/focus and three bilingual curated stories, plus a manifest-driven diagram library with SVG and PNG assets for all twelve demos.
 - Twenty-seven source-backed milestone events linked to the chapter and lineage models.
 - One bilingual, non-blocking concept check per chapter with clearable local records.
 - Public privacy documentation and a typed in-page signal allowlist with client
@@ -63,14 +64,14 @@ follows the staged process in
   rewards, preference feedback, and runtime observations, then connects the
   existing history through one curated, shareable feedback-learning story. See
   [the v1.5 teaching brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
-- **v1.6 — Implementation merged; release closure pending — Guided causal
-  learning:** `main` at `f6e4178` contains a discoverable story entry on the
-  home page, chapter-to-history context links, and two additional reviewed
-  stories built only from the existing 27 events. The latest documented
-  production verification remains v1.5 until the corresponding main CI,
-  Cloudflare Pages production deployment, three-story production smoke, and
-  release records are confirmed. See
-  [the v1.6 proposal](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md) and
+- **v1.6 — Deployed; manual accessibility closure pending — Guided causal
+  learning:** `main` at `adb3927` contains a discoverable home-page entry,
+  chapter-to-history context links, three reviewed stories built only from the
+  existing 27 events, and stability fixes for hidden story details and sticky
+  header deep links. Main CI run 31247555472, the Cloudflare Pages check, and
+  the three-story production smoke passed on 2026-08-08. Final release closure
+  waits only for a documented real VoiceOver or NVDA spot check. See
+  [the v1.6 implementation and release brief](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md) and
   [the post-v1.6 iteration analysis](docs/POST_V1_6_ITERATION_ANALYSIS.md).
 
 Each milestone must keep the static, scripted teaching boundary and pass the
