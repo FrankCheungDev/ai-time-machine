@@ -321,6 +321,9 @@ v1.5 已完成并发布，包含强化学习章节、固定双 episode 的六步
 双语 URL 状态、概念自测、第十二组图源及专用回归测试。PR #31、main CI、Cloudflare
 Pages production 与生产 smoke 均已通过。
 
-P2-05 仍保持暂停，客户端采集与 CSP 没有改变。后续策展故事的发现与扩展进入
-[`v1.6 Guided Causal Learning 方案`](V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)，该方案仍在
-评审中，尚未开始实现。
+P2-05 仍保持暂停，客户端采集与 CSP 没有改变。后续策展故事的发现与扩展已进入
+[`v1.6 Guided Causal Learning brief`](V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)：PR #33
+合并为 `f6e4178` 完成三故事、首页入口与章节上下文往返，PR #35 合并为 `adb3927`
+完成故事可见性与深链稳定性修复；对应 main CI、Cloudflare Pages production 与
+33 请求三故事 production smoke 已通过。真实 VoiceOver / NVDA spot check 仍待人工
+完成，因此 v1.6 的最终发布收口尚未标记为完成。

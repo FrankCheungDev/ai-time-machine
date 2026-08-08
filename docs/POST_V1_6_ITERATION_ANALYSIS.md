@@ -1,17 +1,19 @@
 # Post-v1.6 Iteration Analysis
 
-- 状态：方向分析，待拆分为独立 brief 后实施
+- 状态：历史方向分析；v1.6 稳定切片已完成并部署，自动发布门禁已完成，发布记录收口中（真实 VoiceOver 或 NVDA Guided Story spot check 待完成）
 - 日期：2026-08-08
-- 代码基线：`main` @ `f6e4178`（PR #33 已合并）
-- 证据范围：本地静态构建、当前代码与测试静态审阅、中文桌面关键路径检查
+- 原始分析基线：`main` @ `f6e4178`（PR #33 已合并）
+- 当前修复基线：`main` @ `adb3927`（PR #35 已合并）
+- 原始证据范围：本地静态构建、代码与测试静态审阅、中文桌面关键路径检查
+- 当前发布证据：main CI run 31247555472、Cloudflare Pages production check 和 2026-08-08 三故事生产隐私 / 交互 smoke 已通过；真实 VoiceOver 或 NVDA spot check 尚未执行
 - 决策性质：产品与工程方向建议，不等同于生产发布记录或真实学习效果证据
 
 ## 1. 决策摘要
 
-v1.6 的三条 Guided Stories、首页入口和章节上下文链接已经进入
-`main`，但发布收口尚未在仓库中完整记录。本轮建议按以下顺序推进：
+v1.6 的三条 Guided Stories、首页入口、章节上下文链接及稳定性修复已经进入
+`main@adb3927` 并部署。自动发布门禁已经完成，仓库发布记录正在收口，唯一仍待补齐的发布门是有记录的真实 VoiceOver 或 NVDA Guided Story spot check。本轮建议按以下顺序推进：
 
-1. **先做 v1.6 发布稳定化与收口。** 修复已确认的故事显示与深链落点问题，补齐行为测试，再记录 main CI、Cloudflare Pages production 和三故事 production smoke。
+1. **完成 v1.6 人工无障碍与发布记录收口。** PR #35 已修复故事显示与深链落点，main CI、Cloudflare Pages production 和三故事 production smoke 已通过；现在只需补做真实 VoiceOver 或 NVDA spot check，并统一最终发布记录。
 2. **下一项主要产品迭代优先验证本地复习闭环。** 把它作为当前优先假设，利用现有自测记录回答“我该复习什么”，并保持无账号、无后端、无联网采集。
 3. **把 Guided Story 阅读模式保留为 P2 独立候选。** 首个原型只验证 timeline 单故事的步骤状态与准确聚焦，不扩张为通用 story builder。
 4. **分别建立性能、自动无障碍与精简跨浏览器、production smoke 三类门禁。** 每类以独立小 PR 推进，先测量和设预算，再决定依赖与 hydration 调整。
@@ -22,7 +24,7 @@ v1.6 的三条 Guided Stories、首页入口和章节上下文链接已经进入
 
 ## 2. 当前基线与证据边界
 
-`main` @ `f6e4178` 已包含以下能力：
+原始分析基线 `main` @ `f6e4178` 已包含以下能力：
 
 - 13 个章节、12 个教学 Demo、27 个来源事件和 12 组图源；
 - 三条双语 Guided Stories，步骤拓扑分别为 6 / 7 / 7；
@@ -39,13 +41,22 @@ v1.6 的三条 Guided Stories、首页入口和章节上下文链接已经进入
 4. 从故事进入基础模型生命周期章节；
 5. 从章节进入谱系节点，以及直接进入同一条谱系故事。
 
-这些证据只证明本地构建与被检查路径的当前行为。它们没有验证生产部署、WebKit、真实屏幕阅读器或完整 WCAG 合规，也不是 P2-05 的真实学习者证据。
+上述内容保留为 `f6e4178` 上的历史分析证据。随后 PR #35 以提交
+`2b80bb1` 修复未选故事布局和 sticky header 深链落点，并合入
+`main@adb3927`。对应的 manifest-driven 浏览器回归覆盖三条故事、双语、390px
+移动视口、隐藏 detail 的 computed display、键盘焦点顺序及标题与 sticky header
+的安全间距。main CI run 31247555472、Cloudflare Pages production check 和
+2026-08-08 三故事生产隐私 / 交互 smoke 均已通过。
 
-## 3. P0：v1.6 发布稳定化与收口
+当前自动证据能够证明部署、受测路径、隐私边界与这些回归行为，但没有验证真实
+VoiceOver 或 NVDA 的播报与阅读顺序，也不支持完整 WCAG 合规或 P2-05 真实学习效果结论。WebKit 与更完整的辅助技术覆盖仍属于后续独立门禁。
 
-### 3.1 已确认：未选故事仍参与布局
+## 3. P0：v1.6 稳定切片完成，发布记录收口中
 
-时间线与谱系控制器会给未选中的 `[data-causal-story-detail]` 设置
+### 3.1 历史缺陷：未选故事参与布局（PR #35 已修复）
+
+原始 `f6e4178` 上，时间线与谱系控制器会给未选中的
+`[data-causal-story-detail]` 设置
 `hidden`。但全局样式同时给 `.causal-story-detail` 设置
 `display: grid`，没有为 detail 自身声明更明确的 hidden 规则。
 
@@ -64,6 +75,8 @@ v1.6 的三条 Guided Stories、首页入口和章节上下文链接已经进入
 - 未选 detail 的可见文本、链接和步骤仍实际参与渲染；
 - “聚焦故事”与控件状态不一致，并形成潜在的键盘顺序与辅助技术暴露风险；该风险仍需通过 tab order、accessibility tree 和真实屏幕阅读器验证。
 
+PR #35 增加 `.causal-story-detail[hidden] { display: none; }`，并把时间线与谱系回归泛化到全部三条 story。自动测试现在证明每个表面只显示当前 detail、其余 detail 的 computed display 为 `none`，未选故事标题不会出现在 role 查询中，且 Tab 会跳过未选故事操作。
+
 相关实现：
 
 - [故事详情样式](../apps/site/src/styles/tokens.css)
@@ -72,47 +85,49 @@ v1.6 的三条 Guided Stories、首页入口和章节上下文链接已经进入
 - [现有 story 状态浏览器测试](../apps/site/tests/feedback-learning-story.spec.ts)
 - [首页 Guided Stories 浏览器测试](../apps/site/tests/guided-stories.spec.ts)
 
-v1.6 发布稳定化验收至少包括：
+PR #35 与后续自动发布门禁已经完成以下稳定化验收：
 
 - 未选 detail 的 computed display 为 `none`，且没有可聚焦后代；
 - 时间线与谱系分别只显示当前选中的一个故事摘要；
-- Tab 从故事筛选器跳过全部未选故事操作，accessibility tree 也不暴露未选故事的名称与步骤；
-- 至少完成一次真实屏幕阅读器 spot check，并确认 `aria-live` 区域不会异常播报未选故事；
+- Tab 从故事筛选器跳过全部未选故事操作，role-based 查询也不暴露未选故事标题；
 - 中英文、刷新、语言切换和三条 story id 都通过同一组 manifest-driven 测试；
 - 无 JavaScript fallback 仍能阅读完整历史与故事内容。
 
-### 3.2 已确认：story 深链标题会被固定导航遮挡
+真实 VoiceOver 或 NVDA spot check 仍待完成，用于确认 accessibility tree、阅读顺序及 `aria-live` 区域不会异常播报未选故事。自动测试不能替代该人工证据。
 
-直接打开 `#story-<storyId>` 时，目标 article 会贴到视口顶部，标题和
+### 3.2 历史缺陷：story 深链标题被固定导航遮挡（PR #35 已修复）
+
+原始 `f6e4178` 上直接打开 `#story-<storyId>` 时，目标 article 会贴到视口顶部，标题和
 Guided Causal Story eyebrow 被 sticky header 遮住。首页学习路径锚点已有
 `scroll-margin-top`，story article 尚未共享同类规则。
 
-验收应证明：
+PR #35 新增共享的 `scrollStoryAnchorIntoView`，按当前 sticky header 高度加
+16px 安全间距计算滚动位置，并由时间线与谱系统一调用。自动回归已经证明：
 
 - 从首页、时间线或谱系进入任一 story 深链时，故事标题完整可见，且目标标题的 `top` 不小于 sticky header 的 `bottom` 加安全间距；
 - 中文、英文和移动端使用同一可解释的 header offset；
 - 直接打开或刷新深链时，目标内容与阅读起点不会藏在导航后方。
 
-### 3.3 发布记录尚未闭合
+### 3.3 自动发布证据已闭合，记录与人工读屏收口中
 
-PR #33 已把 v1.6 实现合入 `main`，但以下发布证据和文档仍记录“实现未开始”、只列出 v1.5，或尚未形成一致记录：
+PR #33 已把 v1.6 实现合入 `main`，PR #35 已把稳定性修复合入
+`main@adb3927` 并部署。以下自动发布证据已经完成：
 
-- [README](../README.md) 与 [中文 README](../README.zh-CN.md)；
-- [v1.6 brief](V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md) 的状态与实施状态；
-- [visual-evidence 索引](visual-evidence/README.md)，虽然三张 v1.6 图片已经存在；
-- main CI、Cloudflare Pages production、production smoke 与对应提交的发布记录。
+1. main CI run 31247555472 成功；
+2. Cloudflare Pages production 已部署且对应 check 通过；
+3. 2026-08-08 production privacy / interaction smoke 遍历三条 story，并保持 CSP、RUM 与网络边界不变；
+4. PR #35 的三故事 × 双语 × timeline / lineage 稳定性回归通过；
+5. v1.6 中文桌面首页、英文移动端时间线深链与章节上下文视觉证据已经留存。
 
-仓库根脚本中尚无可复现的 `capture:v1.6-evidence`。这适合作为证据工程化的后续小项，但原 v1.6 完成定义要求留存视觉证据，并未指定必须提供该脚本，因此脚本本身不构成发布阻断条件。
+当前 release-closure 切片正在统一 [README](../README.md)、[中文 README](../README.zh-CN.md)、[ROADMAP](../ROADMAP.md)、[v1.6 brief](V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)、本文与 [visual-evidence 索引](visual-evidence/README.md)，并补入可复现的 `capture:v1.6-evidence`。这些记录工作不改变已经部署和自动门禁通过的事实。
 
-在把 v1.6 标记为“已发布”前，必须记录：
+唯一仍未完成的发布门是：
 
-1. `main` 对应提交的 CI 成功；
-2. Cloudflare Pages production 部署成功；
-3. production privacy smoke 遍历三条 story，并保持 CSP、RUM 和网络边界不变；
-4. 修复 3.1 与 3.2 后的中英文桌面、移动视觉证据；
-5. README、ROADMAP、brief、visual-evidence 索引与部署记录使用同一提交和日期。
+1. 使用真实 VoiceOver 或 NVDA 检查 timeline 与 lineage Guided Story 区域；
+2. 记录阅读顺序、未选 story 不被播报、交互控件名称与 `aria-live` 状态；
+3. 把结果与 `adb3927`、2026-08-08 的自动发布证据一起写入最终发布记录。
 
-若生产验证尚未完成，公开状态只能写“实现已合并，发布收口待完成”。
+因此当前准确状态是“v1.6 稳定切片已完成并部署，自动发布门禁已完成，发布记录收口中”；在真实读屏证据写入前，不把人工无障碍收口标记为完成。
 
 ## 4. P1：本地复习闭环
 
@@ -224,7 +239,7 @@ axe 只作为自动规则门禁，不能替代键盘顺序、缩放与 reflow、
 
 进入条件：
 
-- v1.6 发布稳定化与收口完成；
+- v1.6 稳定切片与自动发布门禁已完成，发布记录及真实读屏收口完成；
 - 本地复习或 Story Reader 至少有一个形成稳定切片；
 - 性能与跨浏览器基线已经建立；
 - 新增声明通过事实与来源评审。
@@ -237,16 +252,16 @@ axe 只作为自动规则门禁，不能替代键盘顺序、缩放与 reflow、
 
 ## 8. 推荐拆分
 
-| 顺序 | 切片                                   | 用户价值         | 成本 | 进入下一步的必要证据                              |
-| ---- | -------------------------------------- | ---------------- | ---- | ------------------------------------------------- |
-| 1    | v1.6 story 可见性、深链落点与回归测试  | 高               | S    | 三条 story × 双语 × timeline/lineage 回归通过     |
-| 2    | v1.6 发布记录收口                      | 高               | S    | main CI、production、privacy smoke 与文档证据一致 |
-| 3    | 本地复习闭环 brief 与首个纵向切片      | 预期最高，待验证 | M    | 本地确定性状态、隐私边界与降级测试通过            |
-| 4    | 客户端包边界与性能预算小 PR            | 中高             | S–M  | 可重复的页面与 transitive-gzip 基线进入 CI        |
-| 5    | axe 与精简 WebKit smoke 小 PR          | 中高             | S–M  | 自动规则、键盘和跨浏览器门禁职责明确              |
-| 6    | production smoke registry 化小 PR      | 中               | S    | 路径与数量从 registry/manifest 派生               |
-| 7    | P2：timeline 单故事 Reader 原型        | 待验证           | M    | `story + step` 可恢复且不夸大因果关系             |
-| 8    | P2：lineage 与章节往返 Reader 后续切片 | 待验证           | L    | 数据合同、关系语义与上下文恢复分别获批            |
-| 9    | 单一新历史分支 brief                   | 待验证           | L    | 用户问题、来源范围和教学边界获批                  |
+| 顺序 | 切片                                                   | 用户价值         | 成本 | 进入下一步的必要证据                                        |
+| ---- | ------------------------------------------------------ | ---------------- | ---- | ----------------------------------------------------------- |
+| 1    | v1.6 story 可见性、深链落点与回归测试（PR #35 已完成） | 高               | S    | `adb3927` 上三条 story × 双语 × timeline/lineage 回归已通过 |
+| 2    | v1.6 发布记录与真实读屏收口（进行中）                  | 高               | S    | 自动门禁已完成；补齐 VoiceOver/NVDA 记录并统一发布文档      |
+| 3    | 本地复习闭环 brief 与首个纵向切片                      | 预期最高，待验证 | M    | 本地确定性状态、隐私边界与降级测试通过                      |
+| 4    | 客户端包边界与性能预算小 PR                            | 中高             | S–M  | 可重复的页面与 transitive-gzip 基线进入 CI                  |
+| 5    | axe 与精简 WebKit smoke 小 PR                          | 中高             | S–M  | 自动规则、键盘和跨浏览器门禁职责明确                        |
+| 6    | production smoke registry 化小 PR                      | 中               | S    | 路径与数量从 registry/manifest 派生                         |
+| 7    | P2：timeline 单故事 Reader 原型                        | 待验证           | M    | `story + step` 可恢复且不夸大因果关系                       |
+| 8    | P2：lineage 与章节往返 Reader 后续切片                 | 待验证           | L    | 数据合同、关系语义与上下文恢复分别获批                      |
+| 9    | 单一新历史分支 brief                                   | 待验证           | L    | 用户问题、来源范围和教学边界获批                            |
 
-下一轮不应同时实现 3–9。建议以本地复习闭环作为主要产品版本；三类工程门禁分别作为独立小 PR，Story Reader 则保留为后续独立候选。
+下一轮不应同时实现 3–9。先完成第 2 项的真实读屏与记录收口，再以本地复习闭环作为主要产品版本；三类工程门禁分别作为独立小 PR，Story Reader 则保留为后续独立候选。

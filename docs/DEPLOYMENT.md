@@ -67,22 +67,50 @@ Do not merge while any required check is pending or failing.
    - [English Safety / Eval chapter](https://atlas.z-ai.cc/en/chapters/safety/)
    - [Timeline](https://atlas.z-ai.cc/timeline/)
    - [Lineage](https://atlas.z-ai.cc/lineage/)
+   - Feedback learning story: [Timeline](https://atlas.z-ai.cc/timeline/?story=feedback-learning#story-feedback-learning) and [Lineage](https://atlas.z-ai.cc/lineage/?story=feedback-learning#story-feedback-learning)
+   - Rules to representations story: [Timeline](https://atlas.z-ai.cc/timeline/?story=rules-to-representations#story-rules-to-representations) and [Lineage](https://atlas.z-ai.cc/lineage/?story=rules-to-representations#story-rules-to-representations)
+   - Scaled models to reliable systems story: [Timeline](https://atlas.z-ai.cc/timeline/?story=scaled-models-to-reliable-systems#story-scaled-models-to-reliable-systems) and [Lineage](https://atlas.z-ai.cc/lineage/?story=scaled-models-to-reliable-systems#story-scaled-models-to-reliable-systems)
    - [Diagram sources](https://atlas.z-ai.cc/diagrams/)
    - [Privacy](https://atlas.z-ai.cc/privacy/)
    - [English privacy](https://atlas.z-ai.cc/en/privacy/)
    - [Sitemap](https://atlas.z-ai.cc/sitemap-index.xml)
    - [Robots policy](https://atlas.z-ai.cc/robots.txt)
-5. Verify the production HTML contains the expected canonical, language
+5. Open each Guided Story deep link directly, refresh it, and switch languages.
+   Confirm that only the selected story detail is visible in JavaScript mode,
+   the other two retain native `hidden` behavior and stay out of sequential Tab
+   order, and the selected title clears the dynamically sized sticky header on
+   desktop and mobile.
+6. Verify the production HTML contains the expected canonical, language
    alternates, Open Graph image, and description.
-6. Verify HTML responses include `no-transform` in `Cache-Control` and a
+7. Verify HTML responses include `no-transform` in `Cache-Control` and a
    `Content-Security-Policy` with `connect-src 'none'`.
-7. In a real browser, complete one concept check and continue to the next
+8. In a real browser, complete one concept check and continue to the next
    chapter. Confirm the interaction hydrates and that no request targets
    `static.cloudflareinsights.com` or `/cdn-cgi/rum`.
    Run `pnpm smoke:production:privacy` to cover this check together with all 26
-   chapter routes, both timelines, both privacy routes, and the sitemap.
-8. Record any teaching simplification, source change, or deployment-layer
-   privacy correction in the merged PR.
+   chapter routes, both timelines, both home and privacy routes, the sitemap,
+   and the three Chinese Timeline Guided Story deep links, including their
+   English language-switch URL state.
+9. Run and document a real VoiceOver or NVDA spot check on the Timeline and
+   Lineage story regions. Confirm inactive stories are absent from reading and
+   Tab order and that `aria-live` does not announce hidden content. This manual
+   check remains pending for v1.6; automated accessibility assertions and the
+   production smoke do not close it.
+10. Record any teaching simplification, source change, or deployment-layer
+    privacy correction in the merged PR.
+
+## v1.6 Release Record
+
+Automated v1.6 release evidence is tied to merge commit
+[`adb3927`](https://github.com/FrankCheungDev/ai-time-machine/commit/adb3927809646ba1d00e574ae2a3befb99e36c2f):
+
+- [main CI run 31247555472](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31247555472) completed successfully with both `Quality and build` and `Chromium integration and visual tests` passing.
+- [Cloudflare Pages check 93078586968](https://github.com/FrankCheungDev/ai-time-machine/runs/93078586968) reported `Deployed successfully` for the same `main` commit. Access-protected deployment URLs are intentionally omitted from this record.
+- On 2026-08-08, `pnpm smoke:production:privacy` passed against production with 33 checked requests, all 26 bilingual chapter routes, 32 HTML response-policy checks, 27 events in each localized timeline, and all three Chinese Timeline Guided Story deep links restoring their expected 6 / 7 / 7 focused events while preserving English language-switch URL state. `missingNoTransform`, `missingNoConnectPolicy`, and `invalidScriptPolicy` were all zero, while `forbiddenRequests` and `failures` were empty.
+
+These automated checks verify deployment, privacy boundaries, and scripted
+interaction behavior. Final v1.6 release closure still requires the documented
+real VoiceOver or NVDA spot check described above.
 
 ## Rollback
 
@@ -100,7 +128,7 @@ deployment.
 
 ## Analytics Decision
 
-Client-side learning analytics remain disabled for v1.2. The site exposes a
+Client-side learning analytics remain disabled through v1.6. The site exposes a
 typed, sanitized in-page event contract for chapter start, journey completion,
 concept check completion, explanation opening, and continuation, but no
 application listener sends those signals over the network.
