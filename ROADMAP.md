@@ -63,12 +63,15 @@ follows the staged process in
   rewards, preference feedback, and runtime observations, then connects the
   existing history through one curated, shareable feedback-learning story. See
   [the v1.5 teaching brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
-- **v1.6 — Brief under review; implementation not started — Guided causal
-  learning:** proposes a discoverable story entry on the home page,
-  chapter-to-history context links, and two additional reviewed stories built
-  only from the existing 27 events. The current production surface remains at
-  one story until a separate implementation is approved, merged, and released.
-  See [the v1.6 proposal](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md).
+- **v1.6 — Implementation merged; release closure pending — Guided causal
+  learning:** `main` at `f6e4178` contains a discoverable story entry on the
+  home page, chapter-to-history context links, and two additional reviewed
+  stories built only from the existing 27 events. The latest documented
+  production verification remains v1.5 until the corresponding main CI,
+  Cloudflare Pages production deployment, three-story production smoke, and
+  release records are confirmed. See
+  [the v1.6 proposal](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md) and
+  [the post-v1.6 iteration analysis](docs/POST_V1_6_ITERATION_ANALYSIS.md).
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching
