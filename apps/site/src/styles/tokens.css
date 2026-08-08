@@ -793,6 +793,10 @@ main {
   margin-top: 8px;
 }
 
+.causal-story-detail[hidden] {
+  display: none;
+}
+
 .causal-story-detail {
   display: grid;
   gap: 20px;
