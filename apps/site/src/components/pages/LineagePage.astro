@@ -553,6 +553,7 @@ function getLineageEdgeGeometry(
 
 <script>
   import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
+  import { scrollStoryAnchorIntoView } from "../../navigation/storyAnchor";
 
   const lineagePanel = document.querySelector("[data-lineage-panel]");
   const lineageButtons = document.querySelectorAll("[data-lineage-view]");
@@ -789,9 +790,7 @@ function getLineageEdgeGeometry(
       hasValidInitialStory &&
       initialUrl.hash === `#story-${initialStoryId}`
     ) {
-      window.requestAnimationFrame(() => {
-        document.getElementById(`story-${initialStoryId}`)?.scrollIntoView();
-      });
+      scrollStoryAnchorIntoView(initialStoryId);
     }
 
     window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);

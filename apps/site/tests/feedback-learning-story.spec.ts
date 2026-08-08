@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import {
   getAiLineageNodes,
   getAiTimelineEvents,
@@ -6,12 +6,80 @@ import {
 } from "@ai-history/data";
 
 const stories = getCausalStories();
+const englishStories = getCausalStories("en");
 const englishStoriesById = new Map(
-  getCausalStories("en").map((story) => [story.id, story]),
+  englishStories.map((story) => [story.id, story]),
 );
 const eventCount = getAiTimelineEvents().length;
 const lineageNodes = getAiLineageNodes();
 const lineageNodeCount = lineageNodes.length;
+type Story = ReturnType<typeof getCausalStories>[number];
+
+async function expectOnlyStoryDetailVisible(
+  page: Page,
+  regionSelector: string,
+  activeStory: Story,
+  localizedStories: Story[],
+) {
+  const region = page.locator(regionSelector);
+  const activeDetail = region.locator(
+    `[data-causal-story-detail="${activeStory.id}"]`,
+  );
+
+  await expect(activeDetail).toBeVisible();
+  await expect(
+    region.locator("[data-causal-story-detail]:visible"),
+  ).toHaveCount(1);
+  await expect(
+    region.locator("[data-causal-story-detail][hidden]"),
+  ).toHaveCount(localizedStories.length - 1);
+
+  const inactiveDisplays = await region
+    .locator("[data-causal-story-detail][hidden]")
+    .evaluateAll((details) =>
+      details.map((detail) => getComputedStyle(detail).display),
+    );
+  expect(inactiveDisplays).toEqual(
+    Array(localizedStories.length - 1).fill("none"),
+  );
+
+  for (const story of localizedStories) {
+    const expectedHeadingCount = story.id === activeStory.id ? 1 : 0;
+    await expect(
+      region.getByRole("heading", { name: story.title, exact: true }),
+    ).toHaveCount(expectedHeadingCount);
+  }
+}
+
+async function expectStoryHeadingClearsStickyHeader(heading: Locator) {
+  await expect
+    .poll(() =>
+      heading.evaluate((element) => {
+        const header = document.querySelector<HTMLElement>(".site-header");
+        if (!header) {
+          return {
+            clearsHeader: false,
+            insideViewport: false,
+            scrolled: false,
+          };
+        }
+
+        const headingBounds = element.getBoundingClientRect();
+        const headerBottom = header.getBoundingClientRect().bottom;
+
+        return {
+          clearsHeader: headingBounds.top >= headerBottom + 12,
+          insideViewport: headingBounds.bottom <= window.innerHeight,
+          scrolled: window.scrollY > 0,
+        };
+      }),
+    )
+    .toEqual({
+      clearsHeader: true,
+      insideViewport: true,
+      scrolled: true,
+    });
+}
 
 for (const story of stories) {
   const storyEventIds = story.steps.map((step) => step.eventId);
@@ -36,12 +104,19 @@ for (const story of stories) {
     const storyDetail = explorer.locator(
       `[data-causal-story-detail="${story.id}"]`,
     );
+    const storyHeading = storyDetail.getByRole("heading", {
+      name: story.title,
+    });
 
     await expect(storySelect).toHaveValue(story.id);
-    await expect(storyDetail).toBeVisible();
-    await expect(
-      storyDetail.getByRole("heading", { name: story.title }),
-    ).toBeVisible();
+    await expectOnlyStoryDetailVisible(
+      page,
+      "[data-timeline-story-region]",
+      story,
+      stories,
+    );
+    await expect(storyHeading).toBeVisible();
+    await expectStoryHeadingClearsStickyHeader(storyHeading);
     await expect(storyDetail.locator("[data-story-event-id]")).toHaveCount(
       story.steps.length,
     );
@@ -78,6 +153,13 @@ for (const story of stories) {
         page.locator(`[data-timeline-event="${eventId}"]`),
       ).toHaveClass(/is-story-focus/);
     }
+
+    if (story.id === stories.at(-1)!.id) {
+      const resetButton = explorer.locator("[data-timeline-filter-reset]");
+      await resetButton.focus();
+      await page.keyboard.press("Tab");
+      await expect(storyDetail.getByRole("link").first()).toBeFocused();
+    }
   });
 
   test(`lineage restores the ${story.id} story and keeps every node available`, async ({
@@ -90,10 +172,19 @@ for (const story of stories) {
     const storyDetail = page.locator(
       `[data-causal-story-detail="${story.id}"]`,
     );
+    const storyHeading = storyDetail.getByRole("heading", {
+      name: story.title,
+    });
 
     await expect(storySelect).toHaveValue(story.id);
     await expect(focusSelect).toHaveValue("");
-    await expect(storyDetail).toBeVisible();
+    await expectOnlyStoryDetailVisible(
+      page,
+      "[data-lineage-story-region]",
+      story,
+      stories,
+    );
+    await expectStoryHeadingClearsStickyHeader(storyHeading);
     await expect(storyDetail.locator("[data-story-event-id]")).toHaveCount(
       story.steps.length,
     );
@@ -117,6 +208,13 @@ for (const story of stories) {
       );
     }
 
+    if (story.id === stories.at(-1)!.id) {
+      const lastLineageLink = page.locator("[data-lineage-panel] a").last();
+      await lastLineageLink.focus();
+      await page.keyboard.press("Tab");
+      await expect(storyDetail.getByRole("link").first()).toBeFocused();
+    }
+
     await focusSelect.selectOption("rag");
     await expect(storySelect).toHaveValue("");
     await expect(page).toHaveURL(/\/lineage\/\?lineage=rag#node-rag$/);
@@ -128,13 +226,27 @@ for (const story of stories) {
     await expect(page).toHaveURL(
       new RegExp(`/lineage/\\?story=${story.id}#story-${story.id}$`),
     );
+    await expectOnlyStoryDetailVisible(
+      page,
+      "[data-lineage-story-region]",
+      story,
+      stories,
+    );
   });
 
   for (const path of ["timeline", "lineage"] as const) {
     test(`${path} language switch preserves the ${story.id} query and fragment`, async ({
       page,
     }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(`/${path}/?story=${story.id}#story-${story.id}`);
+
+      const regionSelector = `[data-${path}-story-region]`;
+      const chineseHeading = page
+        .locator(`${regionSelector} [data-causal-story-detail="${story.id}"]`)
+        .getByRole("heading", { name: story.title });
+      await expectOnlyStoryDetailVisible(page, regionSelector, story, stories);
+      await expectStoryHeadingClearsStickyHeader(chineseHeading);
 
       const languageSwitch = page.getByRole("link", { name: "English" });
       await expect(languageSwitch).toHaveAttribute(
@@ -147,11 +259,18 @@ for (const story of stories) {
         new RegExp(`/en/${path}/\\?story=${story.id}#story-${story.id}$`),
       );
       await expect(page.getByLabel("Guided story")).toHaveValue(story.id);
-      await expect(
-        page.getByRole("heading", {
-          name: englishStoriesById.get(story.id)!.title,
-        }),
-      ).toBeVisible();
+      const englishStory = englishStoriesById.get(story.id)!;
+      const englishHeading = page
+        .locator(`${regionSelector} [data-causal-story-detail="${story.id}"]`)
+        .getByRole("heading", { name: englishStory.title });
+      await expectOnlyStoryDetailVisible(
+        page,
+        regionSelector,
+        englishStory,
+        englishStories,
+      );
+      await expect(englishHeading).toBeVisible();
+      await expectStoryHeadingClearsStickyHeader(englishHeading);
     });
   }
 }

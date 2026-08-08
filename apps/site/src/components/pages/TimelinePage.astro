@@ -397,6 +397,7 @@ for (const story of causalStories) {
 
 <script>
   import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
+  import { scrollStoryAnchorIntoView } from "../../navigation/storyAnchor";
 
   const timelineExplorer = document.querySelector("[data-causal-timeline]");
 
@@ -615,9 +616,7 @@ for (const story of causalStories) {
         hasValidInitialStory &&
         initialUrl.hash === `#story-${initialStory}`
       ) {
-        window.requestAnimationFrame(() => {
-          document.getElementById(`story-${initialStory}`)?.scrollIntoView();
-        });
+        scrollStoryAnchorIntoView(initialStory);
       }
 
       window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);
