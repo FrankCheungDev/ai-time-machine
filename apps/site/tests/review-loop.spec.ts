@@ -79,6 +79,25 @@ async function expectMinimumHeight(
   ).toBeGreaterThanOrEqual(minimum);
 }
 
+test("chapter language switches preserve non-concept section fragments", async ({
+  page,
+}) => {
+  await page.goto("/chapters/overview/#spine");
+
+  await expect(page.locator("[data-language-switch]")).toHaveAttribute(
+    "href",
+    "/en/chapters/overview/#spine",
+  );
+
+  await page.evaluate(() => {
+    window.location.hash = "chapter-map";
+  });
+  await expect(page.locator("[data-language-switch]")).toHaveAttribute(
+    "href",
+    "/en/chapters/overview/#chapter-map",
+  );
+});
+
 test("migrates v1 suggestions in learning-path order and resolves Search across locales", async ({
   page,
 }) => {

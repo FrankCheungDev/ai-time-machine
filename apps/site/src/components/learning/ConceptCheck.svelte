@@ -54,7 +54,7 @@
     href.hash =
       window.location.hash === `#${conceptCheckAnchor}`
         ? conceptCheckAnchor
-        : "";
+        : window.location.hash;
     languageSwitch.href = `${href.pathname}${href.search}${href.hash}`;
   }
 
