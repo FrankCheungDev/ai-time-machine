@@ -90,11 +90,11 @@ test("chapter language switches preserve non-concept section fragments", async (
   );
 
   await page.evaluate(() => {
-    window.location.hash = "chapter-map";
+    window.location.hash = "chapter-notes";
   });
   await expect(page.locator("[data-language-switch]")).toHaveAttribute(
     "href",
-    "/en/chapters/overview/#chapter-map",
+    "/en/chapters/overview/#chapter-notes",
   );
 });
 

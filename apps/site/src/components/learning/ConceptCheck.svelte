@@ -3,6 +3,7 @@
   import { onMount, tick } from "svelte";
   import { emitLearningSignal } from "../../analytics/learningSignals";
   import { conceptCheckUiCopy } from "../../i18n/conceptCheck";
+  import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
   import type { Locale } from "../../i18n/locales";
   import {
     conceptCheckProgressChangedEventName,
@@ -44,23 +45,9 @@
       !snapshot.storageAvailable || !snapshot.schemaSupported;
   }
 
-  function syncLanguageSwitchHash(): void {
-    const languageSwitch = document.querySelector<HTMLAnchorElement>(
-      "[data-language-switch]",
-    );
-    if (!languageSwitch) return;
-
-    const href = new URL(languageSwitch.href, window.location.href);
-    href.hash =
-      window.location.hash === `#${conceptCheckAnchor}`
-        ? conceptCheckAnchor
-        : window.location.hash;
-    languageSwitch.href = `${href.pathname}${href.search}${href.hash}`;
-  }
-
   onMount(() => {
     syncProgress();
-    syncLanguageSwitchHash();
+    synchronizeLanguageSwitchUrl();
 
     const handleProgressChanged = (): void => syncProgress();
     const handleStorage = (event: StorageEvent): void => {
@@ -74,7 +61,7 @@
       handleProgressChanged,
     );
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("hashchange", syncLanguageSwitchHash);
+    window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);
 
     return () => {
       window.removeEventListener(
@@ -82,7 +69,7 @@
         handleProgressChanged,
       );
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("hashchange", syncLanguageSwitchHash);
+      window.removeEventListener("hashchange", synchronizeLanguageSwitchUrl);
     };
   });
 
