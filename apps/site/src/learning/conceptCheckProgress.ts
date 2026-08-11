@@ -15,20 +15,33 @@ export interface ConceptCheckResult {
   firstCorrect: boolean;
   attempts: number;
   explanationViewed: boolean;
+  reviewSuggested: boolean;
 }
 
 export interface ConceptCheckProgress {
   version: 1;
+  reviewVersion: 2;
   results: ConceptCheckResult[];
 }
 
 export interface ConceptCheckProgressSnapshot {
   progress: ConceptCheckProgress;
   storageAvailable: boolean;
+  schemaSupported: boolean;
 }
 
 export interface ConceptCheckProgressWriteResult extends ConceptCheckProgressSnapshot {
   persisted: boolean;
+}
+
+interface DecodedConceptCheckProgress {
+  progress: ConceptCheckProgress;
+  schemaSupported: boolean;
+}
+
+interface ConceptCheckProgressReadContext {
+  snapshot: ConceptCheckProgressSnapshot;
+  storage: StorageLike | null;
 }
 
 function resolveStorage(storage?: StorageLike | null): StorageLike | null {
@@ -43,10 +56,13 @@ function resolveStorage(storage?: StorageLike | null): StorageLike | null {
 }
 
 export function createEmptyConceptCheckProgress(): ConceptCheckProgress {
-  return { version: 1, results: [] };
+  return { version: 1, reviewVersion: 2, results: [] };
 }
 
-function parseResult(value: unknown): ConceptCheckResult | undefined {
+function parseResult(
+  value: unknown,
+  reviewVersion: 1 | 2,
+): ConceptCheckResult | undefined {
   if (
     typeof value !== "object" ||
     value === null ||
@@ -65,96 +81,172 @@ function parseResult(value: unknown): ConceptCheckResult | undefined {
     return undefined;
   }
 
-  return {
+  const result = {
     chapterId: value.chapterId,
     firstCorrect: value.firstCorrect,
     attempts: Math.min(value.attempts, 99),
     explanationViewed: value.explanationViewed,
   };
+
+  if (reviewVersion === 1) {
+    return {
+      ...result,
+      reviewSuggested: !result.firstCorrect || result.attempts > 1,
+    };
+  }
+
+  if (
+    !("reviewSuggested" in value) ||
+    typeof value.reviewSuggested !== "boolean"
+  ) {
+    return undefined;
+  }
+
+  return { ...result, reviewSuggested: value.reviewSuggested };
 }
 
-export function parseConceptCheckProgress(
+function decodeConceptCheckProgress(
   raw: string | null,
-): ConceptCheckProgress {
-  if (raw === null) return createEmptyConceptCheckProgress();
+): DecodedConceptCheckProgress {
+  if (raw === null) {
+    return {
+      progress: createEmptyConceptCheckProgress(),
+      schemaSupported: true,
+    };
+  }
 
   try {
     const parsed: unknown = JSON.parse(raw);
     if (
       typeof parsed !== "object" ||
       parsed === null ||
-      Array.isArray(parsed) ||
+      Array.isArray(parsed)
+    ) {
+      return {
+        progress: createEmptyConceptCheckProgress(),
+        schemaSupported: true,
+      };
+    }
+
+    if ("version" in parsed && parsed.version !== 1) {
+      return {
+        progress: createEmptyConceptCheckProgress(),
+        schemaSupported: false,
+      };
+    }
+
+    if (
       !("version" in parsed) ||
       parsed.version !== 1 ||
       !("results" in parsed) ||
       !Array.isArray(parsed.results)
     ) {
-      return createEmptyConceptCheckProgress();
+      return {
+        progress: createEmptyConceptCheckProgress(),
+        schemaSupported: true,
+      };
     }
 
+    if ("reviewVersion" in parsed && parsed.reviewVersion !== 2) {
+      return {
+        progress: createEmptyConceptCheckProgress(),
+        schemaSupported: false,
+      };
+    }
+
+    const reviewVersion = "reviewVersion" in parsed ? 2 : 1;
     const byChapterId = new Map<LearningChapterId, ConceptCheckResult>();
     for (const candidate of parsed.results) {
-      const result = parseResult(candidate);
+      const result = parseResult(candidate, reviewVersion);
       if (result && !byChapterId.has(result.chapterId)) {
         byChapterId.set(result.chapterId, result);
       }
     }
 
     return {
-      version: 1,
-      results: learningPath.flatMap(({ id }) => {
-        const result = byChapterId.get(id);
-        return result ? [{ ...result }] : [];
-      }),
+      progress: {
+        version: 1,
+        reviewVersion: 2,
+        results: learningPath.flatMap(({ id }) => {
+          const result = byChapterId.get(id);
+          return result ? [{ ...result }] : [];
+        }),
+      },
+      schemaSupported: true,
     };
   } catch {
-    return createEmptyConceptCheckProgress();
+    return {
+      progress: createEmptyConceptCheckProgress(),
+      schemaSupported: true,
+    };
+  }
+}
+
+export function parseConceptCheckProgress(
+  raw: string | null,
+): ConceptCheckProgress {
+  return decodeConceptCheckProgress(raw).progress;
+}
+
+function readConceptCheckProgressContext(
+  storage?: StorageLike | null,
+): ConceptCheckProgressReadContext {
+  const resolvedStorage = resolveStorage(storage);
+  if (!resolvedStorage) {
+    return {
+      snapshot: {
+        progress: createEmptyConceptCheckProgress(),
+        storageAvailable: false,
+        schemaSupported: false,
+      },
+      storage: null,
+    };
+  }
+
+  try {
+    const decoded = decodeConceptCheckProgress(
+      resolvedStorage.getItem(conceptCheckProgressStorageKey),
+    );
+
+    return {
+      snapshot: {
+        progress: decoded.progress,
+        storageAvailable: true,
+        schemaSupported: decoded.schemaSupported,
+      },
+      storage: resolvedStorage,
+    };
+  } catch {
+    return {
+      snapshot: {
+        progress: createEmptyConceptCheckProgress(),
+        storageAvailable: false,
+        schemaSupported: false,
+      },
+      storage: resolvedStorage,
+    };
   }
 }
 
 export function readConceptCheckProgress(
   storage?: StorageLike | null,
 ): ConceptCheckProgressSnapshot {
-  const resolvedStorage = resolveStorage(storage);
-  if (!resolvedStorage) {
-    return {
-      progress: createEmptyConceptCheckProgress(),
-      storageAvailable: false,
-    };
-  }
-
-  try {
-    return {
-      progress: parseConceptCheckProgress(
-        resolvedStorage.getItem(conceptCheckProgressStorageKey),
-      ),
-      storageAvailable: true,
-    };
-  } catch {
-    return {
-      progress: createEmptyConceptCheckProgress(),
-      storageAvailable: false,
-    };
-  }
+  return readConceptCheckProgressContext(storage).snapshot;
 }
 
 function writeConceptCheckProgress(
   progress: ConceptCheckProgress,
-  storage?: StorageLike | null,
+  current: ConceptCheckProgressSnapshot,
+  storage: StorageLike,
 ): ConceptCheckProgressWriteResult {
-  const resolvedStorage = resolveStorage(storage);
-  const current = readConceptCheckProgress(resolvedStorage);
-
-  if (!resolvedStorage || !current.storageAvailable) {
-    return { ...current, persisted: false };
-  }
-
   try {
-    resolvedStorage.setItem(
-      conceptCheckProgressStorageKey,
-      JSON.stringify(progress),
-    );
-    return { progress, persisted: true, storageAvailable: true };
+    storage.setItem(conceptCheckProgressStorageKey, JSON.stringify(progress));
+    return {
+      progress,
+      persisted: true,
+      storageAvailable: true,
+      schemaSupported: true,
+    };
   } catch {
     return { ...current, persisted: false, storageAvailable: false };
   }
@@ -165,7 +257,17 @@ export function recordConceptCheckAttempt(
   correct: boolean,
   storage?: StorageLike | null,
 ): ConceptCheckProgressWriteResult {
-  const current = readConceptCheckProgress(storage);
+  const context = readConceptCheckProgressContext(storage);
+  const current = context.snapshot;
+
+  if (
+    !context.storage ||
+    !current.storageAvailable ||
+    !current.schemaSupported
+  ) {
+    return { ...current, persisted: false };
+  }
+
   const existing = current.progress.results.find(
     (result) => result.chapterId === chapterId,
   );
@@ -173,12 +275,14 @@ export function recordConceptCheckAttempt(
     ? {
         ...existing,
         attempts: Math.min(existing.attempts + 1, 99),
+        reviewSuggested: !correct,
       }
     : {
         chapterId,
         firstCorrect: correct,
         attempts: 1,
         explanationViewed: false,
+        reviewSuggested: !correct,
       };
   const resultsByChapterId = new Map(
     current.progress.results.map((result) => [result.chapterId, result]),
@@ -186,20 +290,31 @@ export function recordConceptCheckAttempt(
   resultsByChapterId.set(chapterId, nextResult);
   const progress: ConceptCheckProgress = {
     version: 1,
+    reviewVersion: 2,
     results: learningPath.flatMap(({ id }) => {
       const result = resultsByChapterId.get(id);
       return result ? [{ ...result }] : [];
     }),
   };
 
-  return writeConceptCheckProgress(progress, storage);
+  return writeConceptCheckProgress(progress, current, context.storage);
 }
 
 export function markConceptExplanationViewed(
   chapterId: LearningChapterId,
   storage?: StorageLike | null,
 ): ConceptCheckProgressWriteResult {
-  const current = readConceptCheckProgress(storage);
+  const context = readConceptCheckProgressContext(storage);
+  const current = context.snapshot;
+
+  if (
+    !context.storage ||
+    !current.storageAvailable ||
+    !current.schemaSupported
+  ) {
+    return { ...current, persisted: false };
+  }
+
   const existing = current.progress.results.find(
     (result) => result.chapterId === chapterId,
   );
@@ -210,6 +325,7 @@ export function markConceptExplanationViewed(
 
   const progress: ConceptCheckProgress = {
     version: 1,
+    reviewVersion: 2,
     results: current.progress.results.map((result) =>
       result.chapterId === chapterId
         ? { ...result, explanationViewed: true }
@@ -217,25 +333,26 @@ export function markConceptExplanationViewed(
     ),
   };
 
-  return writeConceptCheckProgress(progress, storage);
+  return writeConceptCheckProgress(progress, current, context.storage);
 }
 
 export function resetConceptCheckProgress(
   storage?: StorageLike | null,
 ): ConceptCheckProgressWriteResult {
-  const resolvedStorage = resolveStorage(storage);
-  const current = readConceptCheckProgress(resolvedStorage);
+  const context = readConceptCheckProgressContext(storage);
+  const current = context.snapshot;
 
-  if (!resolvedStorage || !current.storageAvailable) {
+  if (!context.storage || !current.storageAvailable) {
     return { ...current, persisted: false };
   }
 
   try {
-    resolvedStorage.removeItem(conceptCheckProgressStorageKey);
+    context.storage.removeItem(conceptCheckProgressStorageKey);
     return {
       progress: createEmptyConceptCheckProgress(),
       persisted: true,
       storageAvailable: true,
+      schemaSupported: true,
     };
   } catch {
     return { ...current, persisted: false, storageAvailable: false };

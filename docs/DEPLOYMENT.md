@@ -84,9 +84,12 @@ Do not merge while any required check is pending or failing.
    alternates, Open Graph image, and description.
 7. Verify HTML responses include `no-transform` in `Cache-Control` and a
    `Content-Security-Policy` with `connect-src 'none'`.
-8. In a real browser, complete one concept check and continue to the next
-   chapter. Confirm the interaction hydrates and that no request targets
-   `static.cloudflareinsights.com` or `/cdn-cgi/rum`.
+8. In a fresh browser context, answer one concept check incorrectly, confirm
+   the localized home review queue links back to that check, then answer it
+   correctly and confirm the suggestion clears without changing chapter
+   completion. Inspect the compatible `version: 1` + `reviewVersion: 2` local
+   record and verify that no request targets analytics, collection, beacon,
+   telemetry, `static.cloudflareinsights.com`, or `/cdn-cgi/rum`.
    Run `pnpm smoke:production:privacy` to cover this check together with all 26
    chapter routes, both timelines, both home and privacy routes, the sitemap,
    and the three Chinese Timeline Guided Story deep links, including their
@@ -128,7 +131,7 @@ deployment.
 
 ## Analytics Decision
 
-Client-side learning analytics remain disabled through v1.6. The site exposes a
+Client-side learning analytics remain disabled through v1.7. The site exposes a
 typed, sanitized in-page event contract for chapter start, journey completion,
 concept check completion, explanation opening, and continuation, but no
 application listener sends those signals over the network.

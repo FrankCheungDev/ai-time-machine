@@ -173,6 +173,129 @@ main {
   flex: 0 1 auto;
 }
 
+.home-review-panel {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.home-review-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: baseline;
+}
+
+.home-review-heading h2,
+.home-review-heading p,
+.hero .home-review-status,
+.hero .home-review-intro,
+.hero .home-review-boundary {
+  margin: 0;
+}
+
+.home-review-heading h2 {
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+.hero .home-review-heading .eyebrow {
+  font-size: 0.76rem;
+}
+
+.hero .home-review-status {
+  color: var(--color-green);
+  font-size: 1rem;
+  font-weight: 760;
+}
+
+.home-review-status:focus-visible {
+  outline: 3px solid rgba(52, 105, 166, 0.32);
+  outline-offset: 3px;
+}
+
+.hero .home-review-intro,
+.hero .home-review-boundary {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.home-review-primary,
+.home-review-list a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.home-review-primary:hover,
+.home-review-list a:hover {
+  border-color: rgba(44, 107, 86, 0.52);
+}
+
+.home-review-primary:focus-visible,
+.home-review-list a:focus-visible,
+.home-review-more summary:focus-visible {
+  outline: 3px solid rgba(52, 105, 166, 0.32);
+  outline-offset: 2px;
+}
+
+.home-review-primary > span:first-child,
+.home-review-list a > span:first-child {
+  display: grid;
+  min-width: 0;
+}
+
+.home-review-primary small,
+.home-review-list small {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.home-review-primary > span:last-child,
+.home-review-list a > span:last-child {
+  flex: 0 0 auto;
+  color: var(--color-green);
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.home-review-more summary {
+  display: list-item;
+  min-height: 44px;
+  padding: 9px 0;
+  color: var(--color-green);
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.home-review-list {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-review-clear {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding-top: 4px;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
 .home-learning-reset {
   width: fit-content;
   min-height: 44px;
@@ -491,6 +614,7 @@ main {
 .concept-check {
   display: grid;
   gap: 18px;
+  scroll-margin-top: 120px;
 }
 
 .concept-check h2,
@@ -511,6 +635,13 @@ main {
   background: rgba(44, 107, 86, 0.09);
   font-size: 0.88rem;
   font-weight: 720;
+}
+
+.concept-check-review-note {
+  padding: 12px 14px;
+  color: var(--color-ink);
+  background: rgba(184, 121, 24, 0.1);
+  border-left: 4px solid var(--color-amber);
 }
 
 .concept-check form,
@@ -1431,6 +1562,10 @@ main {
     min-height: auto;
   }
 
+  .concept-check {
+    scroll-margin-top: 220px;
+  }
+
   .pill-grid,
   .demo-grid,
   .overview-grid {
@@ -1534,6 +1669,12 @@ main {
     min-width: 0;
     justify-content: center;
     text-align: center;
+  }
+
+  .home-review-primary,
+  .home-review-list a {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .chapter-main {

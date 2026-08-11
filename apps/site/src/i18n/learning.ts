@@ -62,6 +62,21 @@ export interface LearningUiCopy {
   chapterContextNavigation: string;
   viewChapterTimeline: string;
   viewChapterLineage: string;
+  reviewEyebrow: string;
+  reviewHeading: string;
+  reviewCount: (count: number) => string;
+  reviewIntro: string;
+  reviewBoundary: string;
+  reviewEmpty: string;
+  reviewCleared: string;
+  reviewChapterNumber: (number: string) => string;
+  reviewAction: string;
+  reviewMore: (count: number) => string;
+  clearReviewRecords: string;
+  clearReviewConfirmation: string;
+  confirmClearReview: string;
+  cancelClearReview: string;
+  reviewStorageWarning: string;
 }
 
 export const learningUiCopy = {
@@ -92,6 +107,24 @@ export const learningUiCopy = {
     chapterContextNavigation: "本章的历史与技术谱系",
     viewChapterTimeline: "在时间线中查看本章",
     viewChapterLineage: "在技术谱系中查看本章",
+    reviewEyebrow: "Local Review",
+    reviewHeading: "本机复习建议",
+    reviewCount: (count) => `待复习 ${count} 章`,
+    reviewIntro:
+      "建议只根据这台设备上的概念自测记录生成，并按学习主线排列；再次答对后会移出。",
+    reviewBoundary: "它不是能力评估，也不代表学习效果已经得到验证。",
+    reviewEmpty: "当前没有待处理的复习建议。",
+    reviewCleared: "本机自测与复习记录已清除，章节完成进度未改变。",
+    reviewChapterNumber: (number) => `第 ${number} 章`,
+    reviewAction: "前往自测",
+    reviewMore: (count) => `查看其余 ${count} 章`,
+    clearReviewRecords: "清除自测与复习记录",
+    clearReviewConfirmation:
+      "确定删除这台设备上的全部自测与复习记录？章节完成进度会保留。",
+    confirmClearReview: "确定清除",
+    cancelClearReview: "取消",
+    reviewStorageWarning:
+      "无法读取或更新这台设备上的自测记录；章节与自测仍可正常使用。",
   },
   en: {
     positionLabel: (position, total) =>
@@ -122,6 +155,28 @@ export const learningUiCopy = {
     chapterContextNavigation: "Chapter history and technology lineage",
     viewChapterTimeline: "View this chapter in the timeline",
     viewChapterLineage: "View this chapter in the technology lineage",
+    reviewEyebrow: "Local Review",
+    reviewHeading: "Review Suggestions On This Device",
+    reviewCount: (count) =>
+      `${count} ${count === 1 ? "chapter" : "chapters"} suggested for review`,
+    reviewIntro:
+      "Suggestions use only concept-check records on this device and follow learning-path order. A correct answer removes a suggestion.",
+    reviewBoundary:
+      "They are not an ability assessment or evidence of validated learning outcomes.",
+    reviewEmpty: "There are no review suggestions to address right now.",
+    reviewCleared:
+      "Self-check and review records were cleared. Chapter completion did not change.",
+    reviewChapterNumber: (number) => `Chapter ${number}`,
+    reviewAction: "Open self-check",
+    reviewMore: (count) =>
+      `Show ${count} more ${count === 1 ? "chapter" : "chapters"}`,
+    clearReviewRecords: "Clear self-check and review records",
+    clearReviewConfirmation:
+      "Delete every self-check and review record on this device? Chapter completion will remain.",
+    confirmClearReview: "Clear records",
+    cancelClearReview: "Cancel",
+    reviewStorageWarning:
+      "Self-check records on this device cannot be read or updated. Chapters and checks remain available.",
   },
 } satisfies Record<Locale, LearningUiCopy>;
 
@@ -186,4 +241,12 @@ export function getLocalizedLearningChapter(
     href: toLocalizedPath(chapter.route, locale),
     ...(activityTitle ? { activityTitle } : {}),
   };
+}
+
+export function getLocalizedConceptCheckHref(
+  id: ChapterId,
+  locale: Locale,
+): string {
+  const chapter = getLocalizedLearningChapter(id, locale);
+  return `${chapter.href}#concept-check-${chapter.id}`;
 }

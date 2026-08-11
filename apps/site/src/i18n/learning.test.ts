@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { learningPath } from "../learning/learningPath";
 import {
   getLocalizedChapterContextLinks,
+  getLocalizedConceptCheckHref,
   getLocalizedLearningChapter,
   learningUiCopy,
 } from "./learning";
@@ -41,6 +42,22 @@ describe("learning i18n", () => {
     expect(learningUiCopy["zh-CN"].completedCount(3, 10)).toBe("已完成 3 / 10");
     expect(learningUiCopy.en.continueLearning("Search Trees")).toBe(
       "Continue: Search Trees",
+    );
+    expect(learningUiCopy["zh-CN"].reviewCount(2)).toBe("待复习 2 章");
+    expect(learningUiCopy.en.reviewCount(1)).toBe(
+      "1 chapter suggested for review",
+    );
+    expect(learningUiCopy.en.reviewCount(2)).toBe(
+      "2 chapters suggested for review",
+    );
+  });
+
+  it("localizes stable concept-check deep links", () => {
+    expect(getLocalizedConceptCheckHref("search", "zh-CN")).toBe(
+      "/chapters/search/#concept-check-search",
+    );
+    expect(getLocalizedConceptCheckHref("search", "en")).toBe(
+      "/en/chapters/search/#concept-check-search",
     );
   });
 

@@ -60,6 +60,7 @@ test("an incorrect answer can reveal why, retry, persist, and clear", async ({
   await expect(
     check.locator('[data-concept-check-result="incorrect"]'),
   ).toBeVisible();
+  await expect(check.getByText(/已加入这台设备的复习建议/)).toBeVisible();
 
   await check.getByRole("button", { name: "查看为什么" }).click();
   await expect(
@@ -74,6 +75,7 @@ test("an incorrect answer can reveal why, retry, persist, and clear", async ({
   await expect(
     check.getByRole("heading", { level: 3, name: "回答正确" }),
   ).toBeFocused();
+  await expect(check.getByText(/已从这台设备的复习建议中移出/)).toBeVisible();
   await expect(check.getByTestId("concept-check-recorded")).toContainText(
     "2 次尝试",
   );
@@ -84,12 +86,14 @@ test("an incorrect answer can reveal why, retry, persist, and clear", async ({
   }, progressKey);
   expect(stored).toEqual({
     version: 1,
+    reviewVersion: 2,
     results: [
       {
         chapterId: "search",
         firstCorrect: false,
         attempts: 2,
         explanationViewed: true,
+        reviewSuggested: false,
       },
     ],
   });
@@ -99,9 +103,11 @@ test("an incorrect answer can reveal why, retry, persist, and clear", async ({
   await expect(reloaded.getByTestId("concept-check-recorded")).toContainText(
     "2 次尝试",
   );
-  await reloaded.getByRole("button", { name: "清除全部自测记录" }).click();
+  await reloaded
+    .getByRole("button", { name: "清除全部自测与复习记录" })
+    .click();
   await expect(
-    reloaded.getByText("确定清除这台设备上的全部自测记录？"),
+    reloaded.getByText("确定清除这台设备上的全部自测与复习记录？"),
   ).toBeVisible();
   await reloaded.getByRole("button", { name: "确定清除" }).click();
   await expect(reloaded.getByTestId("concept-check-recorded")).toHaveCount(0);
@@ -184,7 +190,7 @@ test("storage failure keeps feedback and continuation available", async ({
   ).toBeVisible();
   await expect(
     check.getByTestId("concept-check-storage-warning"),
-  ).toContainText("无法保存自测记录");
+  ).toContainText("无法保存自测与复习记录");
   await expect(page.getByTestId("complete-and-continue")).toBeVisible();
 });
 
