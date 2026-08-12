@@ -245,9 +245,10 @@ page.on("request", (request) => {
   const url = request.url();
   if (url.includes("static.cloudflareinsights.com")) {
     forbiddenRequests.push("cloudflare-beacon-script");
-  }
-  if (url.includes("/cdn-cgi/rum")) {
+  } else if (url.includes("/cdn-cgi/rum")) {
     forbiddenRequests.push("cloudflare-rum");
+  } else if (/analytics|collect|beacon|telemetry/i.test(url)) {
+    forbiddenRequests.push(url);
   }
 });
 
@@ -258,15 +259,73 @@ try {
   const conceptCheck = page.getByTestId("concept-check");
   await conceptCheck
     .getByRole("radio", {
+      name: "只看离目标的估计距离 h",
+    })
+    .check();
+  await conceptCheck.getByRole("button", { name: "提交答案" }).click();
+  await conceptCheck.getByText(/已加入这台设备的复习建议/).waitFor();
+
+  await page.goto(new URL("/", baseUrl).href, { waitUntil: "networkidle" });
+  const reviewQueue = page.getByTestId("home-review-queue");
+  await reviewQueue.getByText("待复习 1 章", { exact: true }).waitFor();
+  const reviewLink = reviewQueue.locator(".home-review-primary");
+  if (
+    (await reviewLink.getAttribute("href")) !==
+    "/chapters/search/#concept-check-search"
+  ) {
+    failures.push("the production review queue did not deep-link to Search");
+  }
+  await reviewLink.click();
+  await page.waitForURL("**/chapters/search/#concept-check-search");
+
+  await conceptCheck
+    .getByRole("radio", {
       name: "比较已走成本 g 与剩余估计 h 的和 f = g + h",
     })
     .check();
   await conceptCheck.getByRole("button", { name: "提交答案" }).click();
+  await conceptCheck.getByText(/已从这台设备的复习建议中移出/).waitFor();
   await conceptCheck.getByRole("button", { name: "查看为什么" }).click();
   await conceptCheck.getByText(/A\* 同时考虑已经付出的路径成本 g/).waitFor();
+
+  const storedConceptProgress = await page.evaluate(() => {
+    const raw = localStorage.getItem("ai-history-concept-check-progress");
+    return raw ? JSON.parse(raw) : null;
+  });
+  const storedSearchResult = storedConceptProgress?.results?.find(
+    (result) => result.chapterId === "search",
+  );
+  if (
+    storedConceptProgress?.version !== 1 ||
+    storedConceptProgress?.reviewVersion !== 2 ||
+    Object.keys(storedConceptProgress ?? {})
+      .sort()
+      .join(",") !== "results,reviewVersion,version" ||
+    storedConceptProgress?.results?.length !== 1 ||
+    storedSearchResult?.firstCorrect !== false ||
+    storedSearchResult?.attempts !== 2 ||
+    storedSearchResult?.explanationViewed !== true ||
+    storedSearchResult?.reviewSuggested !== false ||
+    Object.keys(storedSearchResult ?? {})
+      .sort()
+      .join(",") !==
+      "attempts,chapterId,explanationViewed,firstCorrect,reviewSuggested"
+  ) {
+    failures.push("the production review result did not persist safe v2 data");
+  }
+
   await page.getByTestId("complete-and-continue").click();
   await page.waitForURL("**/chapters/expert-system/");
   await page.waitForLoadState("networkidle");
+
+  await page.goto(new URL("/", baseUrl).href, { waitUntil: "networkidle" });
+  const resolvedQueue = page.getByTestId("home-review-queue");
+  await resolvedQueue.getByTestId("home-review-empty").waitFor();
+  if ((await resolvedQueue.locator(".home-review-primary").count()) !== 0) {
+    failures.push(
+      "the production review queue kept Search after a correct retry",
+    );
+  }
 
   const injectedBeaconCount = await page
     .locator('script[src*="cloudflareinsights"], script[data-cf-beacon]')
@@ -302,7 +361,7 @@ try {
     layout.documentWidth > layout.viewport ||
     layout.bodyWidth > layout.viewport
   ) {
-    failures.push("the 390px production chapter overflows horizontally");
+    failures.push("the 390px production review home overflows horizontally");
   }
 
   await page.goto(new URL("/chapters/reinforcement-learning/", baseUrl).href, {
@@ -406,7 +465,7 @@ try {
           invalidScriptPolicy: headerFailures.scriptPolicy.length,
         },
         browserInteraction:
-          "concept check, continuation, feedback update/runtime boundary, all guided stories",
+          "local review entry/exit, concept explanation, continuation, feedback update/runtime boundary, all guided stories",
         feedbackLearning: {
           policyState: feedbackPolicyState,
           runtimeBoundary: feedbackBoundaryText.trim(),

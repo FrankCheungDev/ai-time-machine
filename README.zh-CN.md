@@ -68,7 +68,10 @@ Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 分析器继续保留，但不会因此启用网络采集。发布记录与后续方案见
 [`v1.5 反馈学习与引导式因果路径`](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)、
 [`v1.6 引导式因果学习实施与发布说明`](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)以及
-[`v1.6 后续迭代分析`](docs/POST_V1_6_ITERATION_ANALYSIS.md)。
+[`v1.6 后续迭代分析`](docs/POST_V1_6_ITERATION_ANALYSIS.md)。v1.7 本机复习闭环现已进入评审：
+它把章节完成状态与可清除、按学习主线排序的复习建议保持为两条独立状态轴，且不启用
+联网采集。实施合同与待完成的发布门见
+[`v1.7 本机复习闭环 brief`](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md)。
 
 ## 部署
 

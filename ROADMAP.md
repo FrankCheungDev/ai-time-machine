@@ -73,6 +73,14 @@ follows the staged process in
   waits only for a documented real VoiceOver or NVDA spot check. See
   [the v1.6 implementation and release brief](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md) and
   [the post-v1.6 iteration analysis](docs/POST_V1_6_ITERATION_ANALYSIS.md).
+- **v1.7 — In review — Device-local review loop:** evolves the concept-check
+  record through an old-client-compatible review-state v2, derives a
+  learning-path-ordered review queue, links the home page back to each chapter
+  check, and keeps completion, clearing, privacy, and network boundaries
+  independent. Local engineering verification is recorded in
+  [the v1.7 implementation brief](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md);
+  preview, main CI, production deployment, and production smoke evidence remain
+  release gates until they actually run.
 
 Each milestone must keep the static, scripted teaching boundary and pass the
 format, data, type, build, unit, browser, visual, accessibility, and teaching

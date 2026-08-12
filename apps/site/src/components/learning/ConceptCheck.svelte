@@ -3,6 +3,7 @@
   import { onMount, tick } from "svelte";
   import { emitLearningSignal } from "../../analytics/learningSignals";
   import { conceptCheckUiCopy } from "../../i18n/conceptCheck";
+  import { synchronizeLanguageSwitchUrl } from "../../i18n/languagePreference";
   import type { Locale } from "../../i18n/locales";
   import {
     conceptCheckProgressChangedEventName,
@@ -21,11 +22,14 @@
 
   const check = getConceptCheck(chapterId, locale);
   const copy = conceptCheckUiCopy[locale];
+  const conceptCheckAnchor = `concept-check-${chapterId}`;
   const explanationId = `concept-check-explanation-${check.id}`;
 
   let selectedOptionId = "";
   let submitted = false;
   let correct = false;
+  let reviewSuggested = false;
+  let reviewResolved = false;
   let explanationVisible = false;
   let showStorageWarning = false;
   let showClearConfirmation = false;
@@ -37,11 +41,13 @@
     result = snapshot.progress.results.find(
       (entry) => entry.chapterId === chapterId,
     );
-    showStorageWarning = !snapshot.storageAvailable;
+    showStorageWarning =
+      !snapshot.storageAvailable || !snapshot.schemaSupported;
   }
 
   onMount(() => {
     syncProgress();
+    synchronizeLanguageSwitchUrl();
 
     const handleProgressChanged = (): void => syncProgress();
     const handleStorage = (event: StorageEvent): void => {
@@ -55,6 +61,7 @@
       handleProgressChanged,
     );
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);
 
     return () => {
       window.removeEventListener(
@@ -62,12 +69,15 @@
         handleProgressChanged,
       );
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("hashchange", synchronizeLanguageSwitchUrl);
     };
   });
 
   function resetFeedback(): void {
     submitted = false;
     explanationVisible = false;
+    reviewSuggested = false;
+    reviewResolved = false;
   }
 
   async function submitAnswer(event: SubmitEvent): Promise<void> {
@@ -75,9 +85,12 @@
     if (!selectedOptionId) return;
 
     const attempt = result ? "retry" : "first";
+    const wasSuggestedForReview = result?.reviewSuggested ?? false;
     correct = selectedOptionId === check.correctOptionId;
     submitted = true;
     explanationVisible = false;
+    reviewSuggested = false;
+    reviewResolved = false;
 
     const writeResult = recordConceptCheckAttempt(chapterId, correct);
     if (writeResult.persisted) {
@@ -85,6 +98,8 @@
         (entry) => entry.chapterId === chapterId,
       );
       showStorageWarning = false;
+      reviewSuggested = !correct;
+      reviewResolved = correct && wasSuggestedForReview;
       dispatchConceptCheckProgressChanged(writeResult.progress);
     } else {
       showStorageWarning = true;
@@ -128,6 +143,8 @@
     selectedOptionId = "";
     submitted = false;
     explanationVisible = false;
+    reviewSuggested = false;
+    reviewResolved = false;
   }
 
   function clearProgress(): void {
@@ -141,6 +158,8 @@
     selectedOptionId = "";
     submitted = false;
     explanationVisible = false;
+    reviewSuggested = false;
+    reviewResolved = false;
     showStorageWarning = false;
     showClearConfirmation = false;
     dispatchConceptCheckProgressChanged(writeResult.progress);
@@ -148,6 +167,7 @@
 </script>
 
 <section
+  id={conceptCheckAnchor}
   class="section-band concept-check"
   data-testid="concept-check"
   data-concept-check-id={check.id}
@@ -160,6 +180,14 @@
     <p class="concept-check-recorded" data-testid="concept-check-recorded">
       {copy.recorded(result.attempts)}
     </p>
+    {#if result.reviewSuggested && !submitted}
+      <p
+        class="concept-check-review-note"
+        data-testid="concept-check-review-note"
+      >
+        {copy.reviewPendingNote}
+      </p>
+    {/if}
   {/if}
 
   <form onsubmit={submitAnswer}>
@@ -196,7 +224,15 @@
       <h3 bind:this={feedbackHeading} tabindex="-1">
         {correct ? copy.correctHeading : copy.incorrectHeading}
       </h3>
-      <p>{correct ? copy.correctSummary : copy.incorrectSummary}</p>
+      <p>
+        {correct
+          ? reviewResolved
+            ? copy.reviewResolvedSummary
+            : copy.correctSummary
+          : reviewSuggested
+            ? copy.reviewSuggestedSummary
+            : copy.incorrectSummary}
+      </p>
       <div class="concept-check-feedback-actions">
         <button
           class="button"

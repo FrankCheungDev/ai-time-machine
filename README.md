@@ -71,7 +71,11 @@ learner data. The in-page event contract and aggregate analyzer remain
 available without enabling network collection. See the
 [v1.5 release brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md), the
 [v1.6 brief](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md), and the
-[post-v1.6 analysis](docs/POST_V1_6_ITERATION_ANALYSIS.md).
+[post-v1.6 analysis](docs/POST_V1_6_ITERATION_ANALYSIS.md). The v1.7
+device-local review loop is now in review; it keeps chapter completion separate
+from deterministic, clearable review suggestions and does not enable network
+collection. See the
+[v1.7 implementation brief](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md).
 
 ## Deployment
 

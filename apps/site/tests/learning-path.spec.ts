@@ -317,6 +317,7 @@ test("home start and browse links remain available without JavaScript", async ({
   await expect(
     progress.getByRole("link", { name: "浏览全部章节" }),
   ).toHaveAttribute("href", "#learning-path");
+  await expect(page.getByTestId("home-review-queue")).toHaveCount(0);
   await context.close();
 });
 

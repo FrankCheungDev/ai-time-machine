@@ -81,3 +81,16 @@ Recreate them against the same local preview:
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:v1.6-evidence
 ```
+
+## Local Review Loop v1.7
+
+- `v1-7-local-review-home-desktop.png`: the Chinese home-page queue with three deterministic, device-local review suggestions.
+- `v1-7-local-review-english-mobile.png`: the expanded English review queue at 390px, including localized chapter links and the independent clear action.
+- `v1-7-review-deep-link-english-mobile.png`: the English Search concept-check deep link at 390px, with the local review state visible below the sticky header.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:v1.7-evidence
+```

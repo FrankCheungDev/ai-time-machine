@@ -60,6 +60,9 @@ test("privacy pages explain local records, disabled analytics, and no planned pr
     await expect(page.getByText(/visitor id|访客 id/i)).toBeVisible();
     await expect(page.getByText(/edge traffic|边缘流量/i)).toBeVisible();
     await expect(
+      page.getByText(/是否建议复习该章|suggests reviewing that chapter/i),
+    ).toBeVisible();
+    await expect(
       page.getByRole("link", {
         name: "Cloudflare Web Analytics: privacy-first analytics overview",
       }),

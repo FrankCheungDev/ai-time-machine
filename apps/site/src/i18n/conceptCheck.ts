@@ -13,6 +13,9 @@ export interface ConceptCheckUiCopy {
   hideExplanation: string;
   tryAgain: string;
   recorded: (attempts: number) => string;
+  reviewPendingNote: string;
+  reviewSuggestedSummary: string;
+  reviewResolvedSummary: string;
   clearProgress: string;
   clearConfirmation: string;
   confirmClear: string;
@@ -35,11 +38,15 @@ export const conceptCheckUiCopy = {
     hideExplanation: "收起解释",
     tryAgain: "再试一次",
     recorded: (attempts) => `本章自测已记录 · ${attempts} 次尝试`,
-    clearProgress: "清除全部自测记录",
-    clearConfirmation: "确定清除这台设备上的全部自测记录？",
+    reviewPendingNote: "本章在这台设备的复习建议中；再次答对即可移出。",
+    reviewSuggestedSummary:
+      "本章已加入这台设备的复习建议；再次答对后会自动移出。",
+    reviewResolvedSummary: "回答正确；本章已从这台设备的复习建议中移出。",
+    clearProgress: "清除全部自测与复习记录",
+    clearConfirmation: "确定清除这台设备上的全部自测与复习记录？",
     confirmClear: "确定清除",
     cancelClear: "取消",
-    storageWarning: "本设备无法保存自测记录；你仍可作答并查看解释。",
+    storageWarning: "本设备无法保存自测与复习记录；你仍可作答并查看解释。",
   },
   en: {
     eyebrow: "Concept Check",
@@ -57,11 +64,18 @@ export const conceptCheckUiCopy = {
     tryAgain: "Try again",
     recorded: (attempts) =>
       `Concept check recorded · ${attempts} ${attempts === 1 ? "attempt" : "attempts"}`,
-    clearProgress: "Clear all self-check records",
-    clearConfirmation: "Clear every self-check record stored on this device?",
+    reviewPendingNote:
+      "This chapter is suggested for review on this device. Answer correctly to remove it.",
+    reviewSuggestedSummary:
+      "This chapter is now suggested for review on this device. A correct answer removes it.",
+    reviewResolvedSummary:
+      "Correct. This chapter was removed from this device's review suggestions.",
+    clearProgress: "Clear all self-check and review records",
+    clearConfirmation:
+      "Clear every self-check and review record stored on this device?",
     confirmClear: "Clear records",
     cancelClear: "Cancel",
     storageWarning:
-      "This device cannot save self-check records. You can still answer and read the explanation.",
+      "This device cannot save self-check or review records. You can still answer and read the explanation.",
   },
 } satisfies Record<Locale, ConceptCheckUiCopy>;
