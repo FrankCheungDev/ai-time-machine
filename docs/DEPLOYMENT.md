@@ -95,10 +95,12 @@ Do not merge while any required check is pending or failing.
    and the three Chinese Timeline Guided Story deep links, including their
    English language-switch URL state.
 9. Run and document a real VoiceOver or NVDA spot check on the Timeline and
-   Lineage story regions. Confirm inactive stories are absent from reading and
-   Tab order and that `aria-live` does not announce hidden content. This manual
-   check remains pending for v1.6; automated accessibility assertions and the
-   production smoke do not close it.
+   Lineage story regions, the home review panel and clear confirmation, and a
+   chapter concept-check deep link. Confirm inactive stories are absent from
+   reading and Tab order, `aria-live` does not announce hidden content, controls
+   have understandable names and focus order, and deep links begin at a useful
+   reading position. This manual check remains pending; automated accessibility
+   assertions and the production smoke do not close it.
 10. Record any teaching simplification, source change, or deployment-layer
     privacy correction in the merged PR.
 
@@ -114,6 +116,20 @@ Automated v1.6 release evidence is tied to merge commit
 These automated checks verify deployment, privacy boundaries, and scripted
 interaction behavior. Final v1.6 release closure still requires the documented
 real VoiceOver or NVDA spot check described above.
+
+## v1.7 Release Record
+
+Automated v1.7 release evidence is tied to merge commit
+[`ff19b4a`](https://github.com/FrankCheungDev/ai-time-machine/commit/ff19b4accb4a7f8dc709c73d7ab870212ade8fe5):
+
+- [PR #37](https://github.com/FrankCheungDev/ai-time-machine/pull/37) merged the device-local review loop, backward-compatible review-state v2, localized review deep links, independent clearing, and its privacy / browser regressions.
+- [main CI run 31569422805](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31569422805) completed successfully with both `Quality and build` and `Chromium integration and visual tests` passing.
+- Cloudflare Pages reported a successful production deployment check for the same commit. Access-protected deployment URLs are intentionally omitted.
+- On 2026-08-12, `pnpm smoke:production:privacy` passed against production with 33 checked requests, all 26 bilingual chapter routes, 32 HTML response-policy checks, and the device-local path “incorrect answer → home review queue → concept-check deep link → correct answer → queue exit.” All three Timeline Guided Stories also restored their expected state; `missingNoTransform`, `missingNoConnectPolicy`, and `invalidScriptPolicy` were zero, while `forbiddenRequests` and `failures` were empty.
+
+These checks prove the tested release and privacy contracts, not improved learner
+outcomes. Final manual accessibility closure still requires the real VoiceOver
+or NVDA spot check described above.
 
 ## Rollback
 
@@ -131,7 +147,8 @@ deployment.
 
 ## Analytics Decision
 
-Client-side learning analytics remain disabled through v1.7. The site exposes a
+Client-side learning analytics remain disabled. Enabling collection in any
+future release requires a separate approval. The site exposes a
 typed, sanitized in-page event contract for chapter start, journey completion,
 concept check completion, explanation opening, and continuation, but no
 application listener sends those signals over the network.
