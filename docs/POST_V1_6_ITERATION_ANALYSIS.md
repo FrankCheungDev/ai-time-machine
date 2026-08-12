@@ -1,6 +1,6 @@
 # Post-v1.6 Iteration Analysis
 
-> 2026-08-11 更新：项目已选择“本地复习闭环”作为 v1.7 主切片，当前实现与本地自动验证见 [v1.7 Local Review Loop Brief](V1_7_LOCAL_REVIEW_LOOP_BRIEF.md)。本文其余候选仍作为后续排序依据，不代表同时进入开发。
+> 2026-08-12 更新：v1.7 已合并、部署并通过自动发布门；post-v1.7 的正式执行顺序已转入 [Post-v1.7 Iteration Plan](POST_V1_7_ITERATION_PLAN.md)。本文保留 `f6e4178` / `adb3927` 上的历史分析与当时决策依据，不再作为当前状态源。
 
 - 状态：历史方向分析；v1.6 稳定切片已完成并部署，自动发布门禁已完成，发布记录收口中（真实 VoiceOver 或 NVDA Guided Story spot check 待完成）
 - 日期：2026-08-08

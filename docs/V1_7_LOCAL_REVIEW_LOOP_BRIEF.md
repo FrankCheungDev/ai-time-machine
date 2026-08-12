@@ -1,9 +1,10 @@
 # v1.7 Local Review Loop Brief
 
-- 状态：功能实现与本地工程验证已完成；发布流程进行中，PR preview、main CI、生产部署与 production smoke 尚待真实环境验证
+- 状态：已合并并部署；本地与自动发布验证完成，真实 VoiceOver 或 NVDA 辅助技术检查待完成
 - 日期：2026-08-11
 - 规划基线：`main` @ `1d64cbc`（PR #36 已合并）
 - 实现分支：`codex/v1-7-local-review-loop`
+- 发布基线：`main` @ `ff19b4a`（PR #37）
 - 范围：向后兼容的复习状态 schema v2、本机复习队列、首页复习面板、章节自测深链、独立清除与发布验证
 - 决策性质：基于现有本地自测状态形成确定性复习建议；不声称已经由真实学习效果、用户研究或线上指标验证
 
@@ -273,7 +274,7 @@ v1 没有保存最后一次答案，因此无法判断“首次答错、第二�
 
 ### P2-01：隐私、浏览器与发布门禁
 
-状态：隐私说明、自动化、production smoke 脚本与本地视觉证据已完成并通过本地验证；PR preview、main CI、生产部署与 production smoke 待合并后执行。
+状态：隐私说明、自动化、production smoke 脚本、本地视觉证据、PR / main CI、生产部署与 production smoke 均已完成；真实辅助技术检查待完成。
 
 - 更新双语隐私说明；
 - 增加端到端闭环、双语、刷新、跨 tab、存储异常与无网络测试；
@@ -401,21 +402,21 @@ production smoke 的成功只证明受测生产路径与隐私边界，不证明
 
 以下项目在真实执行并取得结果前一律标记为待验证，不得根据计划或历史运行推断成功：
 
-| 发布证据                            | 当前状态     | 记录                                                                                                             |
-| ----------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `pnpm format` / `pnpm format:check` | 本地通过     | 2026-08-11；Prettier 写入后复核全部文件符合格式                                                                  |
-| `pnpm validate:data`                | 本地通过     | 2026-08-11；`packages/data` TypeScript `--noEmit` 通过                                                           |
-| `pnpm lint`                         | 本地通过     | 2026-08-11；Astro 155 files，0 errors / warnings / hints；workspace 与 scripts TypeScript 检查通过               |
-| `pnpm build`                        | 本地通过     | 2026-08-11；Astro 155 files 零诊断，37 个静态页面与 sitemap 构建完成                                             |
-| Vitest                              | 本地通过     | 2026-08-11；26 files / 208 tests：demo-core 5、data 61、site 142                                                 |
-| Chromium Playwright                 | 本地通过     | 2026-08-11；196 tests，包括 review-loop 定向 10 tests、旧客户端重写、unknown schema、防网络请求与移动端回归      |
-| 脚本语法与 diff whitespace          | 本地通过     | 2026-08-11；两个 v1.7 相关 `.mjs` 脚本均通过 `node --check`，`git diff --check` 通过                             |
-| 320px / 390px 与桌面视觉证据        | 本地通过     | 2026-08-11；三张 v1.7 证据已重抓并经独立 UX 复核，无剩余阻塞项；概念自测预期视觉快照已同步                       |
-| 独立测试只读复核                    | 本地通过     | 2026-08-11；兼容 schema、防覆写、跨 tab、重新入队、焦点、深链边界与 production-smoke 字段白名单无合并阻塞项      |
-| PR preview                          | 待验证       | Draft PR 创建后执行双语、移动、键盘与存储降级人工检查                                                            |
-| main CI                             | 待合并后验证 | 记录 run URL、合并提交与 job 结果                                                                                |
-| Cloudflare Pages production         | 待合并后验证 | 记录对应提交与 deployment check；当前生产仍为 v1.6                                                               |
-| `pnpm smoke:production:privacy`     | 待部署后验证 | 新脚本已完成本地语法与字段合同检查；真实生产闭环、header、请求数与 forbidden requests 不能在 v1.7 部署前声称通过 |
-| 真实 VoiceOver / NVDA spot check    | 待验证       | 自动化只覆盖语义、键盘、焦点和尺寸，不替代真实辅助技术检查                                                       |
+| 发布证据                            | 当前状态 | 记录                                                                                                                                        |
+| ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format` / `pnpm format:check` | 本地通过 | 2026-08-11；Prettier 写入后复核全部文件符合格式                                                                                             |
+| `pnpm validate:data`                | 本地通过 | 2026-08-11；`packages/data` TypeScript `--noEmit` 通过                                                                                      |
+| `pnpm lint`                         | 本地通过 | 2026-08-11；Astro 155 files，0 errors / warnings / hints；workspace 与 scripts TypeScript 检查通过                                          |
+| `pnpm build`                        | 本地通过 | 2026-08-11；Astro 155 files 零诊断，37 个静态页面与 sitemap 构建完成                                                                        |
+| Vitest                              | 本地通过 | 2026-08-11；26 files / 208 tests：demo-core 5、data 61、site 142                                                                            |
+| Chromium Playwright                 | 本地通过 | 2026-08-11；196 tests，包括 review-loop 定向 10 tests、旧客户端重写、unknown schema、防网络请求与移动端回归                                 |
+| 脚本语法与 diff whitespace          | 本地通过 | 2026-08-11；两个 v1.7 相关 `.mjs` 脚本均通过 `node --check`，`git diff --check` 通过                                                        |
+| 320px / 390px 与桌面视觉证据        | 本地通过 | 2026-08-11；三张 v1.7 证据已重抓并经独立 UX 复核，无剩余阻塞项；概念自测预期视觉快照已同步                                                  |
+| 独立测试只读复核                    | 本地通过 | 2026-08-11；兼容 schema、防覆写、跨 tab、重新入队、焦点、深链边界与 production-smoke 字段白名单无合并阻塞项                                 |
+| PR head remote checks               | 通过     | PR #37 头提交 `b18e328` 的 Quality / build、Chromium 与 Cloudflare Pages checks 成功；不据此补写未记录的人工 preview 审阅                   |
+| main CI                             | 通过     | PR #37 合并为 `ff19b4a`；main CI run 31569422805 的 Quality / build 与 Chromium jobs 成功                                                   |
+| Cloudflare Pages production         | 通过     | Cloudflare Pages 对 `ff19b4a` 的 production check 成功                                                                                      |
+| `pnpm smoke:production:privacy`     | 通过     | 2026-08-12；33 个请求、26 条双语章节路由、32 个 HTML policy 检查；本机复习进入 / 退出与三条故事通过，`forbiddenRequests`、`failures` 均为空 |
+| 真实 VoiceOver / NVDA spot check    | 待验证   | 自动化只覆盖语义、键盘、焦点和尺寸，不替代真实辅助技术检查                                                                                  |
 
-在上述证据完成前，v1.7 的准确状态始终是“实施或验证中”，不能写成“完成”“已发布”或“已证明有效”。即使全部工程门禁通过，也只能证明实现与受测发布行为符合本 brief；真实学习效果仍需要独立、获批的数据来源、观察窗口与研究设计。
+v1.7 已部署且自动发布门完成，但在真实 VoiceOver 或 NVDA 结果写回前，人工辅助技术发布收口仍未完成。即使全部工程门禁通过，也只能证明实现与受测发布行为符合本 brief，不能写成“已证明有效”；真实学习效果仍需要独立、获批的数据来源、观察窗口与研究设计。后续顺序见 [`POST_V1_7_ITERATION_PLAN.md`](POST_V1_7_ITERATION_PLAN.md)。
