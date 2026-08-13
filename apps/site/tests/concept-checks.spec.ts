@@ -115,8 +115,8 @@ test("initial hydration preserves focus that a user already moved", async ({
   await expect(island).toHaveAttribute("ssr", "");
   await firstRadio.click();
   await expect
-    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
-    .toBe(true);
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBeGreaterThan(0);
   releaseConceptCheckModule();
   await expect(island).not.toHaveAttribute("ssr", "");
   await page.evaluate(
@@ -155,6 +155,57 @@ async function delaySearchDemoHydration(page: Page): Promise<{
   return { searchDemoModuleRequested, releaseSearchDemoModule };
 }
 
+async function delayChapterJourneyHydration(page: Page): Promise<{
+  chapterJourneyModuleRequested: Promise<void>;
+  releaseChapterJourneyModule: () => void;
+}> {
+  let markChapterJourneyModuleRequested!: () => void;
+  const chapterJourneyModuleRequested = new Promise<void>((resolve) => {
+    markChapterJourneyModuleRequested = resolve;
+  });
+  let releaseChapterJourneyModule!: () => void;
+  const chapterJourneyModuleReleased = new Promise<void>((resolve) => {
+    releaseChapterJourneyModule = resolve;
+  });
+  await page.route("**/_astro/ChapterJourney.*.js", async (route) => {
+    markChapterJourneyModuleRequested();
+    await chapterJourneyModuleReleased;
+    await route.continue();
+  });
+
+  return { chapterJourneyModuleRequested, releaseChapterJourneyModule };
+}
+
+async function failChapterJourneyHydrationAfterRelease(page: Page): Promise<{
+  chapterJourneyModuleRequested: Promise<void>;
+  releaseChapterJourneyFailure: () => void;
+  getAttempts: () => number;
+}> {
+  let markChapterJourneyModuleRequested!: () => void;
+  const chapterJourneyModuleRequested = new Promise<void>((resolve) => {
+    markChapterJourneyModuleRequested = resolve;
+  });
+  let releaseChapterJourneyFailure!: () => void;
+  const chapterJourneyFailureReleased = new Promise<void>((resolve) => {
+    releaseChapterJourneyFailure = resolve;
+  });
+  let attempts = 0;
+  await page.route("**/_astro/ChapterJourney.*.js", async (route) => {
+    attempts += 1;
+    if (attempts === 1) {
+      markChapterJourneyModuleRequested();
+      await chapterJourneyFailureReleased;
+    }
+    await route.abort("failed");
+  });
+
+  return {
+    chapterJourneyModuleRequested,
+    releaseChapterJourneyFailure,
+    getAttempts: () => attempts,
+  };
+}
+
 test("deep-link focus waits for the earlier demo island to hydrate", async ({
   page,
 }) => {
@@ -190,6 +241,226 @@ test("deep-link focus waits for the earlier demo island to hydrate", async ({
   await expect(heading).toBeFocused();
 });
 
+test("deep-link focus waits for the later chapter journey island to hydrate", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { chapterJourneyModuleRequested, releaseChapterJourneyModule } =
+    await delayChapterJourneyHydration(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await chapterJourneyModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const journeyIsland = page
+    .locator('astro-island[component-url*="ChapterJourney"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await expect(journeyIsland).toHaveAttribute("ssr", "");
+  await expect(heading).not.toBeFocused();
+
+  releaseChapterJourneyModule();
+  await expect(journeyIsland).not.toHaveAttribute("ssr", "");
+  await expect(heading).toBeFocused();
+  await expect(
+    page.locator('main astro-island[client="load"][ssr]'),
+  ).toHaveCount(0);
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(heading).toBeFocused();
+});
+
+test("a later chapter journey hydration error releases deep-link focus", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const {
+    chapterJourneyModuleRequested,
+    releaseChapterJourneyFailure,
+    getAttempts,
+  } = await failChapterJourneyHydrationAfterRelease(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await chapterJourneyModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const journeyIsland = page
+    .locator('astro-island[component-url*="ChapterJourney"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await expect(journeyIsland).toHaveAttribute("ssr", "");
+  await expect(heading).not.toBeFocused();
+
+  releaseChapterJourneyFailure();
+  await expect
+    .poll(() =>
+      journeyIsland.evaluate((island) =>
+        window.__aiHistoryHydrationErrors?.has(island as HTMLElement),
+      ),
+    )
+    .toBe(true);
+  expect(getAttempts()).toBe(2);
+  await expect(journeyIsland).toHaveAttribute("ssr", "");
+  await expect(heading).toBeFocused();
+});
+
+test("incidental journey focus does not replace the home review deep link", async ({
+  page,
+}) => {
+  await page.addInitScript((key) => {
+    window.localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        reviewVersion: 2,
+        results: [
+          {
+            chapterId: "search",
+            firstCorrect: false,
+            attempts: 1,
+            explanationViewed: false,
+            reviewSuggested: true,
+          },
+        ],
+      }),
+    );
+  }, progressKey);
+  const { chapterJourneyModuleRequested, releaseChapterJourneyModule } =
+    await delayChapterJourneyHydration(page);
+  await page.goto("/");
+  await page
+    .getByRole("link", { name: "第 01 章 搜索树 / A* 前往自测" })
+    .click();
+  await chapterJourneyModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const journeyIsland = page
+    .locator('astro-island[component-url*="ChapterJourney"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  const languageSwitch = page.getByRole("link", {
+    name: "Switch language to English",
+  });
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await languageSwitch.focus();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBe(0);
+  await expect(heading).not.toBeFocused();
+
+  releaseChapterJourneyModule();
+  await expect(journeyIsland).not.toHaveAttribute("ssr", "");
+  await expect(heading).toBeFocused();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(heading).toBeFocused();
+});
+
+test("late chapter journey hydration preserves target-page user input", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { chapterJourneyModuleRequested, releaseChapterJourneyModule } =
+    await delayChapterJourneyHydration(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await chapterJourneyModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const journeyIsland = page
+    .locator('astro-island[component-url*="ChapterJourney"]')
+    .first();
+  const firstRadio = check.getByRole("radio").first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await firstRadio.click();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBeGreaterThan(0);
+
+  releaseChapterJourneyModule();
+  await expect(journeyIsland).not.toHaveAttribute("ssr", "");
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(firstRadio).toBeFocused();
+  await expect(heading).not.toBeFocused();
+});
+
+test("hash-change deep-link focus preserves a radio clicked while the journey hydrates", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { chapterJourneyModuleRequested, releaseChapterJourneyModule } =
+    await delayChapterJourneyHydration(page);
+  await page.goto("/chapters/search/#away-from-concept-check");
+  await chapterJourneyModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const journeyIsland = page
+    .locator('astro-island[component-url*="ChapterJourney"]')
+    .first();
+  const firstRadio = check.getByRole("radio").first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await expect(journeyIsland).toHaveAttribute("ssr", "");
+  await expect(heading).not.toBeFocused();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBe(0);
+
+  await page.evaluate(() => {
+    window.location.hash = "#concept-check-search";
+  });
+  await expect(page).toHaveURL(/#concept-check-search$/);
+  await expect(heading).not.toBeFocused();
+  await firstRadio.click();
+  await expect(firstRadio).toBeFocused();
+  await expect(firstRadio).toBeChecked();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBeGreaterThan(0);
+
+  releaseChapterJourneyModule();
+  await expect(journeyIsland).not.toHaveAttribute("ssr", "");
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(firstRadio).toBeFocused();
+  await expect(heading).not.toBeFocused();
+});
+
 test("late demo hydration does not replace focus that a user moved", async ({
   page,
 }) => {
@@ -208,8 +479,8 @@ test("late demo hydration does not replace focus that a user moved", async ({
   await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
   await firstRadio.click();
   await expect
-    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
-    .toBe(true);
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBeGreaterThan(0);
 
   releaseSearchDemoModule();
   await expect(demoIsland).not.toHaveAttribute("ssr", "");
@@ -247,8 +518,8 @@ test("incidental focus does not override the initial concept-check deep link", a
   await languageSwitch.focus();
   await expect(languageSwitch).toBeFocused();
   await expect
-    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
-    .toBe(false);
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBe(0);
 
   releaseSearchDemoModule();
   await expect(demoIsland).not.toHaveAttribute("ssr", "");
@@ -368,8 +639,8 @@ test("the home review link resets interaction state and focuses the deep-linked 
   });
   await expect(page).toHaveURL(/\/chapters\/search\/#concept-check-search$/);
   await expect
-    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
-    .toBe(false);
+    .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
+    .toBe(0);
   await expect(heading).toBeFocused();
 });
 

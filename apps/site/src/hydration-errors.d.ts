@@ -3,6 +3,6 @@ export {};
 declare global {
   interface Window {
     __aiHistoryHydrationErrors?: WeakSet<HTMLElement>;
-    __aiHistoryUserInteracted?: boolean;
+    __aiHistoryInteractionEpoch?: number;
   }
 }

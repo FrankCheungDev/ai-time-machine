@@ -50,91 +50,128 @@
       !snapshot.storageAvailable || !snapshot.schemaSupported;
   }
 
-  function focusDeepLinkedCheck(preserveExistingFocus: boolean): void {
+  function focusDeepLinkedCheck(
+    initialRequest: boolean,
+    interactionEpoch: number,
+  ): void {
+    const currentEpoch = window.__aiHistoryInteractionEpoch ?? 0;
     if (
       window.location.hash !== `#${conceptCheckAnchor}` ||
-      (preserveExistingFocus && window.__aiHistoryUserInteracted === true)
+      (initialRequest ? currentEpoch > 0 : currentEpoch !== interactionEpoch)
     )
       return;
     conceptCheckHeading?.focus({ preventScroll: true });
   }
 
-  function waitForEarlierIslands(preserveExistingFocus: boolean): () => void {
+  function waitForPageIslands(initialRequest: boolean): () => void {
     const request = ++deepLinkFocusRequest;
+    const interactionEpoch = window.__aiHistoryInteractionEpoch ?? 0;
     const currentIsland = conceptCheckHeading?.closest("astro-island");
     const main = conceptCheckHeading?.closest("main");
-    if (!currentIsland || !main) {
-      if (request === deepLinkFocusRequest)
-        focusDeepLinkedCheck(preserveExistingFocus);
-      return () => {};
-    }
+    let firstFrame = 0;
+    let secondFrame = 0;
+    let stopped = false;
+    let stopWaitingForDom = (): void => {};
 
-    const allIslands = Array.from(
-      main.querySelectorAll<HTMLElement>('astro-island[client="load"]'),
-    );
-    const currentIndex = allIslands.indexOf(currentIsland as HTMLElement);
-    const pendingIslands = allIslands
-      .slice(0, currentIndex < 0 ? 0 : currentIndex)
-      .filter(
+    const scheduleFocus = (): void => {
+      if (stopped || request !== deepLinkFocusRequest) return;
+      firstFrame = requestAnimationFrame(() => {
+        firstFrame = 0;
+        secondFrame = requestAnimationFrame(() => {
+          secondFrame = 0;
+          if (stopped || request !== deepLinkFocusRequest) return;
+          focusDeepLinkedCheck(initialRequest, interactionEpoch);
+        });
+      });
+    };
+
+    const beginWaiting = (): (() => void) => {
+      if (!currentIsland || !main) {
+        scheduleFocus();
+        return () => {};
+      }
+
+      const pendingIslands = Array.from(
+        main.querySelectorAll<HTMLElement>('astro-island[client="load"]'),
+      ).filter(
         (island) =>
           island.hasAttribute("ssr") &&
           !window.__aiHistoryHydrationErrors?.has(island),
       );
 
-    if (pendingIslands.length === 0) {
-      if (request === deepLinkFocusRequest)
-        focusDeepLinkedCheck(preserveExistingFocus);
-      return () => {};
-    }
+      if (pendingIslands.length === 0) {
+        scheduleFocus();
+        return () => {};
+      }
 
-    let remaining = pendingIslands.length;
-    let settled = false;
-    const listeners = new Map<HTMLElement, () => void>();
-    const settleIsland = (island: HTMLElement): void => {
-      if (settled) return;
-      const listener = listeners.get(island);
-      if (!listener) return;
-      island.removeEventListener("astro:hydrate", listener);
-      island.removeEventListener("astro:hydration-error", listener);
-      listeners.delete(island);
-      remaining -= 1;
-      if (remaining > 0) return;
-      settled = true;
-      if (request === deepLinkFocusRequest)
-        focusDeepLinkedCheck(preserveExistingFocus);
+      let remaining = pendingIslands.length;
+      let settled = false;
+      const listeners = new Map<HTMLElement, (event: Event) => void>();
+      const settleIsland = (island: HTMLElement): void => {
+        if (settled) return;
+        const listener = listeners.get(island);
+        if (!listener) return;
+        island.removeEventListener("astro:hydrate", listener);
+        island.removeEventListener("astro:hydration-error", listener);
+        listeners.delete(island);
+        remaining -= 1;
+        if (remaining > 0) return;
+        settled = true;
+        scheduleFocus();
+      };
+
+      for (const island of pendingIslands) {
+        const listener = (event: Event): void => {
+          if (event.target === island) settleIsland(island);
+        };
+        listeners.set(island, listener);
+        island.addEventListener("astro:hydrate", listener);
+        island.addEventListener("astro:hydration-error", listener);
+      }
+
+      for (const island of pendingIslands) {
+        if (
+          !island.hasAttribute("ssr") ||
+          window.__aiHistoryHydrationErrors?.has(island)
+        )
+          settleIsland(island);
+      }
+
+      return () => {
+        settled = true;
+        for (const [island, listener] of listeners) {
+          island.removeEventListener("astro:hydrate", listener);
+          island.removeEventListener("astro:hydration-error", listener);
+        }
+        listeners.clear();
+      };
     };
 
-    for (const island of pendingIslands) {
-      const listener = (): void => settleIsland(island);
-      listeners.set(island, listener);
-      island.addEventListener("astro:hydrate", listener, { once: true });
-      island.addEventListener("astro:hydration-error", listener, {
+    if (document.readyState === "loading") {
+      const handleReady = (): void => {
+        stopWaitingForDom = beginWaiting();
+      };
+      document.addEventListener("DOMContentLoaded", handleReady, {
         once: true,
       });
-    }
-
-    for (const island of pendingIslands) {
-      if (
-        !island.hasAttribute("ssr") ||
-        window.__aiHistoryHydrationErrors?.has(island)
-      )
-        settleIsland(island);
+      stopWaitingForDom = () =>
+        document.removeEventListener("DOMContentLoaded", handleReady);
+    } else {
+      stopWaitingForDom = beginWaiting();
     }
 
     return () => {
-      settled = true;
-      for (const [island, listener] of listeners) {
-        island.removeEventListener("astro:hydrate", listener);
-        island.removeEventListener("astro:hydration-error", listener);
-      }
-      listeners.clear();
+      stopped = true;
+      stopWaitingForDom();
+      if (firstFrame) cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
     };
   }
 
   onMount(() => {
     syncProgress();
     synchronizeLanguageSwitchUrl();
-    let stopWaitingForEarlierIslands = waitForEarlierIslands(true);
+    let stopWaitingForPageIslands = waitForPageIslands(true);
 
     const handleProgressChanged = (): void => syncProgress();
     const handleStorage = (event: StorageEvent): void => {
@@ -143,9 +180,9 @@
       }
     };
     const handleHashChange = (): void => {
-      stopWaitingForEarlierIslands();
+      stopWaitingForPageIslands();
       synchronizeLanguageSwitchUrl();
-      stopWaitingForEarlierIslands = waitForEarlierIslands(false);
+      stopWaitingForPageIslands = waitForPageIslands(false);
     };
 
     window.addEventListener(
@@ -156,7 +193,7 @@
     window.addEventListener("hashchange", handleHashChange);
 
     return () => {
-      stopWaitingForEarlierIslands();
+      stopWaitingForPageIslands();
       window.removeEventListener(
         conceptCheckProgressChangedEventName,
         handleProgressChanged,
