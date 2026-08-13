@@ -154,6 +154,12 @@ test("migrates v1 suggestions in learning-path order and resolves Search across 
   const conceptCheck = page.getByTestId("concept-check");
   await expect(conceptCheck).toHaveAttribute("id", "concept-check-search");
   await expect(
+    conceptCheck.getByRole("heading", {
+      level: 2,
+      name: "用一个问题检验核心直觉",
+    }),
+  ).toBeFocused();
+  await expect(
     conceptCheck.getByTestId("concept-check-review-note"),
   ).toBeVisible();
 
@@ -180,6 +186,9 @@ test("migrates v1 suggestions in learning-path order and resolves Search across 
     })
     .check();
   await conceptCheck.getByRole("button", { name: "提交答案" }).click();
+  await expect(
+    conceptCheck.getByRole("heading", { level: 3, name: "回答正确" }),
+  ).toBeFocused();
   await expect(
     conceptCheck.getByText("回答正确；本章已从这台设备的复习建议中移出。"),
   ).toBeVisible();
@@ -260,6 +269,12 @@ test("clearing self-check and review records preserves learning completion", asy
     name: "确定清除",
     exact: true,
   });
+  const clearDescription =
+    "确定删除这台设备上的全部自测与复习记录？章节完成进度会保留。";
+  await expect(confirmClear).toHaveAccessibleDescription(clearDescription);
+  await expect(
+    reviewPanel.getByRole("button", { name: "取消", exact: true }),
+  ).toHaveAccessibleDescription(clearDescription);
   await expect(confirmClear).toBeFocused();
   await reviewPanel.getByRole("button", { name: "取消", exact: true }).click();
   const clearTrigger = reviewPanel.getByRole("button", {

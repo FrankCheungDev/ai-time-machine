@@ -32,6 +32,7 @@
   export let locale: Locale;
 
   const copy = learningUiCopy[locale];
+  const reviewClearConfirmationId = "home-review-clear-confirmation";
   const startChapter = getLocalizedLearningChapter("overview", locale);
   const reviewLinks = [
     {
@@ -275,11 +276,14 @@
         {#if hasConceptRecords}
           <div class="home-review-clear">
             {#if showReviewClearConfirmation}
-              <span>{copy.clearReviewConfirmation}</span>
+              <span id={reviewClearConfirmationId}
+                >{copy.clearReviewConfirmation}</span
+              >
               <button
                 bind:this={confirmClearReviewButton}
                 class="button subtle"
                 type="button"
+                aria-describedby={reviewClearConfirmationId}
                 onclick={clearReviewRecords}
               >
                 {copy.confirmClearReview}
@@ -287,6 +291,7 @@
               <button
                 class="button subtle"
                 type="button"
+                aria-describedby={reviewClearConfirmationId}
                 onclick={cancelReviewClearConfirmation}
               >
                 {copy.cancelClearReview}

@@ -24,6 +24,7 @@
   const copy = conceptCheckUiCopy[locale];
   const conceptCheckAnchor = `concept-check-${chapterId}`;
   const explanationId = `concept-check-explanation-${check.id}`;
+  const clearConfirmationId = `concept-check-clear-confirmation-${check.id}`;
 
   let selectedOptionId = "";
   let submitted = false;
@@ -34,7 +35,10 @@
   let showStorageWarning = false;
   let showClearConfirmation = false;
   let result: ConceptCheckResult | undefined;
+  let conceptCheckHeading: HTMLHeadingElement | undefined;
   let feedbackHeading: HTMLHeadingElement | undefined;
+  let clearTrigger: HTMLButtonElement | undefined;
+  let confirmClearButton: HTMLButtonElement | undefined;
 
   function syncProgress(): void {
     const snapshot = readConceptCheckProgress();
@@ -45,9 +49,29 @@
       !snapshot.storageAvailable || !snapshot.schemaSupported;
   }
 
+  function hasMeaningfulFocus(): boolean {
+    const activeElement = document.activeElement;
+    return (
+      activeElement !== null &&
+      activeElement !== document.body &&
+      activeElement !== document.documentElement &&
+      activeElement !== conceptCheckHeading
+    );
+  }
+
+  function focusDeepLinkedCheck(preserveExistingFocus: boolean): void {
+    if (
+      window.location.hash !== `#${conceptCheckAnchor}` ||
+      (preserveExistingFocus && hasMeaningfulFocus())
+    )
+      return;
+    conceptCheckHeading?.focus({ preventScroll: true });
+  }
+
   onMount(() => {
     syncProgress();
     synchronizeLanguageSwitchUrl();
+    focusDeepLinkedCheck(true);
 
     const handleProgressChanged = (): void => syncProgress();
     const handleStorage = (event: StorageEvent): void => {
@@ -55,13 +79,17 @@
         syncProgress();
       }
     };
+    const handleHashChange = (): void => {
+      synchronizeLanguageSwitchUrl();
+      focusDeepLinkedCheck(false);
+    };
 
     window.addEventListener(
       conceptCheckProgressChangedEventName,
       handleProgressChanged,
     );
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("hashchange", synchronizeLanguageSwitchUrl);
+    window.addEventListener("hashchange", handleHashChange);
 
     return () => {
       window.removeEventListener(
@@ -69,7 +97,7 @@
         handleProgressChanged,
       );
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("hashchange", synchronizeLanguageSwitchUrl);
+      window.removeEventListener("hashchange", handleHashChange);
     };
   });
 
@@ -147,6 +175,18 @@
     reviewResolved = false;
   }
 
+  async function openClearConfirmation(): Promise<void> {
+    showClearConfirmation = true;
+    await tick();
+    confirmClearButton?.focus();
+  }
+
+  async function cancelClearConfirmation(): Promise<void> {
+    showClearConfirmation = false;
+    await tick();
+    clearTrigger?.focus();
+  }
+
   function clearProgress(): void {
     const writeResult = resetConceptCheckProgress();
     if (!writeResult.persisted) {
@@ -173,7 +213,7 @@
   data-concept-check-id={check.id}
 >
   <p class="eyebrow">{copy.eyebrow}</p>
-  <h2>{copy.heading}</h2>
+  <h2 bind:this={conceptCheckHeading} tabindex="-1">{copy.heading}</h2>
   <p class="concept-check-note">{copy.nonBlockingNote}</p>
 
   {#if result}
@@ -267,22 +307,30 @@
 
   <div class="concept-check-clear">
     {#if showClearConfirmation}
-      <span>{copy.clearConfirmation}</span>
-      <button class="button subtle" type="button" onclick={clearProgress}>
+      <span id={clearConfirmationId}>{copy.clearConfirmation}</span>
+      <button
+        bind:this={confirmClearButton}
+        class="button subtle"
+        type="button"
+        aria-describedby={clearConfirmationId}
+        onclick={clearProgress}
+      >
         {copy.confirmClear}
       </button>
       <button
         class="button subtle"
         type="button"
-        onclick={() => (showClearConfirmation = false)}
+        aria-describedby={clearConfirmationId}
+        onclick={cancelClearConfirmation}
       >
         {copy.cancelClear}
       </button>
     {:else}
       <button
+        bind:this={clearTrigger}
         class="button subtle"
         type="button"
-        onclick={() => (showClearConfirmation = true)}
+        onclick={openClearConfirmation}
       >
         {copy.clearProgress}
       </button>

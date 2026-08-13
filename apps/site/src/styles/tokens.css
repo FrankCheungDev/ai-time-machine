@@ -623,6 +623,11 @@ main {
   margin: 0;
 }
 
+.concept-check > h2:focus {
+  outline: 3px solid rgba(52, 105, 166, 0.32);
+  outline-offset: 4px;
+}
+
 .concept-check-note {
   color: var(--color-muted);
 }
