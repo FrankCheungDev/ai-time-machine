@@ -316,27 +316,40 @@ test("a later chapter journey hydration error releases deep-link focus", async (
   await expect(heading).toBeFocused();
 });
 
-test("incidental journey focus does not replace the home review deep link", async ({
+test("completed chapter hydration omits a live region and preserves the home review deep link", async ({
   page,
 }) => {
-  await page.addInitScript((key) => {
-    window.localStorage.setItem(
-      key,
-      JSON.stringify({
-        version: 1,
-        reviewVersion: 2,
-        results: [
-          {
-            chapterId: "search",
-            firstCorrect: false,
-            attempts: 1,
-            explanationViewed: false,
-            reviewSuggested: true,
-          },
-        ],
-      }),
-    );
-  }, progressKey);
+  await page.addInitScript(
+    ({ conceptProgressKey, learningProgressKey }) => {
+      window.localStorage.setItem(
+        conceptProgressKey,
+        JSON.stringify({
+          version: 1,
+          reviewVersion: 2,
+          results: [
+            {
+              chapterId: "search",
+              firstCorrect: false,
+              attempts: 1,
+              explanationViewed: false,
+              reviewSuggested: true,
+            },
+          ],
+        }),
+      );
+      window.localStorage.setItem(
+        learningProgressKey,
+        JSON.stringify({
+          version: 1,
+          completedChapterIds: ["search"],
+        }),
+      );
+    },
+    {
+      conceptProgressKey: progressKey,
+      learningProgressKey: "ai-history-learning-progress",
+    },
+  );
   const { chapterJourneyModuleRequested, releaseChapterJourneyModule } =
     await delayChapterJourneyHydration(page);
   await page.goto("/");
@@ -350,6 +363,8 @@ test("incidental journey focus does not replace the home review deep link", asyn
   const journeyIsland = page
     .locator('astro-island[component-url*="ChapterJourney"]')
     .first();
+  const journey = page.getByTestId("chapter-journey");
+  const journeyStatus = journey.locator(".chapter-journey-status");
   const heading = check.getByRole("heading", {
     level: 2,
     name: "用一个问题检验核心直觉",
@@ -358,6 +373,7 @@ test("incidental journey focus does not replace the home review deep link", asyn
     name: "Switch language to English",
   });
   await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
   await languageSwitch.focus();
   await expect
     .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
@@ -366,6 +382,10 @@ test("incidental journey focus does not replace the home review deep link", asyn
 
   releaseChapterJourneyModule();
   await expect(journeyIsland).not.toHaveAttribute("ssr", "");
+  await expect(
+    journey.getByRole("heading", { level: 2, name: "本章已完成" }),
+  ).toBeVisible();
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
   await expect(heading).toBeFocused();
   await page.evaluate(
     () =>

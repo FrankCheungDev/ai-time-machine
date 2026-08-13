@@ -162,7 +162,7 @@
 </script>
 
 <section class="chapter-journey" data-testid="chapter-journey">
-  <div class="chapter-journey-status" aria-live="polite">
+  <div class="chapter-journey-status">
     {#if currentChapterComplete}
       <h2 bind:this={finalCompletionHeading} tabindex="-1">
         {pathComplete ? copy.pathComplete : copy.currentChapterComplete}

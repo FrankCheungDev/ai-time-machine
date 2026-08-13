@@ -527,6 +527,10 @@ test("falls back to no-save navigation after a storage write fails", async ({
   await expect(journey.getByTestId("storage-warning")).toContainText(
     "本设备无法保存学习进度",
   );
+  await expect(journey.getByTestId("storage-warning")).toHaveAttribute(
+    "aria-live",
+    "polite",
+  );
   await expect(completionLink).toContainText("继续下一章（不保存进度）");
 
   await completionLink.click();
@@ -589,15 +593,65 @@ test("completing Safety alone returns to the first incomplete chapter", async ({
   page,
 }) => {
   await page.goto("/chapters/safety/");
+  const journey = page.getByTestId("chapter-journey");
+  const journeyStatus = journey.locator(".chapter-journey-status");
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
+
   await page.getByTestId("complete-and-continue").click();
 
-  const journey = page.getByTestId("chapter-journey");
   const completionHeading = journey.getByRole("heading", {
     name: "本章已完成",
   });
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionHeading).toHaveAttribute("tabindex", "-1");
   await expect(completionHeading).toBeFocused();
   await expect(journey.getByText("学习主线已完成")).toHaveCount(0);
   await expect(
     journey.getByRole("link", { name: "继续未完成章节：总览" }),
   ).toHaveAttribute("href", "/chapters/overview/");
+});
+
+test("completing Safety focuses the whole-path completion heading", async ({
+  page,
+}) => {
+  await seedLearningProgress(
+    page,
+    chapterCases.filter(({ id }) => id !== "safety").map(({ id }) => id),
+  );
+  await page.goto("/chapters/safety/");
+
+  const journey = page.getByTestId("chapter-journey");
+  const journeyStatus = journey.locator(".chapter-journey-status");
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
+
+  await page.getByTestId("complete-and-continue").click();
+
+  const completionHeading = journey.getByRole("heading", {
+    name: "学习主线已完成",
+  });
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionHeading).toHaveAttribute("tabindex", "-1");
+  await expect(completionHeading).toBeFocused();
+});
+
+test("failed final completion keeps only the storage warning as a live region", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Storage.prototype.setItem = () => {
+      throw new Error("storage unavailable");
+    };
+  });
+  await page.goto("/chapters/safety/");
+
+  const journey = page.getByTestId("chapter-journey");
+  const completionButton = journey.getByTestId("complete-and-continue");
+  await completionButton.click();
+
+  await expect(completionButton).toBeFocused();
+  await expect(journey.getByRole("heading", { level: 2 })).toHaveCount(0);
+  await expect(journey.getByTestId("storage-warning")).toHaveAttribute(
+    "aria-live",
+    "polite",
+  );
 });
