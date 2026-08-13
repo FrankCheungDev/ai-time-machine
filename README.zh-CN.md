@@ -7,10 +7,11 @@
 
 ## 当前版本
 
-v1.7 已由 PR #37 合入 `main@ff19b4a` 并部署；main CI run 31569422805、
-Cloudflare Pages production check 和 2026-08-12 生产隐私与交互 smoke 均已
-通过。自动发布门已完成；最终发布收口仍等待一次有记录的真实 VoiceOver 或 NVDA
-Guided Story 与本机复习表面 spot check。
+v1.7 已由 `main@79daf69` 部署。PR #37 交付本机复习闭环，PR #39–#43
+关闭 Guided Story 与复习流程共用的 VoiceOver 缺陷；PR head CI run
+31703100783、main CI run 31703484976、Cloudflare Pages production check、
+2026-08-12 生产隐私 / 交互 smoke 与 2026-08-13 五项生产 VoiceOver 检查均已
+通过；生产当前提供收口资源 `ChapterJourney.ClIOeOOI.js`。
 
 - 基于 Astro、MDX 与 Svelte islands 的纯静态站点。
 - 从总览到 Safety / Eval 的 13 个章节，其中反馈学习位于 CNN 与 Attention 之间。
@@ -64,15 +65,15 @@ Post-MVP 的实施顺序、依赖、质量门禁和完成定义见
 [`docs/POST_MVP_ITERATION_PROCESS.md`](docs/POST_MVP_ITERATION_PROCESS.md)。
 发布收口、章节扩展架构、Safety / Eval、图源资产库、事件级历史、因果图谱导航、
 基础模型生命周期章节、章节自测与 v1.5 反馈学习切片已经实现并发布。v1.6 引导式
-因果学习、稳定性修复与 v1.7 本机复习闭环已部署；自动化发布证据已经闭合，真实读屏
-spot check 仍待完成。P2-05 真实使用闭环继续暂停：provider 决策重新开放，
+因果学习、稳定性修复与 v1.7 本机复习闭环均已完成并发布；共用的自动化与真实
+VoiceOver 发布门已经闭合。P2-05 真实使用闭环继续暂停：provider 决策重新开放，
 没有获批或排期中的数据来源，自动化流量不会被当作学习者数据。页面内事件契约与聚合
 分析器继续保留，但不会因此启用网络采集。发布记录与后续方案见
 [`v1.5 反馈学习与引导式因果路径`](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)、
 [`v1.6 引导式因果学习实施与发布说明`](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)以及
-[`v1.7 本机复习闭环 brief`](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md)。后续顺序为发布与
-辅助技术收口、三个独立的 v1.8 工程质量基线，以及另案批准的 v1.9 Timeline 单故事
-Reader 原型；范围、依赖、非目标与证据门见
+[`v1.7 本机复习闭环 brief`](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md)。后续顺序从
+v1.8-01 路由 JavaScript 基线与回退门开始，再完成另外两项独立工程质量基线和另案
+批准的 v1.9 Timeline 单故事 Reader 原型；范围、依赖、非目标与证据门见
 [`post-v1.7 迭代方案`](docs/POST_V1_7_ITERATION_PLAN.md)。
 
 ## 部署

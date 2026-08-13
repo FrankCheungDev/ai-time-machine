@@ -6,11 +6,12 @@ extend the first version described in
 
 ## Current Surface
 
-v1.7 is deployed from `main` at `ff19b4a` (PR #37). Main CI run 31569422805,
-the Cloudflare Pages production check, and the 2026-08-12 production privacy and
-interaction smoke all passed. Automated release gates are complete. A
-documented real VoiceOver or NVDA spot check of the Guided Story and
-device-local review surfaces is the remaining release-closure gate.
+v1.7 is deployed from `main` at `79daf69`. PR #37 delivered the device-local
+review loop, and PRs #39–#43 closed the shared Guided Story and review-flow
+VoiceOver findings. PR-head CI run 31703100783, main CI run 31703484976,
+Cloudflare Pages production, the 2026-08-12 production privacy / interaction
+smoke, and five documented production VoiceOver checks passed on 2026-08-13.
+Production serves the closing `ChapterJourney.ClIOeOOI.js` asset.
 
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
@@ -66,26 +67,31 @@ follows the staged process in
   rewards, preference feedback, and runtime observations, then connects the
   existing history through one curated, shareable feedback-learning story. See
   [the v1.5 teaching brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md).
-- **v1.6 — Deployed; manual accessibility closure pending — Guided causal
+- **v1.6 — Complete and published — Guided causal
   learning:** `main` at `adb3927` contains a discoverable home-page entry,
   chapter-to-history context links, three reviewed stories built only from the
   existing 27 events, and stability fixes for hidden story details and sticky
   header deep links. Main CI run 31247555472, the Cloudflare Pages check, and
-  the three-story production smoke passed on 2026-08-08. Final release closure
-  waits only for a documented real VoiceOver or NVDA spot check. See
+  the three-story production smoke passed on 2026-08-08. The shared production
+  VoiceOver gate closed on 2026-08-13 after the fixes through PR #43. See
   [the v1.6 implementation and release brief](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md) and
   [the post-v1.6 iteration analysis](docs/POST_V1_6_ITERATION_ANALYSIS.md).
-- **v1.7 — Deployed; manual accessibility closure pending — Device-local review loop:** evolves the concept-check
+- **v1.7 — Complete and published — Device-local review loop:** evolves the concept-check
   record through an old-client-compatible review-state v2, derives a
   learning-path-ordered review queue, links the home page back to each chapter
   check, and keeps completion, clearing, privacy, and network boundaries
   independent. PR #37 merged as `ff19b4a`; main CI run 31569422805, Cloudflare
   Pages production, and the 2026-08-12 production privacy / interaction smoke
-  passed. The documented real VoiceOver or NVDA spot check remains open. See
+  passed. PRs #39–#43 then fixed the production VoiceOver findings; PR-head CI
+  run 31703100783, main CI run 31703484976, the `79daf69` deployment serving
+  `ChapterJourney.ClIOeOOI.js`, and five real VoiceOver checks passed on
+  2026-08-13. See
   [the v1.7 implementation brief](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md).
-- **v1.8 — Planned — Engineering quality baselines:** three independent small
-  PRs establish reproducible transitive-gzip budgets, axe plus a focused WebKit
-  smoke and a site-wide skip link, and registry-derived production smoke.
+- **v1.8 — Planned; v1.8-01 next — Engineering quality baselines:** three
+  independent small PRs establish reproducible transitive-gzip budgets, axe
+  plus a focused WebKit smoke and a site-wide skip link, and registry-derived
+  production smoke. The next slice is the route JavaScript baseline and
+  regression gate.
 - **v1.9 — Planned; separate brief required — Timeline single-story Reader:**
   prototype `story + step + view` URL state, step navigation, and synchronized
   event focus for one existing curated story before considering Lineage or
