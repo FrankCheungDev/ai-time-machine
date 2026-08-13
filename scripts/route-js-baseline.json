@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "route-js-budget-baseline",
+  "method": {
+    "version": 1,
+    "htmlEntries": [
+      "script[src]",
+      "link[rel~=modulepreload]",
+      "astro-island[component-url|renderer-url|before-hydration-url]"
+    ],
+    "imports": "es-module-lexer@2.1.0 static imports only",
+    "dedupe": "per-route canonical public pathname",
+    "gzip": "node:zlib level=9, sum of independently compressed files"
+  },
+  "toolchain": {
+    "node": "22.22.2",
+    "pnpm": "11.7.0",
+    "esModuleLexer": "2.1.0"
+  },
+  "build": {
+    "commit": "3b34fb247c06d41f058d017e7c0871aa63dc0370"
+  },
+  "threshold": {
+    "minimumIncreaseBytes": 5000,
+    "ratioNumerator": 5,
+    "ratioDenominator": 100,
+    "comparison": "strictly-greater-than"
+  },
+  "routes": [
+    {
+      "id": "home",
+      "pathname": "/",
+      "rawBytes": 72308,
+      "gzipBytes": 28458
+    },
+    {
+      "id": "search",
+      "pathname": "/chapters/search/",
+      "rawBytes": 292258,
+      "gzipBytes": 103796
+    },
+    {
+      "id": "rag",
+      "pathname": "/chapters/rag/",
+      "rawBytes": 353477,
+      "gzipBytes": 128056
+    },
+    {
+      "id": "timeline",
+      "pathname": "/timeline/",
+      "rawBytes": 6958,
+      "gzipBytes": 3347
+    },
+    {
+      "id": "lineage",
+      "pathname": "/lineage/",
+      "rawBytes": 7166,
+      "gzipBytes": 3285
+    }
+  ]
+}

@@ -52,8 +52,24 @@ jobs:
           pnpm --filter @ai-history/data test
           pnpm --filter site test:unit
 
+      - name: Test route JavaScript budget analyzer
+        run: pnpm test:route-js-budget
+
       - name: Build static site
         run: pnpm build
+
+      - name: Check route JavaScript budget
+        id: route_js_budget
+        run: pnpm check:route-js-budget
+
+      - name: Upload route JavaScript budget report
+        if: ${{ !cancelled() && steps.route_js_budget.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-js-budget-report
+          path: artifacts/route-js-budget.json
+          if-no-files-found: error
+          retention-days: 7
 
   browser:
     name: Chromium integration and visual tests
