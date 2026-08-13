@@ -99,8 +99,9 @@ Do not merge while any required check is pending or failing.
    chapter concept-check deep link. Confirm inactive stories are absent from
    reading and Tab order, `aria-live` does not announce hidden content, controls
    have understandable names and focus order, and deep links begin at a useful
-   reading position. This manual check remains pending; automated accessibility
-   assertions and the production smoke do not close it.
+   reading position. The 2026-08-13 VoiceOver record below closes this gate for
+   `main@79daf69`; automated accessibility assertions and the production smoke
+   remain supporting, not substitute, evidence.
 10. Record any teaching simplification, source change, or deployment-layer
     privacy correction in the merged PR.
 
@@ -114,12 +115,13 @@ Automated v1.6 release evidence is tied to merge commit
 - On 2026-08-08, `pnpm smoke:production:privacy` passed against production with 33 checked requests, all 26 bilingual chapter routes, 32 HTML response-policy checks, 27 events in each localized timeline, and all three Chinese Timeline Guided Story deep links restoring their expected 6 / 7 / 7 focused events while preserving English language-switch URL state. `missingNoTransform`, `missingNoConnectPolicy`, and `invalidScriptPolicy` were all zero, while `forbiddenRequests` and `failures` were empty.
 
 These automated checks verify deployment, privacy boundaries, and scripted
-interaction behavior. Final v1.6 release closure still requires the documented
-real VoiceOver or NVDA spot check described above.
+interaction behavior. At the v1.6 release point, the documented real VoiceOver
+or NVDA spot check was still outstanding; that shared v1.6 / v1.7 manual gate
+was subsequently closed by the 2026-08-13 production VoiceOver record below.
 
 ## v1.7 Release Record
 
-Automated v1.7 release evidence is tied to merge commit
+Initial v1.7 feature-release evidence is tied to merge commit
 [`ff19b4a`](https://github.com/FrankCheungDev/ai-time-machine/commit/ff19b4accb4a7f8dc709c73d7ab870212ade8fe5):
 
 - [PR #37](https://github.com/FrankCheungDev/ai-time-machine/pull/37) merged the device-local review loop, backward-compatible review-state v2, localized review deep links, independent clearing, and its privacy / browser regressions.
@@ -127,9 +129,71 @@ Automated v1.7 release evidence is tied to merge commit
 - Cloudflare Pages reported a successful production deployment check for the same commit. Access-protected deployment URLs are intentionally omitted.
 - On 2026-08-12, `pnpm smoke:production:privacy` passed against production with 33 checked requests, all 26 bilingual chapter routes, 32 HTML response-policy checks, and the device-local path “incorrect answer → home review queue → concept-check deep link → correct answer → queue exit.” All three Timeline Guided Stories also restored their expected state; `missingNoTransform`, `missingNoConnectPolicy`, and `invalidScriptPolicy` were zero, while `forbiddenRequests` and `failures` were empty.
 
-These checks prove the tested release and privacy contracts, not improved learner
-outcomes. Final manual accessibility closure still requires the real VoiceOver
-or NVDA spot check described above.
+Real VoiceOver review then found issues that were fixed in five follow-up pull
+requests:
+
+- [PR #39](https://github.com/FrankCheungDev/ai-time-machine/pull/39) corrected the clear confirmation and its focus behavior.
+- [PR #40](https://github.com/FrankCheungDev/ai-time-machine/pull/40) corrected the hydrated concept-check deep-link focus.
+- [PR #41](https://github.com/FrankCheungDev/ai-time-machine/pull/41) preserved the intended VoiceOver navigation sequence.
+- [PR #42](https://github.com/FrankCheungDev/ai-time-machine/pull/42) stabilized the final feedback focus.
+- [PR #43](https://github.com/FrankCheungDev/ai-time-machine/pull/43) prevented the chapter-completion announcement from overlapping the concept-check feedback and prevented a stale cross-tab announcement.
+
+The closing release baseline is
+[`main@79daf69`](https://github.com/FrankCheungDev/ai-time-machine/commit/79daf69):
+
+- Closing PR-head [CI run 31703100783](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31703100783) completed successfully with both `Quality and build` and `Chromium integration and visual tests` passing.
+- [main CI run 31703484976](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31703484976) completed successfully with the same two jobs passing.
+- Cloudflare Pages reported a successful production deployment check, and production served the closing `ChapterJourney.ClIOeOOI.js` asset.
+
+### 2026-08-13 production VoiceOver record
+
+All five planned production spot checks passed after the fixes through PR #43:
+
+| Check | Full tested URL                                                                                                     | Result                                                                                                                                                                                       |
+| ----- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AT-01 | `https://atlas.z-ai.cc/timeline/?story=scaled-models-to-reliable-systems#story-scaled-models-to-reliable-systems`   | The selected story and its status were announced, while unselected story content stayed out of the reading and sequential Tab order.                                                         |
+| AT-02 | `https://atlas.z-ai.cc/en/lineage/?story=scaled-models-to-reliable-systems#story-scaled-models-to-reliable-systems` | The selected state and return control had understandable announcements, story / RAG URL state was mutually exclusive, and hidden stories stayed out of reading and sequential Tab order.     |
+| AT-03 | `https://atlas.z-ai.cc/`                                                                                            | Two UI-created suggestions exposed the Search primary entry; Bayes stayed unavailable while collapsed and became readable after expansion, with summary focus preserved.                     |
+| AT-04 | `https://atlas.z-ai.cc/`                                                                                            | Confirmation descriptions and initial focus, Cancel focus return and queue preservation, successful status focus, and independent chapter completion all passed.                             |
+| AT-05 | `https://atlas.z-ai.cc/chapters/search/#concept-check-search`                                                       | The deep link began at the concept-check heading, continued to the question group, and placed final focus on the correct-answer heading without a competing chapter-completion announcement. |
+
+AT-01 through AT-04 above are result-level records, not claimed as verbatim
+transcripts. For AT-05, the preserved actual VoiceOver announcement excerpts
+were:
+
+- Entry link: `第 01 章 搜索树 / A* 前往自测 已访问 链接`
+- First key announcement after activation: `标题级别2 用一个问题检验核心直觉`
+- Continued question-group announcement after 1.25 seconds: `A* 在本章演示中用什么决定优先展开哪个 frontier 节点？ 组`
+- Correct submission: `回答正确 回答正确；本章已从这台设备的复习建议中移出。 查看为什么 再试一次`
+- Final focus: `回答正确 标题级别3`
+
+The spot check used macOS 13.4.1 (build `22F770820d`), VoiceOver 10, and
+Chrome `151.0.7922.110`. Page interaction was performed only through Chrome;
+system automation was limited to Apple Events controlling VoiceOver and
+reading `content of last phrase`. Safari, System Events, screen recording, and
+the microphone were not used; neither were screenshots, audio recording, or
+GitHub CLI. AT-03 and AT-04 used an isolated browser profile / private storage
+scope populated through the normal UI, so the checks neither read nor changed
+the user's real learning records. The VoiceOver caption-panel command did not
+produce usable evidence, so this record does not claim that the caption panel
+was opened.
+
+AT-01 through AT-04 are result-level records because their exact single-phrase
+transcripts were not retained in this release-closure material; this record
+does not reconstruct them from static page copy or automated assertions. The
+full URLs, steps, expected and actual results, fixes, and per-check limitations
+are recorded in
+[`V1_7_LOCAL_REVIEW_LOOP_BRIEF.md`](V1_7_LOCAL_REVIEW_LOOP_BRIEF.md#17-真实-voiceover-验收记录).
+VoiceOver `last phrase` is a single-utterance snapshot and cannot prove visual
+sticky-header geometry; the existing desktop and 390px browser checks cover
+that separate contract.
+
+This evidence closes the shared v1.6 / v1.7 manual assistive-technology release
+gate for these five production paths. It proves the behavior of the tested
+build and paths within the stated environment and permission boundary. It is
+not a complete WCAG certification, does not replace zoom, reflow, keyboard,
+automated-rule, or cross-browser testing, and does not demonstrate improved
+understanding, retention, completion, or any other learner outcome.
 
 ## Rollback
 

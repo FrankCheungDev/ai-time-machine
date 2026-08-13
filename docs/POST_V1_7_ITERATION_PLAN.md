@@ -1,19 +1,19 @@
 # Post-v1.7 Iteration Plan
 
-- 状态：方向已确定；v1.7 自动发布证据已闭合，人工辅助技术收口待完成；v1.8 与 v1.9 尚未实施
-- 日期：2026-08-12
-- 当前发布基线：`main` @ `ff19b4a`（PR #37）
-- 证据范围：仓库与构建产物静态审阅、GitHub check 结果、2026-08-12 生产隐私 / 交互 smoke
+- 状态：v1.7 P0 发布与真实辅助技术收口已完成；v1.8-01 为下一切片并处于开发准备中；v1.8-02、v1.8-03 与 v1.9 尚未实施
+- 日期：2026-08-13
+- 当前发布基线：`main` @ `79daf69`（PR #43；v1.7 产品切片由 PR #37 的 `ff19b4a` 交付）
+- 证据范围：仓库与生产构建产物静态审阅、PR-head / main GitHub check、2026-08-12 生产隐私 / 交互 smoke，以及 2026-08-13 五项生产 VoiceOver 检查
 - 决策性质：固定 post-v1.7 的执行顺序、进入条件、非目标与验收边界；不等同于实现授权或真实学习效果证据
 
 ## 1. 决策摘要
 
-v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。当前最重要的工作不再是继续扩张复习状态，而是先把已经部署的版本收口，再为后续产品迭代建立可重复的工程基线，最后把现有 Guided Story 从 Atlas 筛选结果升级为一段可逐步完成的阅读任务。
+v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。PR #39–#43 修复真实 VoiceOver 检查发现的清除、深链焦点、导航意图、最终焦点和完成状态播报问题；`main@79daf69` 的自动检查、生产资源与五项真实 VoiceOver 复验均已通过。因此 P0 已收口，当前最重要的工作是以 v1.8-01 建立可重复的 route-level transitive JavaScript 基线与回退门，再按独立切片推进其他工程门禁和产品原型。
 
 执行顺序固定为：
 
-1. **P0：完成 v1.7 发布与事实源收口。** 自动发布门已经通过；补齐真实 VoiceOver 或 NVDA 检查，并让 README、ROADMAP、发布 brief 与部署记录保持一致。
-2. **v1.8：以三个独立小 PR 建立工程质量基线。** 依次覆盖 transitive-gzip 性能测量、axe 与精简 WebKit smoke、production smoke registry 化。先测量和固化合同，再决定优化手段。
+1. **P0：v1.7 发布与事实源收口已完成。** PR #39–#43 的修复、PR-head / main CI、生产部署与 2026-08-13 五项真实 VoiceOver 检查已经闭合共同发布门。
+2. **v1.8：以三个独立小 PR 建立工程质量基线。** v1.8-01 是下一切片，开发准备中；其后依次覆盖 axe 与精简 WebKit smoke、production smoke registry 化。先测量和固化合同，再决定优化手段。
 3. **v1.9：单独立项 Timeline 单故事 Reader。** 首个原型只覆盖现有 `feedback-learning` 故事，验证 `story + step + view` URL 状态、逐步导航与准确事件聚焦。
 4. **继续延期新内容分支与真实指标闭环。** Diffusion、多模态、Lineage Reader、托管分析和 P2-05 都需要独立决策门，不随本方案自动进入开发。
 
@@ -25,7 +25,7 @@ v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。
 
 ### 2.1 已发布表面
 
-`main@ff19b4a` 包含：
+当前生产基线为 `main@79daf69`。它包含 `main@ff19b4a` 交付的以下 v1.7 产品表面：
 
 - 13 个双语章节、12 个脚本化教学 Demo、27 个来源支持事件、12 组 SVG / PNG 图源和 3 条双语策展故事；
 - 可续学的本机章节完成记录，以及每章一个双语概念自测；
@@ -37,21 +37,24 @@ v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。
 
 - [PR #37](https://github.com/FrankCheungDev/ai-time-machine/pull/37) 合并为 [`ff19b4a`](https://github.com/FrankCheungDev/ai-time-machine/commit/ff19b4accb4a7f8dc709c73d7ab870212ade8fe5)；
 - [main CI run 31569422805](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31569422805) 的 Quality / build 与 Chromium jobs 成功；
-- Cloudflare Pages 对同一提交的 production check 成功；
+- [PR #39](https://github.com/FrankCheungDev/ai-time-machine/pull/39)、[PR #40](https://github.com/FrankCheungDev/ai-time-machine/pull/40)、[PR #41](https://github.com/FrankCheungDev/ai-time-machine/pull/41)、[PR #42](https://github.com/FrankCheungDev/ai-time-machine/pull/42) 与 [PR #43](https://github.com/FrankCheungDev/ai-time-machine/pull/43) 依次修复清除确认与焦点、hydration 深链焦点、VoiceOver 导航意图、最终焦点稳定性，以及完成状态播报重叠和跨 tab 公告；
+- 收口 PR-head [CI run 31703100783](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31703100783) 与 [`main@79daf69`](https://github.com/FrankCheungDev/ai-time-machine/commit/79daf69) 的 [CI run 31703484976](https://github.com/FrankCheungDev/ai-time-machine/actions/runs/31703484976) 成功；
+- Cloudflare Pages production check 成功，生产当前提供收口资源 `ChapterJourney.ClIOeOOI.js`；
 - 2026-08-12 的 `pnpm smoke:production:privacy` 检查 33 个请求、26 条双语章节路由和 32 个 HTML 响应策略，完成“答错入队 → 自测深链 → 答对出队”以及三条 Guided Story 流程；`missingNoTransform`、`missingNoConnectPolicy` 与 `invalidScriptPolicy` 均为 0，`forbiddenRequests` 与 `failures` 均为空。
+- 2026-08-13，计划定义的五项生产 VoiceOver 检查在上述修复部署后全部复验通过；逐项步骤、预期、实际播报与限制见 [`V1_7_LOCAL_REVIEW_LOOP_BRIEF.md`](V1_7_LOCAL_REVIEW_LOOP_BRIEF.md) 和 [`DEPLOYMENT.md`](DEPLOYMENT.md)。
 
-这些结果证明受测构建、部署、交互和隐私边界符合合同，但不证明复习功能改善了理解、记忆、完成率或任何学习结果。
+这些结果证明受测构建、部署、交互、隐私边界与五项真实辅助技术路径符合当前发布合同，但不是完整 WCAG 认证，也不证明复习功能改善了理解、记忆、完成率或任何学习结果。
 
-### 2.2 尚未闭合的发布门
+### 2.2 已闭合的真实辅助技术发布门
 
-仓库仍没有一份真实 VoiceOver 或 NVDA 记录，能够同时证明：
+2026-08-13 的真实 VoiceOver 记录已经覆盖并通过：
 
 - Timeline 与 Lineage 中未选故事不进入阅读与顺序 Tab 流；
 - 故事筛选器、返回链接和 `aria-live` 状态被准确播报；
 - 首页复习面板、展开其余章节、清除确认和清除后状态具有可理解的控件名称与焦点顺序；
 - 章节自测深链落点清除 sticky header，并从合理的阅读起点继续。
 
-因此 v1.7 的准确状态是“已部署且自动发布门完成，人工辅助技术发布收口待完成”，不能写成完整无障碍合规。
+检查过程中发现的问题由 PR #39–#43 修复，并在 `main@79daf69` 的生产部署上复验通过。v1.6 Guided Story 与 v1.7 本机复习流程共用的人工辅助技术发布门因此关闭；详细证据见 [`V1_7_LOCAL_REVIEW_LOOP_BRIEF.md`](V1_7_LOCAL_REVIEW_LOOP_BRIEF.md) 与 [`DEPLOYMENT.md`](DEPLOYMENT.md)。该结论仍不能写成完整无障碍合规，也不替代缩放、reflow、键盘和自动规则测试。
 
 ### 2.3 当前产品缺口
 
@@ -80,11 +83,13 @@ v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。
 
 这些数字只用于证明“需要可重复测量与归因”，不是正式预算，也不能与 handoff 中定义不完整的“单 Demo < 80 KB gzip”直接比较。构建文件名、压缩工具和依赖版本都会影响结果；v1.8-01 必须先把测量方法固化进仓库。
 
-## 3. P0：v1.7 发布与事实源收口
+该表继续保留为 `ff19b4a` 的探索性历史基线，不因当前发布提交已经前进到 `79daf69` 而静默改写。v1.8-01 必须在固定 Node、pnpm、Astro 与 gzip 方法后，从当前实现重新生成经评审的正式 baseline。
 
-### P0-01：发布事实同步
+## 3. P0：v1.7 发布与事实源收口（已完成）
 
-本方案文档 PR 负责同步：
+### P0-01：发布事实同步（已完成）
+
+本收口切片同步：
 
 - `README.md` 与 `README.zh-CN.md` 的 Current Release；
 - `ROADMAP.md` 的 Current Surface 与 post-v1.7 顺序；
@@ -92,11 +97,11 @@ v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。
 - `V1_7_LOCAL_REVIEW_LOOP_BRIEF.md` 的真实自动发布证据；
 - `DEPLOYMENT.md` 的独立 v1.7 Release Record。
 
-该项只有在文档 PR 合并且远端检查通过后才完成。本轮不追溯重写 v1.6 分析、原始 handoff 或早期发布 brief 中明确标注日期与提交的历史证据。
+当前状态文档统一指向 `main@79daf69`、收口 CI 与 2026-08-13 VoiceOver 证据。本轮不追溯重写 v1.6 分析、原始 handoff 或早期发布 brief 中明确标注日期与提交的历史证据。
 
-### P0-02：真实辅助技术检查
+### P0-02：真实辅助技术检查（已完成）
 
-在当前生产版本上使用真实 VoiceOver 或 NVDA，至少检查：
+在当前生产版本上使用真实 VoiceOver 完成并通过：
 
 1. 中文 Timeline 的一条非首个 Guided Story 深链；
 2. 英文 Lineage 的同一故事切换、隐藏内容与返回链接；
@@ -104,21 +109,23 @@ v1.7 已把“继续学习”和“本机待复习”连接成确定性闭环。
 4. 清除自测与复习记录的确认、取消、成功状态和焦点返回；
 5. 从首页进入章节 `#concept-check-<chapterId>` 后的标题、题组与反馈阅读顺序。
 
-记录必须包含浏览器、操作系统、辅助技术及其版本、受测 URL、步骤、预期、实际结果和已知限制。只有结果写回仓库，且检查发现的问题全部修复并使用真实辅助技术复验通过后，才关闭 v1.6 / v1.7 共用的人工辅助技术发布门；否则该门保持阻塞。该 spot check 仍不是 WCAG 认证，也不替代缩放、reflow、键盘和自动规则测试。
+记录包含浏览器、操作系统、辅助技术及其版本、受测 URL、步骤、预期、实际结果和已知限制。检查发现的问题已由 PR #39–#43 修复，并在生产部署上用真实 VoiceOver 复验通过；逐项记录见 [`V1_7_LOCAL_REVIEW_LOOP_BRIEF.md`](V1_7_LOCAL_REVIEW_LOOP_BRIEF.md) 与 [`DEPLOYMENT.md`](DEPLOYMENT.md)。该 spot check 仍不是 WCAG 认证，也不替代缩放、reflow、键盘和自动规则测试。
 
 ### P0 退出条件
 
-- 所有当前状态文档都指向同一个已发布提交与自动证据；
-- 不再把 v1.7 写成 “in review” 或“生产仍为 v1.6”；
-- P0-01 可在文档合并且继续明确标注人工门后关闭；
-- P0 整体只有在真实辅助技术结果写回，且发现的问题已经修复并验证后才关闭；无法在当前切片修复的问题必须明确保持为发布阻塞，不能仅凭记录后续处置关闭门禁；
+- 当前状态文档指向已发布的 `main@79daf69`、收口 CI 与同一组生产证据；
+- v1.7 不再标记为 “in review”、生产仍为 v1.6 或人工辅助技术待收口；
+- PR #39–#43 发现的问题已经修复、部署并由真实 VoiceOver 复验；
+- 五项结果已经写回发布 brief 与 Deployment 记录，v1.6 / v1.7 共用发布门关闭；
 - 不把 CI、smoke 或人工 spot check 写成真实学习效果证据。
 
 ## 4. v1.8：工程质量基线
 
 v1.8 是三个独立、可单独发布的小 PR。它们解决不同风险，不应共享一个大重构分支。
 
-### v1.8-01：可重复性能基线与回退门
+### v1.8-01：可重复性能基线与回退门（下一切片，开发准备中）
+
+P0 进入条件已经满足。v1.8-01 是唯一进入开发准备的下一切片；当前仍只有 `ff19b4a` 的探索性数字，尚未生成或批准正式 baseline，也尚未实施任何依赖移除、hydration 策略变更或运行时代码优化。
 
 范围：
 
@@ -254,17 +261,17 @@ Reader 交互：
 
 ## 6. 执行顺序与决策门
 
-| 顺序 | 切片                              | 规模 | 进入条件                                       | 退出证据                                               |
-| ---- | --------------------------------- | ---- | ---------------------------------------------- | ------------------------------------------------------ |
-| 1    | P0-01 发布事实同步                | S    | `main@ff19b4a` 自动发布证据可核验              | 文档 PR 合并、远端检查通过、状态口径一致               |
-| 2    | P0-02 真实 VoiceOver / NVDA       | S    | 当前生产版本可访问                             | 真实设备 / AT 记录写回；发现的缺陷修复并验证           |
-| 3    | v1.8-01 性能测量与回退门          | S–M  | P0 整体关闭                                    | 可重复 transitive 基线进入 CI                          |
-| 4    | v1.8-02 axe / skip link / WebKit  | S–M  | 人工与自动无障碍职责已写清                     | axe、skip link、精简 WebKit 与现有 Chromium 同时通过   |
-| 5    | v1.8-03 production smoke registry | S    | registry / manifest 是当前事实源               | 手写拓扑移除，fixture、生产 smoke 与隐私边界通过       |
-| 6    | v1.9 Reader 独立 brief            | S    | 三项 v1.8 基线完成                             | URL、默认 view、history、焦点和非目标合同获批          |
-| 7    | v1.9 Timeline Reader 实现         | M    | Reader brief 获批且从最新 `main` 建立 worktree | 双语 / 移动 / 键盘 / 无 JS / 发布证据全部按 brief 闭合 |
+| 顺序 | 切片                              | 状态       | 规模 | 进入条件                                       | 退出证据                                               |
+| ---- | --------------------------------- | ---------- | ---- | ---------------------------------------------- | ------------------------------------------------------ |
+| 1    | P0-01 发布事实同步                | 已完成     | S    | `main@79daf69` 与收口证据可核验                | 当前状态文档口径一致                                   |
+| 2    | P0-02 真实 VoiceOver              | 已完成     | S    | 当前生产版本可访问                             | 五项记录写回；PR #39–#43 修复并通过真实 AT 复验        |
+| 3    | v1.8-01 性能测量与回退门          | 开发准备中 | S–M  | P0 已于 2026-08-13 关闭                        | 可重复 transitive 基线进入 CI                          |
+| 4    | v1.8-02 axe / skip link / WebKit  | 计划       | S–M  | 人工与自动无障碍职责已写清                     | axe、skip link、精简 WebKit 与现有 Chromium 同时通过   |
+| 5    | v1.8-03 production smoke registry | 计划       | S    | registry / manifest 是当前事实源               | 手写拓扑移除，fixture、production smoke 与隐私边界通过 |
+| 6    | v1.9 Reader 独立 brief            | 计划       | S    | 三项 v1.8 基线完成                             | URL、默认 view、history、焦点和非目标合同获批          |
+| 7    | v1.9 Timeline Reader 实现         | 未开始     | M    | Reader brief 获批且从最新 `main` 建立 worktree | 双语 / 移动 / 键盘 / 无 JS / 发布证据全部按 brief 闭合 |
 
-v1.8 的三个 PR 在依赖上可以独立，但为降低评审负担，默认一次只保持一个主要工程切片处于合并评审。Reader 不得绕过任何未完成的 v1.8 进入门。
+v1.8 的三个 PR 在依赖上可以独立，但为降低评审负担，默认一次只保持一个主要工程切片处于合并评审。当前只为 v1.8-01 做开发准备；v1.8-02、v1.8-03 与 Reader 不得绕过其进入门并行扩张。
 
 ## 7. 隐私、教学与证据边界
 

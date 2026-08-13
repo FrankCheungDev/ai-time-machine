@@ -9,11 +9,13 @@ default language, with a complete English learning path under `/en/`.
 
 ## Current Release
 
-v1.7 is deployed from `main` at `ff19b4a` (PR #37). Main CI run 31569422805,
-the Cloudflare Pages production check, and the 2026-08-12 production privacy
-and interaction smoke passed. Automated release gates are complete; final
-release closure still requires a documented real VoiceOver or NVDA spot check
-of the Guided Story and device-local review surfaces.
+v1.7 is deployed from `main` at `79daf69`. PR #37 delivered the device-local
+review loop; PRs #39–#43 closed the shared Guided Story and review-flow
+VoiceOver findings. PR-head CI run 31703100783, main CI run 31703484976, the
+Cloudflare Pages production check, the 2026-08-12 production privacy /
+interaction smoke, and five documented production VoiceOver checks on
+2026-08-13 all passed. Production serves the closing
+`ChapterJourney.ClIOeOOI.js` asset.
 
 - Astro static site with MDX and Svelte islands.
 - Thirteen chapters from overview through Safety / Evaluation, including a feedback-learning bridge between CNN and Attention.
@@ -70,14 +72,15 @@ Release hardening, extension architecture, Safety / Evaluation, diagram assets,
 source-backed historical depth, causal atlas navigation, a foundation-model
 lifecycle chapter, chapter self-checks, and the v1.5 feedback-learning slice are
 implemented and published. v1.6 Guided Causal Learning and v1.7 device-local
-review are deployed; automated release evidence is complete, while the real
-screen-reader spot check remains open. The
+review are complete and published, and their shared automated and real
+VoiceOver release gates are closed. The
 P2-05 real-usage loop is paused: the provider decision is open again, no data
 source is approved or scheduled, and automated traffic is not treated as
 learner data. The in-page event contract and aggregate analyzer remain
-available without enabling network collection. The next sequence is release
-and accessibility closure, three independent v1.8 engineering baselines, then
-a separately approved v1.9 Timeline single-story Reader prototype. See the
+available without enabling network collection. The next sequence is the v1.8-01
+route JavaScript baseline and regression gate, followed by the two remaining
+independent v1.8 engineering baselines and a separately approved v1.9 Timeline
+single-story Reader prototype. See the
 [v1.5 release brief](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md), the
 [v1.6 brief](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md), and the
 [v1.7 implementation brief](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md). The detailed
