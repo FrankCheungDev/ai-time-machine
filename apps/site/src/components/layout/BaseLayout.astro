@@ -90,6 +90,7 @@ const chapterNavigationHref = `${localizeHref("/")}#learning-path`;
     <title>{fullTitle}</title>
     <script is:inline>
       window.__aiHistoryHydrationErrors = new WeakSet();
+      window.__aiHistoryUserInteracted = false;
       window.addEventListener(
         "astro:hydration-error",
         (event) => {
@@ -99,6 +100,30 @@ const chapterNavigationHref = `${localizeHref("/")}#learning-path`;
         },
         { capture: true },
       );
+      const markUserInteraction = (event) => {
+        if (
+          !event.isTrusted ||
+          (event instanceof KeyboardEvent && event.repeat)
+        )
+          return;
+        window.__aiHistoryUserInteracted = true;
+        window.removeEventListener("keydown", markUserInteraction, true);
+        window.removeEventListener("pointerdown", markUserInteraction, true);
+        window.removeEventListener("wheel", markUserInteraction, true);
+        window.removeEventListener("click", markUserInteraction, true);
+      };
+      window.addEventListener("keydown", markUserInteraction, {
+        capture: true,
+      });
+      window.addEventListener("pointerdown", markUserInteraction, {
+        capture: true,
+      });
+      window.addEventListener("wheel", markUserInteraction, {
+        capture: true,
+      });
+      window.addEventListener("click", markUserInteraction, {
+        capture: true,
+      });
     </script>
   </head>
   <body>

@@ -113,7 +113,10 @@ test("initial hydration preserves focus that a user already moved", async ({
   const island = check.locator("xpath=ancestor::astro-island");
   const firstRadio = check.getByRole("radio").first();
   await expect(island).toHaveAttribute("ssr", "");
-  await firstRadio.focus();
+  await firstRadio.click();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
+    .toBe(true);
   releaseConceptCheckModule();
   await expect(island).not.toHaveAttribute("ssr", "");
   await page.evaluate(
@@ -203,7 +206,10 @@ test("late demo hydration does not replace focus that a user moved", async ({
     .first();
   const firstRadio = check.getByRole("radio").first();
   await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
-  await firstRadio.focus();
+  await firstRadio.click();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
+    .toBe(true);
 
   releaseSearchDemoModule();
   await expect(demoIsland).not.toHaveAttribute("ssr", "");
@@ -214,6 +220,45 @@ test("late demo hydration does not replace focus that a user moved", async ({
       }),
   );
   await expect(firstRadio).toBeFocused();
+});
+
+test("incidental focus does not override the initial concept-check deep link", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { searchDemoModuleRequested, releaseSearchDemoModule } =
+    await delaySearchDemoHydration(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await searchDemoModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const demoIsland = page
+    .locator('astro-island[component-url*="SearchTreeDemo"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  const languageSwitch = page.getByRole("link", {
+    name: "Switch language to English",
+  });
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await languageSwitch.focus();
+  await expect(languageSwitch).toBeFocused();
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
+    .toBe(false);
+
+  releaseSearchDemoModule();
+  await expect(demoIsland).not.toHaveAttribute("ssr", "");
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(heading).toBeFocused();
 });
 
 test("late demo hydration cancels deep-link focus after the hash changes", async ({
@@ -285,6 +330,46 @@ test("a prior demo hydration error does not block deep-link focus", async ({
     .toBe(true);
 
   releaseConceptCheckModule();
+  await expect(heading).toBeFocused();
+});
+
+test("the home review link resets interaction state and focuses the deep-linked heading", async ({
+  page,
+}) => {
+  await page.addInitScript((key) => {
+    window.localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        reviewVersion: 2,
+        results: [
+          {
+            chapterId: "search",
+            firstCorrect: false,
+            attempts: 1,
+            explanationViewed: false,
+            reviewSuggested: true,
+          },
+        ],
+      }),
+    );
+  }, progressKey);
+  await page.goto("/");
+
+  const reviewLink = page.getByRole("link", {
+    name: "第 01 章 搜索树 / A* 前往自测",
+  });
+  await reviewLink.click();
+
+  const check = page.getByTestId("concept-check");
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await expect(page).toHaveURL(/\/chapters\/search\/#concept-check-search$/);
+  await expect
+    .poll(() => page.evaluate(() => window.__aiHistoryUserInteracted))
+    .toBe(false);
   await expect(heading).toBeFocused();
 });
 

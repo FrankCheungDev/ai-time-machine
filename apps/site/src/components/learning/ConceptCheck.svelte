@@ -50,20 +50,10 @@
       !snapshot.storageAvailable || !snapshot.schemaSupported;
   }
 
-  function hasMeaningfulFocus(): boolean {
-    const activeElement = document.activeElement;
-    return (
-      activeElement !== null &&
-      activeElement !== document.body &&
-      activeElement !== document.documentElement &&
-      activeElement !== conceptCheckHeading
-    );
-  }
-
   function focusDeepLinkedCheck(preserveExistingFocus: boolean): void {
     if (
       window.location.hash !== `#${conceptCheckAnchor}` ||
-      (preserveExistingFocus && hasMeaningfulFocus())
+      (preserveExistingFocus && window.__aiHistoryUserInteracted === true)
     )
       return;
     conceptCheckHeading?.focus({ preventScroll: true });
