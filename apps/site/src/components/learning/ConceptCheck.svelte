@@ -39,6 +39,7 @@
   let feedbackHeading: HTMLHeadingElement | undefined;
   let clearTrigger: HTMLButtonElement | undefined;
   let confirmClearButton: HTMLButtonElement | undefined;
+  let deepLinkFocusRequest = 0;
 
   function syncProgress(): void {
     const snapshot = readConceptCheckProgress();
@@ -68,10 +69,82 @@
     conceptCheckHeading?.focus({ preventScroll: true });
   }
 
+  function waitForEarlierIslands(preserveExistingFocus: boolean): () => void {
+    const request = ++deepLinkFocusRequest;
+    const currentIsland = conceptCheckHeading?.closest("astro-island");
+    const main = conceptCheckHeading?.closest("main");
+    if (!currentIsland || !main) {
+      if (request === deepLinkFocusRequest)
+        focusDeepLinkedCheck(preserveExistingFocus);
+      return () => {};
+    }
+
+    const allIslands = Array.from(
+      main.querySelectorAll<HTMLElement>('astro-island[client="load"]'),
+    );
+    const currentIndex = allIslands.indexOf(currentIsland as HTMLElement);
+    const pendingIslands = allIslands
+      .slice(0, currentIndex < 0 ? 0 : currentIndex)
+      .filter(
+        (island) =>
+          island.hasAttribute("ssr") &&
+          !window.__aiHistoryHydrationErrors?.has(island),
+      );
+
+    if (pendingIslands.length === 0) {
+      if (request === deepLinkFocusRequest)
+        focusDeepLinkedCheck(preserveExistingFocus);
+      return () => {};
+    }
+
+    let remaining = pendingIslands.length;
+    let settled = false;
+    const listeners = new Map<HTMLElement, () => void>();
+    const settleIsland = (island: HTMLElement): void => {
+      if (settled) return;
+      const listener = listeners.get(island);
+      if (!listener) return;
+      island.removeEventListener("astro:hydrate", listener);
+      island.removeEventListener("astro:hydration-error", listener);
+      listeners.delete(island);
+      remaining -= 1;
+      if (remaining > 0) return;
+      settled = true;
+      if (request === deepLinkFocusRequest)
+        focusDeepLinkedCheck(preserveExistingFocus);
+    };
+
+    for (const island of pendingIslands) {
+      const listener = (): void => settleIsland(island);
+      listeners.set(island, listener);
+      island.addEventListener("astro:hydrate", listener, { once: true });
+      island.addEventListener("astro:hydration-error", listener, {
+        once: true,
+      });
+    }
+
+    for (const island of pendingIslands) {
+      if (
+        !island.hasAttribute("ssr") ||
+        window.__aiHistoryHydrationErrors?.has(island)
+      )
+        settleIsland(island);
+    }
+
+    return () => {
+      settled = true;
+      for (const [island, listener] of listeners) {
+        island.removeEventListener("astro:hydrate", listener);
+        island.removeEventListener("astro:hydration-error", listener);
+      }
+      listeners.clear();
+    };
+  }
+
   onMount(() => {
     syncProgress();
     synchronizeLanguageSwitchUrl();
-    focusDeepLinkedCheck(true);
+    let stopWaitingForEarlierIslands = waitForEarlierIslands(true);
 
     const handleProgressChanged = (): void => syncProgress();
     const handleStorage = (event: StorageEvent): void => {
@@ -80,8 +153,9 @@
       }
     };
     const handleHashChange = (): void => {
+      stopWaitingForEarlierIslands();
       synchronizeLanguageSwitchUrl();
-      focusDeepLinkedCheck(false);
+      stopWaitingForEarlierIslands = waitForEarlierIslands(false);
     };
 
     window.addEventListener(
@@ -92,6 +166,7 @@
     window.addEventListener("hashchange", handleHashChange);
 
     return () => {
+      stopWaitingForEarlierIslands();
       window.removeEventListener(
         conceptCheckProgressChangedEventName,
         handleProgressChanged,

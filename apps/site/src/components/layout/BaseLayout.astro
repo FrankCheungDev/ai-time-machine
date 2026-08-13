@@ -88,6 +88,18 @@ const chapterNavigationHref = `${localizeHref("/")}#learning-path`;
     <meta name="twitter:image" content={socialImageUrl} />
     <meta name="twitter:image:alt" content={copy.socialImageAlt} />
     <title>{fullTitle}</title>
+    <script is:inline>
+      window.__aiHistoryHydrationErrors = new WeakSet();
+      window.addEventListener(
+        "astro:hydration-error",
+        (event) => {
+          if (event.target instanceof HTMLElement) {
+            window.__aiHistoryHydrationErrors.add(event.target);
+          }
+        },
+        { capture: true },
+      );
+    </script>
   </head>
   <body>
     <header class="site-header">

@@ -131,6 +131,163 @@ test("initial hydration preserves focus that a user already moved", async ({
   ).not.toBeFocused();
 });
 
+async function delaySearchDemoHydration(page: Page): Promise<{
+  searchDemoModuleRequested: Promise<void>;
+  releaseSearchDemoModule: () => void;
+}> {
+  let markSearchDemoModuleRequested!: () => void;
+  const searchDemoModuleRequested = new Promise<void>((resolve) => {
+    markSearchDemoModuleRequested = resolve;
+  });
+  let releaseSearchDemoModule!: () => void;
+  const searchDemoModuleReleased = new Promise<void>((resolve) => {
+    releaseSearchDemoModule = resolve;
+  });
+  await page.route("**/_astro/SearchTreeDemo.*.js", async (route) => {
+    markSearchDemoModuleRequested();
+    await searchDemoModuleReleased;
+    await route.continue();
+  });
+
+  return { searchDemoModuleRequested, releaseSearchDemoModule };
+}
+
+test("deep-link focus waits for the earlier demo island to hydrate", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { searchDemoModuleRequested, releaseSearchDemoModule } =
+    await delaySearchDemoHydration(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await searchDemoModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const demoIsland = page
+    .locator('astro-island[component-url*="SearchTreeDemo"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await expect(demoIsland).toHaveAttribute("ssr", "");
+  await expect(heading).not.toBeFocused();
+
+  releaseSearchDemoModule();
+  await expect(demoIsland).not.toHaveAttribute("ssr", "");
+  await expect(heading).toBeFocused();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(heading).toBeFocused();
+});
+
+test("late demo hydration does not replace focus that a user moved", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { searchDemoModuleRequested, releaseSearchDemoModule } =
+    await delaySearchDemoHydration(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await searchDemoModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const demoIsland = page
+    .locator('astro-island[component-url*="SearchTreeDemo"]')
+    .first();
+  const firstRadio = check.getByRole("radio").first();
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await firstRadio.focus();
+
+  releaseSearchDemoModule();
+  await expect(demoIsland).not.toHaveAttribute("ssr", "");
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(firstRadio).toBeFocused();
+});
+
+test("late demo hydration cancels deep-link focus after the hash changes", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  const { searchDemoModuleRequested, releaseSearchDemoModule } =
+    await delaySearchDemoHydration(page);
+  await page.goto("/chapters/search/#concept-check-search");
+  await searchDemoModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const conceptCheckIsland = check.locator("xpath=ancestor::astro-island");
+  const demoIsland = page
+    .locator('astro-island[component-url*="SearchTreeDemo"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
+  await page.evaluate(() => {
+    window.location.hash = "#away-from-concept-check";
+  });
+
+  releaseSearchDemoModule();
+  await expect(demoIsland).not.toHaveAttribute("ssr", "");
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(heading).not.toBeFocused();
+});
+
+test("a prior demo hydration error does not block deep-link focus", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  let releaseConceptCheckModule!: () => void;
+  const conceptCheckModuleReleased = new Promise<void>((resolve) => {
+    releaseConceptCheckModule = resolve;
+  });
+  await page.route("**/_astro/ConceptCheck.*.js", async (route) => {
+    await conceptCheckModuleReleased;
+    await route.continue();
+  });
+  await page.route("**/_astro/SearchTreeDemo.*.js", async (route) => {
+    await route.abort("failed");
+  });
+  await page.goto("/chapters/search/#concept-check-search");
+
+  const check = page.getByTestId("concept-check");
+  const demoIsland = page
+    .locator('astro-island[component-url*="SearchTreeDemo"]')
+    .first();
+  const heading = check.getByRole("heading", {
+    level: 2,
+    name: "用一个问题检验核心直觉",
+  });
+  await expect(demoIsland).toHaveAttribute("ssr", "");
+  await expect
+    .poll(() =>
+      demoIsland.evaluate((island) =>
+        window.__aiHistoryHydrationErrors?.has(island as HTMLElement),
+      ),
+    )
+    .toBe(true);
+
+  releaseConceptCheckModule();
+  await expect(heading).toBeFocused();
+});
+
 for (const path of [
   "/chapters/search/",
   "/chapters/search/#away-from-concept-check",
