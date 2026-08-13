@@ -39,6 +39,117 @@ for (const locale of ["zh-CN", "en"] as const) {
   });
 }
 
+for (const deepLinkCase of [
+  {
+    locale: "zh-CN",
+    path: "/chapters/search/#concept-check-search",
+    heading: "用一个问题检验核心直觉",
+  },
+  {
+    locale: "en",
+    path: "/en/chapters/search/#concept-check-search",
+    heading: "Test The Core Intuition With One Question",
+  },
+] as const) {
+  test(`${deepLinkCase.locale} concept-check deep links focus the heading without adding it to the Tab order`, async ({
+    page,
+  }) => {
+    await resetSelfChecks(page);
+    await page.goto(deepLinkCase.path);
+
+    const check = page.getByTestId("concept-check");
+    const heading = check.getByRole("heading", {
+      level: 2,
+      name: deepLinkCase.heading,
+    });
+    const firstRadio = check.getByRole("radio").first();
+
+    await expect(heading).toHaveAttribute("tabindex", "-1");
+    await expect(heading).toBeFocused();
+
+    await page
+      .getByRole("link", {
+        name: "A Formal Basis for the Heuristic Determination of Minimum Cost Paths",
+      })
+      .focus();
+    await page.keyboard.press("Tab");
+    await expect(firstRadio).toBeFocused();
+
+    await firstRadio.focus();
+    await page.evaluate(() => {
+      window.location.hash = "#away-from-concept-check";
+    });
+    await expect(page).toHaveURL(/#away-from-concept-check$/);
+    await expect(firstRadio).toBeFocused();
+
+    await page.evaluate(() => {
+      window.location.hash = "#concept-check-search";
+    });
+    await expect(heading).toBeFocused();
+  });
+}
+
+test("initial hydration preserves focus that a user already moved", async ({
+  page,
+}) => {
+  await resetSelfChecks(page);
+  let markConceptCheckModuleRequested!: () => void;
+  const conceptCheckModuleRequested = new Promise<void>((resolve) => {
+    markConceptCheckModuleRequested = resolve;
+  });
+  let releaseConceptCheckModule!: () => void;
+  const conceptCheckModuleReleased = new Promise<void>((resolve) => {
+    releaseConceptCheckModule = resolve;
+  });
+  await page.route("**/_astro/ConceptCheck.*.js", async (route) => {
+    markConceptCheckModuleRequested();
+    await conceptCheckModuleReleased;
+    await route.continue();
+  });
+  await page.goto("/chapters/search/#concept-check-search");
+  await conceptCheckModuleRequested;
+
+  const check = page.getByTestId("concept-check");
+  const island = check.locator("xpath=ancestor::astro-island");
+  const firstRadio = check.getByRole("radio").first();
+  await expect(island).toHaveAttribute("ssr", "");
+  await firstRadio.focus();
+  releaseConceptCheckModule();
+  await expect(island).not.toHaveAttribute("ssr", "");
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+  await expect(firstRadio).toBeFocused();
+  await expect(
+    check.getByRole("heading", {
+      level: 2,
+      name: "用一个问题检验核心直觉",
+    }),
+  ).not.toBeFocused();
+});
+
+for (const path of [
+  "/chapters/search/",
+  "/chapters/search/#away-from-concept-check",
+] as const) {
+  test(`concept-check heading does not take focus for ${path}`, async ({
+    page,
+  }) => {
+    await resetSelfChecks(page);
+    await page.goto(path);
+
+    await expect(
+      page.getByTestId("concept-check").getByRole("heading", {
+        level: 2,
+        name: "用一个问题检验核心直觉",
+      }),
+    ).not.toBeFocused();
+  });
+}
+
 test("an incorrect answer can reveal why, retry, persist, and clear", async ({
   page,
 }) => {
@@ -109,7 +220,22 @@ test("an incorrect answer can reveal why, retry, persist, and clear", async ({
   await expect(
     reloaded.getByText("确定清除这台设备上的全部自测与复习记录？"),
   ).toBeVisible();
-  await reloaded.getByRole("button", { name: "确定清除" }).click();
+  const confirmClear = reloaded.getByRole("button", { name: "确定清除" });
+  const cancelClear = reloaded.getByRole("button", { name: "取消" });
+  await expect(confirmClear).toBeFocused();
+  await expect(confirmClear).toHaveAccessibleDescription(
+    "确定清除这台设备上的全部自测与复习记录？",
+  );
+  await expect(cancelClear).toHaveAccessibleDescription(
+    "确定清除这台设备上的全部自测与复习记录？",
+  );
+  await cancelClear.click();
+  const clearTrigger = reloaded.getByRole("button", {
+    name: "清除全部自测与复习记录",
+  });
+  await expect(clearTrigger).toBeFocused();
+  await clearTrigger.click();
+  await confirmClear.click();
   await expect(reloaded.getByTestId("concept-check-recorded")).toHaveCount(0);
   await expect
     .poll(() => page.evaluate((key) => localStorage.getItem(key), progressKey))
