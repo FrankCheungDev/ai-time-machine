@@ -26,6 +26,10 @@
 - [ ] `pnpm build`
 - [ ] `pnpm test`
 
+## Route JavaScript Baseline
+
+- [ ] Baseline unchanged, or updated with route-level before / after bytes and an explanation of the growth and user value.
+
 ## Visual Evidence
 
 - No rendered change, or screenshots/recordings:

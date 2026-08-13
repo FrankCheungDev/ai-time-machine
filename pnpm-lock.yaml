@@ -13,6 +13,9 @@ importers:
       '@types/node':
         specifier: 26.0.1
         version: 26.0.1
+      es-module-lexer:
+        specifier: 2.1.0
+        version: 2.1.0
       prettier:
         specifier: 3.9.0
         version: 3.9.0
