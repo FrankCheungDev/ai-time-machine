@@ -595,7 +595,11 @@ test("completing Safety alone returns to the first incomplete chapter", async ({
   await page.goto("/chapters/safety/");
   const journey = page.getByTestId("chapter-journey");
   const journeyStatus = journey.locator(".chapter-journey-status");
+  const completionAnnouncement = journey.getByTestId(
+    "chapter-completion-announcement",
+  );
   await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toBeEmpty();
 
   await page.getByTestId("complete-and-continue").click();
 
@@ -603,6 +607,7 @@ test("completing Safety alone returns to the first incomplete chapter", async ({
     name: "本章已完成",
   });
   await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toBeEmpty();
   await expect(completionHeading).toHaveAttribute("tabindex", "-1");
   await expect(completionHeading).toBeFocused();
   await expect(journey.getByText("学习主线已完成")).toHaveCount(0);
@@ -622,7 +627,11 @@ test("completing Safety focuses the whole-path completion heading", async ({
 
   const journey = page.getByTestId("chapter-journey");
   const journeyStatus = journey.locator(".chapter-journey-status");
+  const completionAnnouncement = journey.getByTestId(
+    "chapter-completion-announcement",
+  );
   await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toBeEmpty();
 
   await page.getByTestId("complete-and-continue").click();
 
@@ -630,6 +639,7 @@ test("completing Safety focuses the whole-path completion heading", async ({
     name: "学习主线已完成",
   });
   await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toBeEmpty();
   await expect(completionHeading).toHaveAttribute("tabindex", "-1");
   await expect(completionHeading).toBeFocused();
 });
@@ -646,12 +656,173 @@ test("failed final completion keeps only the storage warning as a live region", 
 
   const journey = page.getByTestId("chapter-journey");
   const completionButton = journey.getByTestId("complete-and-continue");
+  const completionAnnouncement = journey.getByTestId(
+    "chapter-completion-announcement",
+  );
   await completionButton.click();
 
   await expect(completionButton).toBeFocused();
   await expect(journey.getByRole("heading", { level: 2 })).toHaveCount(0);
+  await expect(completionAnnouncement).toBeEmpty();
   await expect(journey.getByTestId("storage-warning")).toHaveAttribute(
     "aria-live",
     "polite",
   );
+});
+
+test("native storage exposes current-chapter completion in the dedicated live region", async ({
+  context,
+  page,
+}) => {
+  await page.goto("/chapters/search/");
+  const writerPage = await context.newPage();
+  await writerPage.goto("/");
+
+  const journey = page.getByTestId("chapter-journey");
+  const journeyStatus = journey.locator(".chapter-journey-status");
+  const completionAnnouncement = journey.getByTestId(
+    "chapter-completion-announcement",
+  );
+  await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toHaveAttribute("aria-live", "polite");
+  await expect(completionAnnouncement).toHaveAttribute("aria-atomic", "true");
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate((key) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({ version: 1, completedChapterIds: ["overview"] }),
+    );
+  }, learningProgressStorageKey);
+  await expect(journey.getByRole("heading", { level: 2 })).toHaveCount(0);
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate((key) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        completedChapterIds: ["overview", "search"],
+      }),
+    );
+  }, learningProgressStorageKey);
+
+  await expect(
+    journey.getByRole("heading", { level: 2, name: "本章已完成" }),
+  ).toBeVisible();
+  await expect(completionAnnouncement).toHaveText("本章已完成");
+
+  await writerPage.evaluate((key) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        completedChapterIds: ["overview", "search", "expert-system"],
+      }),
+    );
+  }, learningProgressStorageKey);
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate(
+    (key) => localStorage.removeItem(key),
+    learningProgressStorageKey,
+  );
+  await expect(journey.getByRole("heading", { level: 2 })).toHaveCount(0);
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate((key) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        completedChapterIds: ["overview", "search"],
+      }),
+    );
+  }, learningProgressStorageKey);
+  await expect(completionAnnouncement).toHaveText("本章已完成");
+
+  await page.evaluate(() => {
+    window.dispatchEvent(
+      new CustomEvent("ai-history:learning-progress-changed"),
+    );
+  });
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate(
+    (key) => localStorage.removeItem(key),
+    learningProgressStorageKey,
+  );
+  await expect(journey.getByRole("heading", { level: 2 })).toHaveCount(0);
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate((key) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        completedChapterIds: ["overview", "search"],
+      }),
+    );
+  }, learningProgressStorageKey);
+  await expect(completionAnnouncement).toHaveText("本章已完成");
+
+  await writerPage.close();
+});
+
+test("native storage exposes whole-path completion in the dedicated live region", async ({
+  context,
+  page,
+}) => {
+  await seedLearningProgress(
+    page,
+    chapterCases.filter(({ id }) => id !== "safety").map(({ id }) => id),
+  );
+  await page.goto("/chapters/safety/");
+  const writerPage = await context.newPage();
+  await writerPage.goto("/");
+
+  const journey = page.getByTestId("chapter-journey");
+  const completionAnnouncement = journey.getByTestId(
+    "chapter-completion-announcement",
+  );
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.evaluate(
+    ({ key, chapterIds }) => {
+      localStorage.setItem(
+        key,
+        JSON.stringify({ version: 1, completedChapterIds: chapterIds }),
+      );
+    },
+    {
+      key: learningProgressStorageKey,
+      chapterIds: chapterCases.map(({ id }) => id),
+    },
+  );
+
+  await expect(
+    journey.getByRole("heading", { level: 2, name: "学习主线已完成" }),
+  ).toBeVisible();
+  await expect(completionAnnouncement).toHaveText("学习主线已完成");
+
+  await writerPage.evaluate(
+    ({ key, chapterIds }) => {
+      localStorage.setItem(
+        key,
+        JSON.stringify({ version: 1, completedChapterIds: chapterIds }),
+      );
+    },
+    {
+      key: learningProgressStorageKey,
+      chapterIds: chapterCases
+        .filter(({ id }) => id !== "overview")
+        .map(({ id }) => id),
+    },
+  );
+  await expect(
+    journey.getByRole("heading", { level: 2, name: "本章已完成" }),
+  ).toBeVisible();
+  await expect(completionAnnouncement).toBeEmpty();
+
+  await writerPage.close();
 });

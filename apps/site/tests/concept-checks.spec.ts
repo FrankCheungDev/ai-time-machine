@@ -316,7 +316,7 @@ test("a later chapter journey hydration error releases deep-link focus", async (
   await expect(heading).toBeFocused();
 });
 
-test("completed chapter hydration omits a live region and preserves the home review deep link", async ({
+test("completed chapter hydration keeps its live region empty and preserves the home review deep link", async ({
   page,
 }) => {
   await page.addInitScript(
@@ -365,6 +365,9 @@ test("completed chapter hydration omits a live region and preserves the home rev
     .first();
   const journey = page.getByTestId("chapter-journey");
   const journeyStatus = journey.locator(".chapter-journey-status");
+  const completionAnnouncement = journey.getByTestId(
+    "chapter-completion-announcement",
+  );
   const heading = check.getByRole("heading", {
     level: 2,
     name: "用一个问题检验核心直觉",
@@ -374,6 +377,9 @@ test("completed chapter hydration omits a live region and preserves the home rev
   });
   await expect(conceptCheckIsland).not.toHaveAttribute("ssr", "");
   await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toHaveAttribute("aria-live", "polite");
+  await expect(completionAnnouncement).toHaveAttribute("aria-atomic", "true");
+  await expect(completionAnnouncement).toBeEmpty();
   await languageSwitch.focus();
   await expect
     .poll(() => page.evaluate(() => window.__aiHistoryInteractionEpoch))
@@ -386,6 +392,7 @@ test("completed chapter hydration omits a live region and preserves the home rev
     journey.getByRole("heading", { level: 2, name: "本章已完成" }),
   ).toBeVisible();
   await expect(journeyStatus).not.toHaveAttribute("aria-live");
+  await expect(completionAnnouncement).toBeEmpty();
   await expect(heading).toBeFocused();
   await page.evaluate(
     () =>

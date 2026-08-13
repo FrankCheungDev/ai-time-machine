@@ -56,6 +56,7 @@
   let hydrated = false;
   let showStorageWarning = false;
   let continueWithoutSaving = false;
+  let completionAnnouncement = "";
   let finalCompletionHeading: HTMLHeadingElement | undefined;
 
   $: currentChapterComplete = progress.completedChapterIds.includes(chapterId);
@@ -66,6 +67,13 @@
   $: firstIncompleteChapter = firstIncompleteDefinition
     ? getLocalizedLearningChapter(firstIncompleteDefinition.id, locale)
     : undefined;
+
+  function getCompletionStage(
+    completedChapterIds: readonly LearningChapterId[],
+  ): 0 | 1 | 2 {
+    if (!completedChapterIds.includes(chapterId)) return 0;
+    return isLearningPathComplete(completedChapterIds) ? 2 : 1;
+  }
 
   function syncProgress(): void {
     const snapshot = readLearningProgress();
@@ -83,11 +91,25 @@
       locale,
     });
 
-    const handleProgressChanged = (): void => syncProgress();
+    const handleProgressChanged = (): void => {
+      completionAnnouncement = "";
+      syncProgress();
+    };
     const handleStorage = (event: StorageEvent): void => {
-      if (event.key === null || event.key === learningProgressStorageKey) {
-        syncProgress();
+      if (event.key !== null && event.key !== learningProgressStorageKey) {
+        return;
       }
+
+      const previousStage = getCompletionStage(progress.completedChapterIds);
+      syncProgress();
+      const nextStage = getCompletionStage(progress.completedChapterIds);
+
+      completionAnnouncement =
+        nextStage > previousStage
+          ? nextStage === 2
+            ? copy.pathComplete
+            : copy.currentChapterComplete
+          : "";
     };
 
     window.addEventListener(
@@ -174,6 +196,15 @@
       {/if}
     {/if}
   </div>
+
+  <p
+    class="sr-only"
+    data-testid="chapter-completion-announcement"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {completionAnnouncement}
+  </p>
 
   {#if showStorageWarning}
     <p
