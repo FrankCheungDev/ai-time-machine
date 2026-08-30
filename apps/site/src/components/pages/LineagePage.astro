@@ -163,7 +163,7 @@ function getLineageEdgeGeometry(
 ---
 
 <BaseLayout title={copy.title} description={copy.description} locale={locale}>
-  <main class="chapter-main">
+  <main id="main-content" class="chapter-main" tabindex="-1">
     <p class="eyebrow">{copy.eyebrow}</p>
     <h1 class="page-title">{copy.heading}</h1>
     <p class="lede">{copy.lede}</p>
@@ -215,7 +215,7 @@ function getLineageEdgeGeometry(
       data-view="fit"
       data-mobile-scroll-scene
     >
-      <svg viewBox="0 0 1420 540" role="img" aria-labelledby="lineage-title">
+      <svg viewBox="0 0 1420 540" role="group" aria-labelledby="lineage-title">
         <title id="lineage-title">{copy.svgTitle}</title>
         <defs>
           <marker

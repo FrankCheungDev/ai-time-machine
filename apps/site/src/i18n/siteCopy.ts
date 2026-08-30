@@ -17,6 +17,7 @@ export interface SiteCopy {
   siteTitle: string;
   defaultDescription: string;
   socialImageAlt: string;
+  skipToContent: string;
   navLabel: string;
   nav: {
     home: string;
@@ -40,6 +41,7 @@ export const siteCopy = {
       "交互式人工智能图解史：用图解、动画和轻量交互解释 AI 技术演化。",
     socialImageAlt:
       "交互式人工智能图解史，从规则与搜索到大模型、RAG 和 Agent 的演化主线",
+    skipToContent: "跳到主要内容",
     navLabel: "主导航",
     nav: {
       home: "总览",
@@ -70,6 +72,7 @@ export const siteCopy = {
       "An interactive illustrated history of AI, explaining technical evolution with diagrams, animation, and lightweight demos.",
     socialImageAlt:
       "Interactive Illustrated AI History, tracing the path from rules and search to large models, RAG, and agents",
+    skipToContent: "Skip to main content",
     navLabel: "Primary navigation",
     nav: {
       home: "Overview",

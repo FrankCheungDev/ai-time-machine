@@ -26,7 +26,7 @@ const chapter = getLocalizedLearningChapter("overview", locale);
 ---
 
 <BaseLayout title={copy.title} description={copy.description} locale={locale}>
-  <main class="chapter-main">
+  <main id="main-content" class="chapter-main" tabindex="-1">
     <ChapterProgress {locale} chapterId="overview" />
     <p class="eyebrow">{chapter.label}</p>
     <h1 class="page-title">{copy.heading}</h1>
