@@ -7,11 +7,15 @@
 
 ## 当前版本
 
-v1.7 已由 `main@79daf69` 部署。PR #37 交付本机复习闭环，PR #39–#43
-关闭 Guided Story 与复习流程共用的 VoiceOver 缺陷；PR head CI run
-31703100783、main CI run 31703484976、Cloudflare Pages production check、
-2026-08-12 生产隐私 / 交互 smoke 与 2026-08-13 五项生产 VoiceOver 检查均已
-通过；生产当前提供收口资源 `ChapterJourney.ClIOeOOI.js`。
+最后一项拥有完整生产记录的版本是由 `main@79daf69` 部署的 v1.7。PR #37
+交付本机复习闭环，PR #39–#43 关闭 Guided Story 与复习流程共用的 VoiceOver
+缺陷；PR head CI run 31703100783、main CI run 31703484976、Cloudflare Pages
+production check、2026-08-12 生产隐私 / 交互 smoke 与 2026-08-13 五项生产
+VoiceOver 检查均已通过。
+
+仓库 `main@7a29ffc` 还包含 PR #45 合并的 v1.8-01 路由 JavaScript 基线与回退
+门。仓库记录能够证明实现与合并；与该提交对应的 main CI、Cloudflare 和生产记录尚未
+写入本仓库。
 
 - 基于 Astro、MDX 与 Svelte islands 的纯静态站点。
 - 从总览到 Safety / Eval 的 13 个章节，其中反馈学习位于 CNN 与 Attention 之间。
@@ -71,9 +75,10 @@ VoiceOver 发布门已经闭合。P2-05 真实使用闭环继续暂停：provide
 分析器继续保留，但不会因此启用网络采集。发布记录与后续方案见
 [`v1.5 反馈学习与引导式因果路径`](docs/V1_5_FEEDBACK_LEARNING_BRIEF.md)、
 [`v1.6 引导式因果学习实施与发布说明`](docs/V1_6_GUIDED_CAUSAL_LEARNING_BRIEF.md)以及
-[`v1.7 本机复习闭环 brief`](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md)。后续顺序从
-v1.8-01 路由 JavaScript 基线与回退门开始，再完成另外两项独立工程质量基线和另案
-批准的 v1.9 Timeline 单故事 Reader 原型；范围、依赖、非目标与证据门见
+[`v1.7 本机复习闭环 brief`](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md)。v1.8-01
+已在 `main@7a29ffc` 实现；下一工程切片是 v1.8-02 axe、全站 skip
+link 与精简 WebKit smoke，随后再做 v1.8-03 registry 驱动的 production smoke
+和另案批准的 v1.9 Timeline 单故事 Reader 原型；范围、依赖、非目标与证据门见
 [`post-v1.7 迭代方案`](docs/POST_V1_7_ITERATION_PLAN.md)。
 
 ## 部署

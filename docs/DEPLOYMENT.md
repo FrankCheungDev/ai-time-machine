@@ -195,6 +195,29 @@ not a complete WCAG certification, does not replace zoom, reflow, keyboard,
 automated-rule, or cross-browser testing, and does not demonstrate improved
 understanding, retention, completion, or any other learner outcome.
 
+## v1.8-01 Repository Record
+
+[PR #45](https://github.com/FrankCheungDev/ai-time-machine/pull/45) merged the
+route JavaScript baseline and regression gate as
+[`main@7a29ffc`](https://github.com/FrankCheungDev/ai-time-machine/commit/7a29ffcd4cccad608e3463bb4119eed9546a8838).
+The repository contains:
+
+- a fixed Node 22.22.2, pnpm 11.7.0, `es-module-lexer` 2.1.0, and zlib level-9
+  measurement contract;
+- route-level raw and transitive-gzip baselines for Home, Search, RAG,
+  Timeline, and Lineage;
+- fixture coverage for HTML entry discovery, recursive static imports,
+  per-route chunk deduplication, containment, baseline validation, and the
+  strict `max(5,000 B, baseline × 5%)` threshold;
+- a Quality and build step that writes and uploads the route budget report.
+
+This repository record proves the implementation and merge, not deployment.
+A matching PR-head/main CI run, Cloudflare Pages result, and production record
+have not yet been captured here and must be verified before v1.8-01 is called
+fully published. The analyzer does not claim that its five routes represent a
+complete performance audit or that the current byte totals prove a learner
+outcome.
+
 ## Rollback
 
 Choose the smallest rollback that restores a known-good state:

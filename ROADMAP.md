@@ -6,12 +6,15 @@ extend the first version described in
 
 ## Current Surface
 
-v1.7 is deployed from `main` at `79daf69`. PR #37 delivered the device-local
+The last fully recorded production release is v1.7 from `main@79daf69`. PR #37 delivered the device-local
 review loop, and PRs #39–#43 closed the shared Guided Story and review-flow
 VoiceOver findings. PR-head CI run 31703100783, main CI run 31703484976,
 Cloudflare Pages production, the 2026-08-12 production privacy / interaction
 smoke, and five documented production VoiceOver checks passed on 2026-08-13.
-Production serves the closing `ChapterJourney.ClIOeOOI.js` asset.
+Production served the closing `ChapterJourney.ClIOeOOI.js` asset. Repository
+`main@7a29ffc` additionally contains PR #45's v1.8-01 route JavaScript baseline
+and regression gate; matching main-CI, Cloudflare, and production evidence has
+not yet been recorded in the repository.
 
 - Static Astro site with MDX chapter support.
 - Svelte demo islands and shared demo shell/stepper/SVG scene primitives.
@@ -87,11 +90,11 @@ follows the staged process in
   `ChapterJourney.ClIOeOOI.js`, and five real VoiceOver checks passed on
   2026-08-13. See
   [the v1.7 implementation brief](docs/V1_7_LOCAL_REVIEW_LOOP_BRIEF.md).
-- **v1.8 — Planned; v1.8-01 next — Engineering quality baselines:** three
-  independent small PRs establish reproducible transitive-gzip budgets, axe
-  plus a focused WebKit smoke and a site-wide skip link, and registry-derived
-  production smoke. The next slice is the route JavaScript baseline and
-  regression gate.
+- **v1.8 — In progress; v1.8-01 implemented, v1.8-02 next — Engineering quality
+  baselines:** PR #45 merged the reproducible transitive-gzip baseline and
+  regression gate as `main@7a29ffc`. The next independent slice adds axe, a
+  focused WebKit smoke, and a site-wide skip link; v1.8-03 then derives
+  production smoke from the registries.
 - **v1.9 — Planned; separate brief required — Timeline single-story Reader:**
   prototype `story + step + view` URL state, step navigation, and synchronized
   event focus for one existing curated story before considering Lineage or
