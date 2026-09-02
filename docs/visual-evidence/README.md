@@ -94,3 +94,19 @@ Recreate them against the same local preview:
 pnpm --filter site preview --host 127.0.0.1 --port 4330
 pnpm capture:v1.7-evidence
 ```
+
+## Accessibility Baseline v1.8-02
+
+- `v1-8-skip-link-chinese-desktop.png`: the Chinese skip link as the first keyboard focus target at desktop width.
+- `v1-8-skip-link-english-mobile.png`: the English skip link with a visible focus indicator at 390px.
+
+Recreate them against the same local preview:
+
+```sh
+pnpm --filter site preview --host 127.0.0.1 --port 4330
+pnpm capture:v1.8-accessibility-evidence
+```
+
+The axe critical/serious gate and focused WebKit smoke are repeatable regression
+signals. They do not replace semantic review, real keyboard and screen-reader
+checks, or a complete WCAG evaluation.

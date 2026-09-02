@@ -13,6 +13,7 @@
     "capture:v1.5-evidence": "node scripts/capture-v1.5-evidence.mjs",
     "capture:v1.6-evidence": "node scripts/capture-v1.6-evidence.mjs",
     "capture:v1.7-evidence": "node scripts/capture-v1.7-evidence.mjs",
+    "capture:v1.8-accessibility-evidence": "node scripts/capture-v1.8-accessibility-evidence.mjs",
     "capture:p2-evidence": "node scripts/capture-p2-evidence.mjs",
     "analyze:learning-metrics": "node scripts/analyze-learning-metrics.ts",
     "smoke:production:privacy": "node scripts/smoke-production-privacy.mjs",

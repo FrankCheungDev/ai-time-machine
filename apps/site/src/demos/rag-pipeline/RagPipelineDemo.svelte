@@ -301,7 +301,7 @@
   .scenario-result span {
     width: fit-content;
     padding: 3px 8px;
-    color: var(--color-amber, #b87918);
+    color: var(--color-amber-text, #8a5a10);
     border: 1px solid rgba(184, 121, 24, 0.32);
     border-radius: 8px;
     font-size: 0.86rem;
